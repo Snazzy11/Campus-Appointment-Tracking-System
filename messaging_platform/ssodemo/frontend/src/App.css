@@ -1,0 +1,6 @@
+.chat { max-width: 740px; margin: 2rem auto; padding: 1.5rem; text-align: left; }
+.messages { min-height: 280px; max-height: 55vh; overflow: auto; border: 1px solid #8885; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.message { padding: .4rem 0; overflow-wrap: anywhere; }
+form { display: flex; gap: .75rem; }
+form input { flex: 1; min-width: 0; padding: .7rem; }
+form button { padding: .7rem 1.2rem; }
