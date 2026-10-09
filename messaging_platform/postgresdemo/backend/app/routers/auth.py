@@ -3,7 +3,6 @@ import base64
 import hashlib
 import os
 import secrets
-import time
 from urllib.parse import urlencode
 
 import httpx
@@ -12,6 +11,8 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Cookie, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from jwt import PyJWKClient
+
+from ..services.sessions import create_session, get_session, delete_session, SESSION_LIFETIME
 
 load_dotenv()
 
@@ -31,10 +32,6 @@ ISSUER = (
 jwks_client = PyJWKClient(
     f"{ISSUER}/.well-known/jwks.json"
 )
-
-# Development only: one process, no persistence.
-sessions = {}
-SESSION_LIFETIME = 60 * 60 * 8  # 8 hours
 
 # Local HTTP development. Set True under HTTPS.
 COOKIE_SECURE = False
@@ -179,13 +176,7 @@ async def callback(
             detail="Cognito token verification failed",
         )
 
-    session_id = secrets.token_urlsafe(32)
-
-    sessions[session_id] = {
-        "sub": claims["sub"],
-        "email": claims.get("email"),
-        "expires": time.time() + SESSION_LIFETIME,
-    }
+    session_id = create_session(claims["sub"], claims.get("email"))
 
     response = RedirectResponse("/", status_code=303)
 
@@ -207,7 +198,7 @@ async def callback(
 def me(
     campus_session: str | None = Cookie(default=None),
 ):
-    session = sessions.get(campus_session)
+    session = get_session(campus_session)
 
     if not session:
         raise HTTPException(
@@ -215,12 +206,6 @@ def me(
             detail="Not authenticated",
         )
 
-    if session["expires"] < time.time():
-        sessions.pop(campus_session, None)
-        raise HTTPException(
-            status_code=401,
-            detail="Session expired",
-        )
 
     return {
         "authenticated": True,
@@ -244,8 +229,7 @@ def logout(
             detail="Invalid request origin",
         )
 
-    if campus_session:
-        sessions.pop(campus_session, None)
+    delete_session(campus_session)
 
     response = RedirectResponse("/", status_code=303)
     response.delete_cookie("campus_session", path="/")

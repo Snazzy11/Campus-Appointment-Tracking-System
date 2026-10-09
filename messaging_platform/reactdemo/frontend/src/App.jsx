@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { login } from './auth'
-
 const API = '/api'
 
 export default function App() {
@@ -44,9 +42,6 @@ export default function App() {
 
   return (
     <main className="chat">
-      <button type="button" onClick={() => login().catch(err => setError(err.message))}>
-      Login with AWS Cognito
-      </button>
       <h1>Campus Messaging</h1>
       <p role="status">{connected ? '● Connected' : '○ Connecting / disconnected'}</p>
       <section className="messages" aria-label="Messages">
