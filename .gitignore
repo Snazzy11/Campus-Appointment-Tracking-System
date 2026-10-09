@@ -45,3 +45,8 @@ example
 # local stuff
 *.idea
 *.env
+
+# IDE and caches and more
+*.venv
+*.__pycache*
+*.vscode
