@@ -64,8 +64,8 @@ The Campus Appointment Tracking System
 - Backend: Python, FastAPI
 - Database: PostgreSQL
 - Map Provider: MapLibre
-- Frontend package manager: NPM
-- Backend package manager: UV
+- Frontend package manager: npm
+- Backend package manager: uv
 
 ### Folders
 - src/
