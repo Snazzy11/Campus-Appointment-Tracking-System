@@ -48,5 +48,6 @@ example
 
 # IDE and caches and more
 *.venv
-*.__pycache*
+*__pycache*
 *.vscode
+*node_modules

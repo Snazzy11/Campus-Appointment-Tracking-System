@@ -1,0 +1,20 @@
+[project]
+name = "cats"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Parker Scott", email = "98108108+Snazzy11@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.143.0",
+    "sqlalchemy>=2.1.4",
+]
+
+[project.scripts]
+cats = "cats:main"
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
