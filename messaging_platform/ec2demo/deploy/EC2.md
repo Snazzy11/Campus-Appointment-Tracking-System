@@ -42,6 +42,8 @@ The prepared deploy/ec2.env reuses existing Cognito settings and contains a newl
 docker compose --env-file deploy/ec2.env config --quiet
 ```
 
+For EC2, set COOKIE_SECURE=true explicitly in deploy/ec2.env. Local Compose defaults to COOKIE_SECURE=false and APP_ORIGIN=http://localhost:18080.
+
 APP_ORIGIN=https://messaging.tufts.pro is embedded into the web bundle. Changing it requires rebuilding the web image. For the installed native Expo app, set EXPO_PUBLIC_API_URL to this origin and reload the development bundle or rebuild a release. Production web uses exported static files, not Metro/Expo Go on port 8081.
 
 In Cognito's existing app client, add https://messaging.tufts.pro/auth/callback to allowed callback URLs; retain campusmessaging://auth/callback for native login. Do not remove callbacks used by other applications. Compose provides the same allowlist to the backend and sets FRONTEND_ORIGINS to https://messaging.tufts.pro. Browser CORS is enforced by FastAPI; the Cognito callback allowlist is a separate setting. This PKCE frontend expects a public app client without a client secret. Web callback is served by Expo, not proxied to the legacy /auth/callback backend route.

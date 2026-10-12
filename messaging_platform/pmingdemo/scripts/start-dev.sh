@@ -3,9 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Phone-friendly defaults; explicit environment values and Expo flags still win.
-export BACKEND_HOST="${BACKEND_HOST:-0.0.0.0}"
-EXPO_ARGS=("$@")
+# Local development defaults; explicit environment values and Expo flags still win.
+export BACKEND_HOST="${BACKEND_HOST:-127.0.0.1}"
 HAS_TARGET=false
 HAS_CONNECTION=false
 for arg in "$@"; do
@@ -14,8 +13,8 @@ for arg in "$@"; do
         --lan|--localhost|--tunnel|--host|--host=*) HAS_CONNECTION=true ;;
     esac
 done
-if [[ "$HAS_TARGET" == false ]]; then EXPO_ARGS=(--go "${EXPO_ARGS[@]}"); fi
-if [[ "$HAS_CONNECTION" == false ]]; then EXPO_ARGS=(--lan "${EXPO_ARGS[@]}"); fi
+if [[ "$HAS_TARGET" == false ]]; then set -- --go "$@"; fi
+if [[ "$HAS_CONNECTION" == false ]]; then set -- --localhost "$@"; fi
 
 # Validate both tools before starting either service.
 if ! command -v uv >/dev/null 2>&1; then
@@ -55,7 +54,7 @@ trap 'exit 143' TERM
 "$SCRIPT_DIR/start-backend.sh" &
 BACKEND_PID=$!
 
-"$SCRIPT_DIR/start-frontend.sh" "${EXPO_ARGS[@]}" &
+"$SCRIPT_DIR/start-frontend.sh" "$@" &
 FRONTEND_PID=$!
 
 echo "Backend:  port ${BACKEND_PORT:-8000}, host ${BACKEND_HOST:-127.0.0.1}"

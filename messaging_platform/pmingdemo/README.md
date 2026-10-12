@@ -27,7 +27,7 @@ uv run --locked alembic upgrade head
 cd ../frontend
 npm ci
 cd ..
-./scripts/start-dev.sh    # backend on LAN + public-chat preview in Expo Go
+./scripts/start-dev.sh    # local backend + public-chat preview in Expo Go
 ```
 
 Keep existing `.env` files; the examples contain placeholders. Configure Cognito before sign-in as described below. FastAPI docs: http://localhost:8000/docs. Expo/Metro: port 8081; press `w` for web or scan the QR code in Expo Go for public chat. There is no Vite proxy. The app calls the absolute `EXPO_PUBLIC_API_URL`, defaulting to `http://localhost:8000`.
@@ -35,10 +35,10 @@ Keep existing `.env` files; the examples contain placeholders. Configure Cognito
 For a physical phone, set `frontend/.env` to your computer's reachable LAN address, for example `EXPO_PUBLIC_API_URL=http://192.168.1.20:8000`, then run:
 
 ```sh
-./scripts/start-dev.sh
+BACKEND_HOST=0.0.0.0 ./scripts/start-dev.sh --lan
 ```
 
-The combined script defaults to backend host 0.0.0.0 and Expo Go over LAN. For the installed native app with Cognito login, run `./scripts/start-dev.sh --dev-client`. Use the same reachable network for phone and computer. Android emulator uses `http://10.0.2.2:8000`; iOS simulator/web can use localhost. Reload Metro after changing environment values. An Expo tunnel only tunnels Metro, not FastAPI.
+The combined script defaults to backend host 127.0.0.1 and Expo Go on localhost. LAN access is explicit. For the installed native app with Cognito login, run `./scripts/start-dev.sh --dev-client`. Use the same reachable network for phone and computer. Android emulator uses `http://10.0.2.2:8000`; iOS simulator/web can use localhost. Reload Metro after changing environment values. An Expo tunnel only tunnels Metro, not FastAPI.
 
 ## Cognito and native builds
 
