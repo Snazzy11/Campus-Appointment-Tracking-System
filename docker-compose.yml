@@ -1,0 +1,36 @@
+name: cats
+
+services:
+  app:
+    build: .
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://cats:cats-devonly@db:5432/cats"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16.6-alpine3.20
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: cats
+      POSTGRES_PASSWORD: cats-devonly
+      POSTGRES_DB: cats
+    volumes:
+      - cats_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cats -d cats"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  cats_data:
