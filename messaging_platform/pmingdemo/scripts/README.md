@@ -6,19 +6,21 @@ Run from pmingdemo/. Each launcher resolves project paths from its own script di
 | --- | --- |
 | start-backend.sh | Requires uv, runs uv sync --locked, then uv run --locked uvicorn |
 | start-frontend.sh | Requires npm; npm ci when node_modules is absent; starts Expo/Metro; forwards its command arguments |
-| start-dev.sh | Defaults to backend 0.0.0.0 and Expo Go over LAN; checks uv/npm; forwards explicit Expo overrides; stops both when either child exits or on interrupt/termination |
+| start-dev.sh | Defaults to backend 127.0.0.1 and Expo Go on localhost; checks uv/npm; forwards explicit Expo overrides; stops both when either child exits or on interrupt/termination |
 | smoke-test.sh | Backend health/history + subscribe-before-post live SSE verification |
 
 ```sh
 ./scripts/start-dev.sh
 # Installed development build with native Cognito login:
 ./scripts/start-dev.sh --dev-client
+# Phone on your LAN (set frontend API URL to the Mac LAN IP):
+BACKEND_HOST=0.0.0.0 ./scripts/start-dev.sh --dev-client --lan
 # Separate terminals:
 ./scripts/start-backend.sh
 ./scripts/start-frontend.sh --web
 ```
 
-The combined launcher defaults BACKEND_HOST to 0.0.0.0 and Expo to --go --lan. Explicit BACKEND_HOST and Expo target/connection flags override those defaults. The standalone backend launcher defaults to 127.0.0.1. BACKEND_PORT defaults to 8000. Set frontend EXPO_PUBLIC_API_URL to the corresponding reachable address/port. Metro uses port 8081; it does not proxy requests. On physical devices localhost points at the device itself. An Expo tunnel does not expose the backend.
+The combined launcher defaults BACKEND_HOST to 127.0.0.1 and Expo to --go --localhost. Explicit BACKEND_HOST and Expo target/connection flags override those defaults. The standalone backend launcher defaults to 127.0.0.1. BACKEND_PORT defaults to 8000. Set frontend EXPO_PUBLIC_API_URL to the corresponding reachable address/port. Metro uses port 8081; it does not proxy requests. On physical devices localhost points at the device itself. An Expo tunnel does not expose the backend.
 
 Install uv using [official instructions](https://docs.astral.sh/uv/getting-started/installation/). uv manages backend/.venv using the committed pyproject.toml/uv.lock/.python-version. Launchers do not configure accounts, create the database, or apply migrations. Run uv run --locked alembic upgrade head from backend/ after reviewing schema state. The combined launcher checks tool availability before starting either child, monitors both children, and stops the sibling when one exits. It does not perform an HTTP readiness check.
 

@@ -10,11 +10,11 @@ x-api-environment: &api-environment
   COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID:?Set COGNITO_CLIENT_ID}
   COGNITO_REGION: ${COGNITO_REGION:?Set COGNITO_REGION}
   COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID:?Set COGNITO_USER_POOL_ID}
-  COGNITO_REDIRECT_URI: ${APP_ORIGIN:?Set APP_ORIGIN}/auth/callback
-  COGNITO_APP_REDIRECT_URIS: campusmessaging://auth/callback,${APP_ORIGIN}/auth/callback
-  FRONTEND_URL: ${APP_ORIGIN}
-  FRONTEND_ORIGINS: ${APP_ORIGIN}
-  COOKIE_SECURE: "true"
+  COGNITO_REDIRECT_URI: ${APP_ORIGIN:-http://localhost:18080}/auth/callback
+  COGNITO_APP_REDIRECT_URIS: campusmessaging://auth/callback,${APP_ORIGIN:-http://localhost:18080}/auth/callback
+  FRONTEND_URL: ${APP_ORIGIN:-http://localhost:18080}
+  FRONTEND_ORIGINS: ${APP_ORIGIN:-http://localhost:18080}
+  COOKIE_SECURE: ${COOKIE_SECURE:-false}
 
 x-logging: &logging
   driver: json-file
@@ -69,7 +69,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       args:
-        EXPO_PUBLIC_API_URL: ${APP_ORIGIN}
+        EXPO_PUBLIC_API_URL: ${APP_ORIGIN:-http://localhost:18080}
     ports:
       - "127.0.0.1:${APP_PORT:-18080}:80"
     restart: unless-stopped
