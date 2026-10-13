@@ -19,3 +19,9 @@ frontend/legacy
 **/.git
 **/.DS_Store
 **/*.log
+
+**/*.env
+**/*.env.*
+deploy/deploy-settings.json
+releases/
+backups/

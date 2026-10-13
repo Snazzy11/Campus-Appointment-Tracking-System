@@ -62,3 +62,7 @@ Backend tests use an isolated SQLite database and mocked Cognito, never the conf
 6. Background/foreground the app and interrupt network access; check history reload and reconnect.
 7. Logout and verify private state/storage clears. Restart the API and verify stale bearer credentials are rejected; database messages should persist.
 8. Inspect safe areas, keyboard avoidance, multiline composer, and long messages on actual iOS/Android devices.
+
+## Automated updates
+
+To redeploy updated local source to the existing EC2 app, run `./scripts/deploy-ec2.sh --dry-run`, then `./scripts/deploy-ec2.sh` from ec2demo. See [the redeployment guide](../deploy/REDEPLOY.md) for setup, backups, migrations, and recovery.

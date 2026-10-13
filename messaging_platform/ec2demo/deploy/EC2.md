@@ -188,3 +188,7 @@ The temporary campus-ec2demo-check containers/networks were removed. Its test-on
 Real account sign-in, private conversation delivery, and native use of the deployed API still need user verification. The user added the new Cognito callback; provider acceptance is verified in the deployment checks.
 
 For server maintenance, use sudo docker compose --env-file deploy/ec2.env from /home/ubuntu/apps/ec2demo. Database backup and image archive are private files there. Before updates, preserve the existing database volume and back it up. Source frontend/backend code is on the Mac; EC2 currently runs prebuilt images rather than a build checkout.
+
+## Automated updates
+
+To redeploy updated local source to the existing EC2 app, run `./scripts/deploy-ec2.sh --dry-run`, then `./scripts/deploy-ec2.sh` from ec2demo. See [the redeployment guide](REDEPLOY.md) for setup, backups, migrations, and recovery.

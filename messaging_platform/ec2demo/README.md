@@ -108,3 +108,7 @@ npx expo export --platform all
 Migration verification: 12 backend tests, Ruff, frontend lint/typecheck, 12 frontend tests (SSE parser, web rendering, and OAuth callbacks), Expo Doctor (21/21), Android/iOS/web JS exports, and the live SSE smoke script against an isolated test backend. Exports are bundle checks, not signed native builds or device runtime tests. The local interactive Metro check hit a macOS watcher limit; see the frontend README for Watchman troubleshooting. PostgreSQL migrations and real Cognito login were not exercised against your accounts. Tests substitute an isolated SQLite database and mocked Cognito; they do not write to your configured database.
 
 The tracked `backend/campus_messaging_before_dm.dump` was not inspected or restored. It is not required for fresh setup and must not be assumed to match the current schema.
+
+## Automated updates
+
+To redeploy updated local source to the existing EC2 app, run `./scripts/deploy-ec2.sh --dry-run`, then `./scripts/deploy-ec2.sh` from ec2demo. See [the redeployment guide](deploy/REDEPLOY.md) for setup, backups, migrations, and recovery.

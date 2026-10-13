@@ -35,3 +35,6 @@ frontend/expo-env.d.ts
 # Private database backups
 *.dump
 backups/
+
+# Machine-specific deployment destination
+deploy/deploy-settings.json
