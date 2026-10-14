@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Campus Messaging",
+    "slug": "campus-messaging",
+    "version": "1.0.0",
+    "scheme": "campusmessaging",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-status-bar",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose a photo for your campus profile.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "edu.campus.messaging",
+      "appleTeamId": "GS266CDYMB"
+    },
+    "android": {
+      "package": "edu.campus.messaging"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
