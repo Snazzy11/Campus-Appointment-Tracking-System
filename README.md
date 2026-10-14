@@ -92,6 +92,9 @@ The Campus Appointment Tracking System
 ## Adding Code
 Please make sure you have read project structure and setup first.
 
+1. Always make a branch from main. We have main protected and pushes will fail
+2. Run `make validate` before pushing and fix any printed errors
+
 ### Adding Dependencies
 For a Python dependency, use `uv add <package>`
 If it is a dev-only dependency, like a debugger or linter, use `uv add --dev <package>`
