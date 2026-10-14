@@ -7,10 +7,10 @@ setup:
 	git config core.hooksPath .githooks
 
 lint: ## Run linter
-	uv run ruff check .
+	uv run ruff check ./cats
 
 format: ## Run formatter
-	uv run ruff format .
+	uv run ruff format ./cats
 
 typecheck: ## Run static type checker
 	uv run mypy
