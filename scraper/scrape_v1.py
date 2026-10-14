@@ -4,12 +4,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urljoin
 import time
-
+from dataclasses import dataclass
 
 BASE_URL = "https://engage.apps.cmich.edu"
 ORGANIZATIONS_URL = f"{BASE_URL}/organizations"
-
-
 options = webdriver.ChromeOptions()
 options.add_argument("--window-size=1920,1080")
 
@@ -18,6 +16,20 @@ options.add_argument("--window-size=1920,1080")
 
 driver = webdriver.Chrome(options=options)
 
+organizations = {}
+RSOs = [] 
+
+@dataclass
+class RSO:
+    name: str
+    description: str
+    link: str
+    
+    def __init__(self, name: str, description: str , link: str):
+        self.name = name
+        self.description = description
+        self.link = link
+        
 
 try:
     print("Opening organizations page...")
@@ -46,11 +58,9 @@ try:
         'a[href*="/organization/"]'
     )
 
-    organizations = {}
-
     for link in links:
 
-        href = link.get_attribute("href")
+        href = link.get_attribute("href");
 
         if not href:
             continue
@@ -67,18 +77,19 @@ try:
 
         # Dictionary automatically removes duplicates
         organizations[href] = text
-
+        info = text.split("\n");
+        
+        # Store info into a RSO object
+        name = info[0]
+        desc = info[1]
+        RSOs.append(RSO(name, desc, href))
 
     print(
         f"Found {len(organizations)} organization URLs\n"
     )
-
-    for i, (url, text) in enumerate(
-        organizations.items(),
-        start=1
-    ):
-        print(f"[{i}] {text!r}")
-        print(f"    {url}")
+    
+    for rso in RSOs:
+        print(rso.name + ": " + rso.link)
 
 
     # --------------------------------------------------
