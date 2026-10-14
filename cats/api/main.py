@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from cats.database.database import get_db
+from database.database import get_db
 
 app = FastAPI(title="Campus Appointment and Tracking System", version="0.1.0")
 

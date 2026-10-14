@@ -3,7 +3,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = os.environ["DATABASE_URL"] # TODO: This must exist in our Dockerfile
+DATABASE_URL = os.environ["DATABASE_URL"] # See Dockerfile for environment variable
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, future=True) # Add `echo=True` for verbose logging
 

@@ -64,6 +64,10 @@ The Campus Appointment Tracking System
  - uv python package manager
  - pnpm js runtime
 
+### IDE
+#### JetBrains (Like PyCharm)
+ - Right-click the "cats" directory, then click "mark directory as" and choose "sources root"
+
 ## Project Structure
 ### Technologies
 - Frontend: React Native
