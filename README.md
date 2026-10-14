@@ -58,13 +58,19 @@ Join our community of developers creating universal apps.
 # CATS
 The Campus Appointment Tracking System
 
+## Setup
+### Things to install
+ - A python 3.14 runtime
+ - uv python package manager
+ - pnpm js runtime
+
 ## Project Structure
 ### Technologies
 - Frontend: React Native
 - Backend: Python, FastAPI
 - Database: PostgreSQL
 - Map Provider: MapLibre
-- Frontend package manager: npm
+- Frontend package manager: pnpm
 - Backend package manager: uv
 
 ### Folders
