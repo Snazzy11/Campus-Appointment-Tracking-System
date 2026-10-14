@@ -59,10 +59,14 @@ Join our community of developers creating universal apps.
 The Campus Appointment Tracking System
 
 ## Setup
-### Things to install
+### Things to install first
  - A python 3.14 runtime
  - uv python package manager
  - pnpm js runtime
+ - Make
+
+### Getting it working
+ - Run `make setup` from the root directory to get packages working
 
 ### IDE
 #### JetBrains (Like PyCharm)
@@ -84,3 +88,10 @@ The Campus Appointment Tracking System
   - Frontend assets go here
 - cats/
   - Backend code goes here
+
+## Adding Code
+Please make sure you have read project structure and setup first.
+
+### Adding Dependencies
+For a Python dependency, use `uv add <package>`
+If it is a dev-only dependency, like a debugger or linter, use `uv add --dev <package>`
