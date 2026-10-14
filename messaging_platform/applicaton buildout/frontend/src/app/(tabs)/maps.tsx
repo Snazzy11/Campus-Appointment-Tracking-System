@@ -1,4 +1,7 @@
-import { PlaceholderScreen } from '../../components/PlaceholderScreen';
+import { useLocalSearchParams } from 'expo-router';
+import { CampusMap } from '../../features/maps/CampusMap';
 export default function Screen() {
-  return <PlaceholderScreen title="Find your way around campus" description="Explore campus locations and find where you need to go." icon="maps" />;
+  const { search, request } = useLocalSearchParams<{ search?: string; request?: string }>();
+  const query = typeof search === 'string' ? search.slice(0, 200) : '';
+  return <CampusMap key={`${query}-${request ?? ''}`} initialSearch={query} />;
 }

@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHeaderHeight, useIsFocused } from 'expo-router/react-navigation';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../context/AuthContext';
-import { LoginButton } from '../components/LoginButton';
 import { RecipientPicker } from '../components/RecipientPicker';
 import { Avatar } from '../components/Avatar';
 import { GroupCreator, GroupDetails } from '../components/GroupControls';
@@ -13,7 +12,7 @@ import { subscribe } from '../services/stream';
 import { ConversationInbox } from '../components/ConversationInbox';
 import { ChatMessage } from '../components/ChatMessage';
 import { clearSentDraft, conversationName, draftKey, inboxRows, InboxFilter } from '../services/inbox';
-import { AuthConfig, Conversation, Message, Recipient } from '../types';
+import { Conversation, Message, Recipient } from '../types';
 
 function merge(previous: Message[], incoming: Message[], retainAll = false) {
   const byId = new Map(previous.map(message => [message.id, message]));
@@ -28,8 +27,7 @@ const serverLayout = () => false;
 
 export function MessagingScreen() {
   const headerHeight = useHeaderHeight();
-  const { token, user, loading, error: authError, expire, clearError } = useAuth();
-  const [config, setConfig] = useState<AuthConfig | null>(null);
+  const { token, user, error: authError, expire, clearError } = useAuth();
   const [error, setError] = useState('');
   const [publicMessages, setPublicMessages] = useState<Message[]>([]);
   const [privateMessages, setPrivateMessages] = useState<Record<number, Message[]>>({});
@@ -68,7 +66,6 @@ export function MessagingScreen() {
   const [publicLive, setPublicLive] = useState(false);
   const [privateLive, setPrivateLive] = useState(false);
   const [foreground, setForeground] = useState(AppState.currentState !== 'background');
-  const [refreshKey, setRefreshKey] = useState(0);
   const activeIdRef = useRef(activeId);
   const autoScroll = useRef(true);
   const listRef = useRef<FlatList<Message>>(null);
@@ -123,13 +120,6 @@ export function MessagingScreen() {
   }, [select]);
 
   useEffect(() => {
-    let active = true;
-    api<AuthConfig>('/api/auth/config').then(value => { if (active) setConfig(value); })
-      .catch(failure => { if (active) report(failure); });
-    return () => { active = false; };
-  }, [report, refreshKey]);
-
-  useEffect(() => {
     if (!foreground) return;
     let active = true;
     const refresh = () => {
@@ -150,7 +140,7 @@ export function MessagingScreen() {
       },
     });
     return () => { active = false; stop(); };
-  }, [foreground, report, refreshKey]);
+  }, [foreground, report]);
 
   useEffect(() => {
     if (!token || !foreground) return;
@@ -200,7 +190,7 @@ export function MessagingScreen() {
       },
     });
     return () => { active = false; stop(); };
-  }, [token, foreground, report, refreshKey, select, refreshHistory, removeConversation, user]);
+  }, [token, foreground, report, select, refreshHistory, removeConversation, user]);
 
   useEffect(() => {
     if (activeId === null || !token || !foreground) return;
@@ -209,7 +199,7 @@ export function MessagingScreen() {
     refreshHistory(id, token).catch(failure => { if (active) report(failure); })
       .finally(() => { if (active) setLoadingHistory(false); });
     return () => { active = false; };
-  }, [activeId, token, foreground, report, refreshKey, refreshHistory]);
+  }, [activeId, token, foreground, report, refreshHistory]);
 
   async function createConversation(recipient: Recipient): Promise<boolean> {
     if (createLock.current || !token) return false;
@@ -262,7 +252,6 @@ export function MessagingScreen() {
   const connected = foreground && (activeId === null ? publicLive : privateLive);
   const title = selected ? conversationName(selected, user?.id || 0) : 'Public chat';
   const rows = inboxRows(conversations, privateMessages, publicMessages, drafts, user?.id || 0, filter, query);
-  function refresh() { setPublicLive(false); setPrivateLive(false); setRefreshKey(value => value + 1); }
 
   return <SafeAreaView edges={['left', 'right']} style={styles.safe}>
     <StatusBar style="dark" />
@@ -276,8 +265,8 @@ export function MessagingScreen() {
           actions={user && token ? <View style={styles.actions}>
             <Pressable accessibilityRole="button" onPress={() => { setError(''); setNewDirect(true); }} style={styles.newButton}><Text style={styles.buttonText}>New message</Text></Pressable>
             <GroupCreator key={`group-${token}`} token={token} onExpired={expire} onCreated={saved => { applyConversation(saved); select(saved.id); }} />
-          </View> : loading ? <ActivityIndicator /> : config ? <LoginButton config={config} onError={setError} /> : <Pressable accessibilityRole="button" onPress={refresh} style={styles.smallButton}><Text style={styles.link}>Retry connection</Text></Pressable>} />
-        <View style={styles.inboxFooter}><Text style={styles.caption}>{user ? 'Private conversations stay between their members.' : 'Sign in to start direct messages and groups.'}</Text><Pressable accessibilityRole="button" onPress={refresh} style={styles.smallButton}><Text style={styles.link}>Refresh</Text></Pressable></View>
+          </View> : null} />
+        <View style={styles.inboxFooter}><Text style={styles.caption}>{user ? 'Private conversations stay between their members.' : 'Use Sign in in the header to start direct messages and groups.'}</Text></View>
       </View> : null}
       {wide || showChat ? <KeyboardAvoidingView style={styles.chat} keyboardVerticalOffset={headerHeight} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.chatHeader}>

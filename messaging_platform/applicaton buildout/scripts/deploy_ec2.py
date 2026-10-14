@@ -177,22 +177,12 @@ uname -m
             ],
             cwd=ROOT,
         )
-        run(
-            [
-                "docker",
-                "build",
-                "--platform",
-                platform,
-                "-f",
-                "frontend/Dockerfile",
-                "--build-arg",
-                "EXPO_PUBLIC_API_URL=" + config["origin"],
-                "-t",
-                web,
-                ".",
-            ],
-            cwd=ROOT,
-        )
+        map_args = []
+        for name in ("EXPO_PUBLIC_MAPS_ENABLED", "EXPO_PUBLIC_MAPTILER_KEY", "EXPO_PUBLIC_MAP_STREET_STYLE", "EXPO_PUBLIC_MAP_SATELLITE_STYLE", "EXPO_PUBLIC_MAP_HYBRID_STYLE"):
+            if name in os.environ:
+                map_args += ["--build-arg", name + "=" + os.environ[name]]
+        run(["docker", "build", "--platform", platform, "-f", "frontend/Dockerfile",
+             "--build-arg", "EXPO_PUBLIC_API_URL=" + config["origin"], *map_args, "-t", web, "."], cwd=ROOT)
         image_tar = bundle / "images.tar"
         run(["docker", "image", "save", "-o", str(image_tar), api, web])
         with (

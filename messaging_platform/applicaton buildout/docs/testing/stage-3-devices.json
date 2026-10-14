@@ -1,0 +1,266 @@
+{
+  "stage": 3,
+  "engine": "Codex in-app browser",
+  "url": "http://127.0.0.1:18091/maps",
+  "viewports": [
+    {
+      "canvas": {
+        "height": 157,
+        "width": 320
+      },
+      "height": 568,
+      "input": {
+        "height": 46,
+        "width": 248
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 320,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 207,
+        "width": 375
+      },
+      "height": 667,
+      "input": {
+        "height": 46,
+        "width": 303
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 375,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 339,
+        "width": 430
+      },
+      "height": 932,
+      "input": {
+        "height": 46,
+        "width": 358
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 430,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 165,
+        "width": 377
+      },
+      "height": 375,
+      "input": {
+        "height": 46,
+        "width": 217
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 667,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 394,
+        "width": 768
+      },
+      "height": 1024,
+      "input": {
+        "height": 46,
+        "width": 696
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 768,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 532,
+        "width": 684
+      },
+      "height": 768,
+      "input": {
+        "height": 46,
+        "width": 267
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 1024,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 532,
+        "width": 1026
+      },
+      "height": 768,
+      "input": {
+        "height": 46,
+        "width": 267
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 1366,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 844,
+        "width": 1580
+      },
+      "height": 1080,
+      "input": {
+        "height": 46,
+        "width": 267
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 1920,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "canvas": {
+        "height": 1204,
+        "width": 2220
+      },
+      "height": 1440,
+      "input": {
+        "height": 46,
+        "width": 267
+      },
+      "overflow": false,
+      "selected": true,
+      "width": 2560,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "databaseSearch": "CMU Park Library and hall queries returned live results",
+    "keyboard": "ArrowDown/ArrowUp controller tests; browser ArrowDown twice selected second suggestion, Enter selected library, Escape closed suggestions",
+    "empty": "No matching buildings message displayed",
+    "entrance": "Entrance 1 selected; map focused point; association and accessibility unverified labels retained",
+    "recovery": "Stopped preview API, confirmed error alert, restarted API, Try again recovered and selection succeeded",
+    "navigation": "Schedule → Maps retained selection",
+    "horizontalOverflow": false
+  },
+  "screenshots": [
+    "/Users/carter/Documents/Codex/2026-10-12/hey/building-search-mobile.png",
+    "/Users/carter/Documents/Codex/2026-10-12/hey/building-search-desktop.png"
+  ],
+  "logs": [
+    {
+      "level": "warn",
+      "message": "Image \"bicycle_parking\" could not be loaded. Please make sure you have added the image before it is needed with map.addImage(), resolved it with map.setMissingStyleImageResolver(), or included it in a \"sprite\" property in your style.",
+      "timestamp": "2026-10-13T21:07:03.946Z",
+      "url": "http://127.0.0.1:18091/_expo/static/js/web/maplibre-gl-b05a1e86e07b1401514c706fb4dab8cd.js"
+    },
+    {
+      "level": "warn",
+      "message": "Image \"gate\" could not be loaded. Please make sure you have added the image before it is needed with map.addImage(), resolved it with map.setMissingStyleImageResolver(), or included it in a \"sprite\" property in your style.",
+      "timestamp": "2026-10-13T21:11:58.635Z",
+      "url": "http://127.0.0.1:18091/_expo/static/js/web/maplibre-gl-ee017b66e52884f274cd17611a69c9d6.js"
+    },
+    {
+      "level": "warn",
+      "message": "Image \"bicycle_parking\" could not be loaded. Please make sure you have added the image before it is needed with map.addImage(), resolved it with map.setMissingStyleImageResolver(), or included it in a \"sprite\" property in your style.",
+      "timestamp": "2026-10-13T21:11:58.635Z",
+      "url": "http://127.0.0.1:18091/_expo/static/js/web/maplibre-gl-ee017b66e52884f274cd17611a69c9d6.js"
+    }
+  ],
+  "native": {
+    "ios": "simctl service connection refused; devicectl timed out",
+    "android": "adb unavailable",
+    "runtimeVerified": false
+  },
+  "limitations": [
+    "Optional provider gate/bicycle_parking icons missing; basemap and destination layers render",
+    "No physical keyboard or screen reader/native runtime claims",
+    "Directions await Stage4; campus metadata remains incomplete"
+  ]
+}

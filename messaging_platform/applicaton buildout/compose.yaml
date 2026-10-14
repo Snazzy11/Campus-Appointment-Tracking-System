@@ -14,6 +14,7 @@ x-api-environment: &api-environment
   COGNITO_APP_REDIRECT_URIS: campusmessaging://auth/callback,${APP_ORIGIN:-http://localhost:18083}/auth/callback
   FRONTEND_URL: ${APP_ORIGIN:-http://localhost:18083}
   FRONTEND_ORIGINS: ${APP_ORIGIN:-http://localhost:18083}
+  AVATAR_LOCAL_DIR: /app/.data/avatars
   AVATAR_S3_BUCKET: ${AVATAR_S3_BUCKET:-}
   AWS_REGION: ${AWS_REGION:-us-east-2}
   COOKIE_SECURE: ${COOKIE_SECURE:-false}
@@ -50,6 +51,8 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     environment: *api-environment
+    volumes:
+      - avatar-data:/app/.data/avatars
     restart: unless-stopped
     depends_on:
       db:
@@ -72,6 +75,11 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         EXPO_PUBLIC_API_URL: ${APP_ORIGIN:-http://localhost:18083}
+        EXPO_PUBLIC_MAPS_ENABLED: ${EXPO_PUBLIC_MAPS_ENABLED:-false}
+        EXPO_PUBLIC_MAPTILER_KEY: ${EXPO_PUBLIC_MAPTILER_KEY:-}
+        EXPO_PUBLIC_MAP_STREET_STYLE: ${EXPO_PUBLIC_MAP_STREET_STYLE:-}
+        EXPO_PUBLIC_MAP_SATELLITE_STYLE: ${EXPO_PUBLIC_MAP_SATELLITE_STYLE:-}
+        EXPO_PUBLIC_MAP_HYBRID_STYLE: ${EXPO_PUBLIC_MAP_HYBRID_STYLE:-}
     ports:
       - "127.0.0.1:${APP_PORT:-18083}:80"
     restart: unless-stopped
@@ -102,3 +110,4 @@ networks:
     internal: true
 volumes:
   postgres-data:
+  avatar-data:

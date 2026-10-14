@@ -18,6 +18,15 @@
           "cameraPermission": false,
           "microphonePermission": false
         }
+      ],
+      "@maplibre/maplibre-react-native",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Use your location once to choose a starting point for campus walking directions.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
       ]
     ],
     "ios": {

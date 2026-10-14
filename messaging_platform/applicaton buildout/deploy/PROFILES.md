@@ -15,7 +15,7 @@ cd ..
 ./scripts/start-dev.sh
 ```
 
-With no S3 bucket configured and `COOKIE_SECURE=false`, photos are stored in ignored `backend/.data/avatars`. Override `AVATAR_LOCAL_DIR` if necessary. Back up this directory along with the local database if retaining development photos. Local disk mode is intended for uv development; photos in a container's writable layer do not survive its replacement.
+With no S3 bucket configured and `COOKIE_SECURE=false`, photos are stored in ignored `backend/.data/avatars`. Override `AVATAR_LOCAL_DIR` if necessary. Back up this directory along with the local database if retaining development photos. Compose mounts the named `avatar-data` volume at `/app/.data/avatars`, explicitly enabling persistent disk storage even under HTTPS. The image initializes this directory for the non-root API user. Back up this volume along with PostgreSQL; never remove it during a normal update. S3 remains preferred for multiple API hosts. Without a bucket or explicitly configured directory, HTTPS uploads fail closed.
 
 The new `expo-image-picker` native module requires rebuilding an existing installed iPhone development app once. Web works immediately; Expo Go supports the picker but still cannot complete the app's Cognito native login. The configured photo-library picker does not request camera or microphone access.
 
@@ -37,7 +37,7 @@ Use the bucket's actual region. The Compose file passes these variables to the A
 6. Deploy this source using `./scripts/deploy-ec2.sh --migrate`. Cloud Compose identity remains `campus-ec2demo` and server directory `/home/ubuntu/apps/ec2demo`, retaining the existing database. Local images now use `campus-buildout-*` tags.
 7. Verify text profile changes, duplicate username errors, photo replacement/removal, and persistence after API container recreation.
 
-With HTTPS mode and no bucket, text profiles still work and photo uploads return a clear 503 rather than silently storing ephemeral files. No bucket, IAM changes, host Nginx changes, or cloud deployment have been performed here.
+HTTPS requires either S3 or the explicit persistent directory supplied by Compose. No bucket or IAM changes are needed for the single-server disk option. The deployment guard permits adding only the standard project-local avatar volume while preserving all existing volumes and networks.
 
 ## Image lifecycle and visibility
 
@@ -66,3 +66,13 @@ Tests cover ownership/bearer requirements, identity field rejection, case-insens
 References: [Boto3 credentials](https://docs.aws.amazon.com/boto3/latest/guide/credentials.html), [S3 permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-language-overview.html), [Expo SDK 57 ImagePicker](https://docs.expo.dev/versions/v57.0.0/sdk/imagepicker/).
 
 Browser QA also exercised actual save and photo upload through a disposable API with mocked Cognito, followed by sign-in again and profile restoration. The application retains its existing in-memory web-session behavior, so a full browser reload requires sign-in again.
+
+
+## Sign-out configuration
+
+Add `https://messaging.tufts.pro/` and `campusmessaging://auth/callback` to the Cognito app client's Allowed sign-out URLs. For local web tests, also add the exact browser origin with a trailing slash, such as `http://localhost:8081/`. Keep existing callback and sign-out entries.
+
+Sign out revokes the bearer session, clears device token storage and the legacy same-origin `campus_session` cookie, then opens Cognito's `/logout` endpoint in the authentication browser to clear its separate managed-login cookie. Web returns to the app root; native returns through the existing callback scheme. Login requests include `prompt=login` to request reauthentication. If the network fails or native logout is cancelled, local sign-out still completes and an explanatory error is shown. Federated external identity-provider sessions are controlled by that provider.
+
+
+Deployed 2026-10-13 to messaging.tufts.pro with persistent disk storage. The actual volume is `campus-ec2demo_avatar-data`; include it in backups. The shared host's messaging site now permits 7 MB request bodies, and nginx configuration validation passed before reload. Database backup and previous Compose settings are retained under `/home/ubuntu/apps/ec2demo/releases/20261013T193555Z-31dbc0be`. No S3 bucket was created.

@@ -9,7 +9,7 @@ RUN uv sync --locked --no-dev
 COPY backend/app ./app
 COPY backend/migrations ./migrations
 COPY backend/alembic.ini ./
-RUN useradd --uid 10001 --create-home campus
+RUN useradd --uid 10001 --create-home campus && mkdir -p /app/.data/avatars && chown -R campus:campus /app/.data
 USER campus
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--no-proxy-headers"]

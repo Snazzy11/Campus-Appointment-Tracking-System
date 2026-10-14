@@ -51,7 +51,7 @@ def storage():
         client = boto3.client("s3", region_name=os.getenv("AWS_REGION") or os.getenv("COGNITO_REGION"),
                               config=Config(connect_timeout=5, read_timeout=10, retries={"max_attempts": 2}))
         return client, bucket
-    if os.getenv("COOKIE_SECURE", "false").lower() == "true":
+    if os.getenv("COOKIE_SECURE", "false").lower() == "true" and not os.getenv("AVATAR_LOCAL_DIR"):
         raise HTTPException(503, "Profile photo storage is not configured yet")
     directory = Path(os.getenv("AVATAR_LOCAL_DIR", Path(__file__).resolve().parents[2] / ".data/avatars"))
     directory.mkdir(parents=True, exist_ok=True)

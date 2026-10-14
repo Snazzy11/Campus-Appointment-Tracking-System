@@ -28,3 +28,5 @@ dist-ssr
 
 expo-env.d.ts
 # @end expo-cli
+# Generated from pinned MapLibre package by prepare-map-assets.mjs
+public/maplibre/

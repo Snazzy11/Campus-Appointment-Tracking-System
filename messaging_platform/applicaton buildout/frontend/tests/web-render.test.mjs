@@ -94,6 +94,7 @@ test('signed-in web screen renders without raw text inside a View when errors ar
   const html = renderScreen(account);
 
   assert.match(html, /New message/);
+  assert.doesNotMatch(html, />Refresh</);
   assert.match(html, /New group/);
   assert.match(html, /Search conversations/);
   assert.doesNotMatch(html, /Message text/);
@@ -104,4 +105,23 @@ test('static HTML stays identical across viewport widths for hydration', () => {
   const html = renderScreen({ authenticated: true, id: 7, email: 'student@example.test' }, 1200);
   assert.match(html, /Search conversations/);
   assert.equal(html, renderScreen({ authenticated: true, id: 7, email: 'student@example.test' }, 390));
+});
+
+test('campus report cards escape untrusted text and require sign-in for submission', () => {
+  const { BlipPanel } = loadComponent('../src/features/maps/BlipPanel.tsx', {
+    '../../context/AuthContext': { useAuth: () => ({ user: null, token: null }) },
+    '../../services/api': { api() { throw new Error('No requests during render'); } },
+    '../../services/stream': {subscribe:()=>()=>{}},
+    './pathReview': {closurePreview:()=>[],nearbyPathIds:()=>[]},
+    './liveReports': {moderationProblem:()=>''},
+  });
+  const destinations = { blips: { data: {type:'FeatureCollection',features:[{
+    id:1,geometry:{type:'Point',coordinates:[-84.78,43.59]},
+    properties:{category:'hazard',description:'<script>alert(1)</script>',severity:'low',verified:false,expires_at:'2026-10-15T00:00:00Z'}
+  }]},loading:false,error:'',refresh(){} },showReport(){} };
+  const html=renderToStaticMarkup(React.createElement(BlipPanel,{destinations}));
+  assert.match(html,/&lt;script&gt;/);
+  assert.doesNotMatch(html,/<script>/);
+  assert.match(html,/Use Sign in in the header/);
+  assert.match(html,/Show report 1 on map/);
 });

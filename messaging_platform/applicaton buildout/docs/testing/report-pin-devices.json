@@ -1,0 +1,56 @@
+[
+  {
+    "height": 568,
+    "overflow": false,
+    "pin": true,
+    "width": 320
+  },
+  {
+    "height": 667,
+    "overflow": false,
+    "pin": true,
+    "width": 375
+  },
+  {
+    "height": 932,
+    "overflow": false,
+    "pin": true,
+    "width": 430
+  },
+  {
+    "height": 375,
+    "overflow": false,
+    "pin": true,
+    "width": 667
+  },
+  {
+    "height": 1024,
+    "overflow": false,
+    "pin": true,
+    "width": 768
+  },
+  {
+    "height": 768,
+    "overflow": false,
+    "pin": true,
+    "width": 1024
+  },
+  {
+    "height": 768,
+    "overflow": false,
+    "pin": true,
+    "width": 1366
+  },
+  {
+    "height": 1080,
+    "overflow": false,
+    "pin": true,
+    "width": 1920
+  },
+  {
+    "height": 1440,
+    "overflow": false,
+    "pin": true,
+    "width": 2560
+  }
+]

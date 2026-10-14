@@ -2,7 +2,7 @@
 
 This folder, `applicaton buildout`, is a source clone of sibling `groupdemo`. It is the workspace for the next phase. The four-tab navigation shell and profile/account entry point are implemented. See [BUILDOUT.md](BUILDOUT.md) for progress and the agreed implementation order.
 
-Editable profiles are implemented. This buildout now uses its own local database (`campus_buildout`, port 5434), Compose project (`campus-buildout`), and image tags. See [profile setup](deploy/PROFILES.md) for local startup, photo storage, and the required iPhone development-build refresh. The next stage is the messaging inbox/chat redesign.
+Editable profiles are implemented. This buildout now uses its own local database (`campus_buildout`, port 5434), Compose project (`campus-buildout`), and image tags. See [profile setup](deploy/PROFILES.md) for local startup, photo storage, and the required iPhone development-build refresh. The messaging inbox/chat redesign is implemented: searchable conversations, latest previews, per-chat drafts, phone chat views, and desktop panes. Next is broader end-to-end and accessibility testing.
 
 Cloud deployment still targets messaging.tufts.pro and preserves its existing cloud database. S3 support is prepared; its bucket and runtime permissions have not been created. The inherited instructions below use updated local names; historical EC2 runbooks retain the real cloud project identity.
 
@@ -99,3 +99,16 @@ The deployment script is configured to update **https://messaging.tufts.pro**, p
 The first group-chat release requires `--migrate`. The script backs up the cloud database before applying migrations, briefly stops messaging API/web, then verifies the updated services. It retains the server's credentials, database and host port; it does not upload the local database. Subsequent updates without schema changes can omit `--migrate`.
 
 See [deployment and recovery instructions](deploy/REDEPLOY.md). The private `deploy/deploy-settings.json` contains this Mac's SSH destination and existing cloud project identity and is ignored by Git. Editing the scripts has not deployed the group-chat release.
+
+
+## CMU campus navigation work
+
+The staged geospatial requirements and progress are recorded in [docs/geospatial/STATUS.md](docs/geospatial/STATUS.md), with the [current architecture audit](docs/architecture/current-system.md), [proposed geospatial design](docs/architecture/geospatial-design.md), and [test baseline](docs/testing/baseline.md). The Maps tab now has a MapLibre foundation, disabled until licensed provider configuration is supplied. Follow [provider setup](docs/geospatial/PROVIDER-SETUP.md); future stages require spatial integration tests and native verification.
+
+Campus spatial data development: [Stage 2 setup, schema, import, tests and recovery](docs/geospatial/stage-2.md). Uses its own local database at port5435; geographic API remains opt-in and no production database is replaced.
+
+[Stage 3 building search, local preview, API contracts and verification](docs/geospatial/stage-3.md).
+
+### Local pedestrian routing (Stage 4)
+
+Maps now supports origin/destination selection, Walking/Shortest/Step-free profiles, route distance/time and a path summary. See [Stage 4 setup, API, validation and limitations](docs/geospatial/stage-4.md). Requires the isolated spatial database, explicit geo003 migration/build-graph and GEO_ROUTING_ENABLED=true; ordinary messaging startup does not run geographic migrations. Routes use incomplete source data and do not guarantee accessibility. Parking/GIS corrections and native device verification remain pending.

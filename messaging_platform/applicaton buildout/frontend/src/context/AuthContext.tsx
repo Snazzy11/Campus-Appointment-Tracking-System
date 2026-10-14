@@ -1,7 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useState, PropsWithChildren } from 'react';
-import { api, ApiError } from '../services/api';
+import { Platform } from 'react-native';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { cognitoLogoutUrl } from '../services/logout';
+import { api, API_URL, ApiError } from '../services/api';
 import { readToken, writeToken } from '../services/session';
-import { User } from '../types';
+import { AuthConfig, User } from '../types';
 
 type AuthState = {
   token: string | null; user: User | null; loading: boolean; error: string;
@@ -47,7 +51,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
   const signOut = useCallback(async () => {
     let revokeError: unknown;
-    try { if (token) await api('/api/auth/logout', token, { method: 'POST' }); }
+    try { if (token) await api('/api/auth/logout', token, { method: 'POST', credentials: Platform.OS === 'web' && new URL(API_URL).origin === window.location.origin ? 'include' : 'omit' }); }
     catch (failure) {
       if (!(failure instanceof ApiError && failure.status === 401)) revokeError = failure;
     }
@@ -56,6 +60,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setToken(null); setUser(null);
     if (revokeError) setError('Signed out locally. The server session could not be revoked and will expire automatically.');
     else setError('');
+    // Cognito owns its login cookie, so it must clear it in the authentication browser.
+    try {
+      const config = await api<AuthConfig>('/api/auth/config');
+      const returnUri = Platform.OS === 'web' ? window.location.origin + '/'
+        : AuthSession.makeRedirectUri({ scheme: 'campusmessaging', path: 'auth/callback' });
+      const url = cognitoLogoutUrl(config, returnUri);
+      if (Platform.OS === 'web') window.location.assign(url);
+      else {
+        const result = await WebBrowser.openAuthSessionAsync(url, returnUri);
+        if (result.type !== 'success') setError('Signed out of the app. Cognito sign-out was cancelled; sign in again to continue.');
+      }
+    } catch { setError('Signed out of the app. Cognito could not be reached to clear its login cookie.'); }
   }, [token]);
   const updateProfile = useCallback((profile: User) => {
     // A late save response must never resurrect a signed-out account.

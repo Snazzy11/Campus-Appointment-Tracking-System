@@ -49,8 +49,19 @@ new config --format json > new-config.json
 python3 - "$ORIGIN" <<'PY'
 import json, sys
 old=json.load(open('old-config.json')); new=json.load(open('new-config.json'))
-for section in ('networks','volumes'):
-    if old.get(section)!=new.get(section): raise SystemExit('Refusing an update that changes '+section)
+if old.get('networks') != new.get('networks'):
+    raise SystemExit('Refusing an update that changes networks')
+old_volumes = old.get('volumes', {}); new_volumes = new.get('volumes', {})
+if any(new_volumes.get(key) != value for key, value in old_volumes.items()):
+    raise SystemExit('Refusing an update that changes existing volumes')
+added = set(new_volumes) - set(old_volumes)
+if added - {'avatar-data'}:
+    raise SystemExit('Refusing unexpected new volumes')
+if added:
+    avatar = new_volumes['avatar-data']
+    project = new['name']
+    if avatar.get('name') != project + '_avatar-data' or avatar.get('external') or avatar.get('driver', 'local') != 'local' or avatar.get('driver_opts'):
+        raise SystemExit('Refusing nonstandard avatar storage volume')
 if old['services']['db']!=new['services']['db']: raise SystemExit('Refusing an update that changes the database service')
 if old['services']['web'].get('ports')!=new['services']['web'].get('ports'): raise SystemExit('Refusing an update that changes the Nginx upstream port')
 if new['services']['api']['environment']['FRONTEND_URL']!=sys.argv[1]: raise SystemExit('Cloud APP_ORIGIN does not match the frontend build; update server configuration separately')

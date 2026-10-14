@@ -13,7 +13,7 @@ export function sessionHeaders(token: string | null): Record<string, string> {
 export async function api<T>(path: string, token: string | null = null, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers);
   for (const [key, value] of Object.entries(sessionHeaders(token))) headers.set(key, value);
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: 'omit' });
+  const response = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: options.credentials ?? 'omit' });
   if (response.status === 204) return undefined as T;
   const data = await response.json().catch(() => null);
   if (!response.ok) {

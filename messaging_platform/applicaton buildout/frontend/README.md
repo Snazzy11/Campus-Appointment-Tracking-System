@@ -26,9 +26,9 @@ npx expo-doctor
 | File | Responsibility |
 | --- | --- |
 | src/app/_layout.tsx | SafeAreaProvider, AuthProvider, Expo Router Stack |
-| src/app/index.tsx | Messaging screen; account-keyed remount clears private state on login/logout/account change |
+| src/app/(tabs)/index.tsx | Messaging screen; account-keyed remount clears private state on login/logout/account change |
 | src/app/auth/callback.tsx | Web code exchange, session establishment, error feedback, and return navigation |
-| src/screens/MessagingScreen.tsx | Public/DM choices, recipient form, message list, composer, connection/error state |
+| src/screens/MessagingScreen.tsx | Responsive inbox/chat layout, separate drafts, recipient dialog, history, connection/error state |
 | src/components/LoginButton.tsx | Cognito PKCE request; same-tab web navigation and native AuthSession |
 | src/context/AuthContext.tsx | Restore account/session, sign-in, logout, expiry clearing |
 | src/services/api.ts | Absolute API URL, bearer headers, typed JSON requests and API errors |
@@ -98,3 +98,17 @@ After installation, start Metro with `npm start -- --dev-client --lan` and keep 
 `RecipientPicker.tsx` replaces the numeric recipient input. At least three trimmed characters are required. The `recipient-search.ts` controller debounces 300 ms, cancels superseded fetches, clears old results immediately, and ignores out-of-order responses even if an abort is not honored. It exposes loading, no-match, verification/rate-limit, and network-error states. A 401 expires the account. Suggestions return only email/ID and use accessible buttons and an email keyboard; selecting one creates or reuses a DM. Session changes remount the picker to clear private directory state.
 
 Search uses `/api/users/search?q=<encoded-prefix>` with a bearer session. Matching is case-insensitive and literal, not fuzzy. Only verified, uniquely identified email accounts appear; self is excluded. Existing accounts may need to sign in again after the migration. Conversation opening has a synchronous lock to prevent double-tap submissions.
+
+
+## Messaging inbox and chat layout
+
+`ConversationInbox.tsx` renders search/filter controls and previews. `ChatMessage.tsx` renders message bubbles, profile identities, dates, and group status events. Pure inbox/draft behavior lives in `services/inbox.ts` and is covered by Node tests.
+
+Below 840px, selecting a conversation opens the chat with an Inbox return button; Android hardware back returns to the inbox while the tab is focused. At larger widths, both panels are visible. Top-level navigation continues through Expo Router. Drafts and chat selection survive tab switches; account changes remount all private state. Drafts are not persisted to disk. Search includes conversation names and member names/emails, not message contents.
+
+The optional API `last_message` supplies a 160-character preview before private history is opened. Cached/live messages supersede older previews. Private rows sort by activity; Public chat stays at the top in All. Unread state and delivery/read receipts are not implemented.
+
+
+## Campus maps
+
+The Maps tab uses platform-specific MapLibre components under src/features/maps. Maps default off until EXPO_PUBLIC_MAPS_ENABLED=true and licensed styles/public provider keys are supplied. See [provider setup](../docs/geospatial/PROVIDER-SETUP.md) and [stage status](../docs/geospatial/STATUS.md). Native MapLibre requires rebuilding the development app; Expo Go is not supported for the map. The platform has not been enabled in production, and building search/routing are not implemented yet.

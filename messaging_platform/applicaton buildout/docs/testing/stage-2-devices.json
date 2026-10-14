@@ -1,0 +1,188 @@
+{
+  "engine": "Codex in-app browser",
+  "stage": 2,
+  "rows": [
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 568,
+      "map": true,
+      "overflow": false,
+      "width": 320,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 667,
+      "map": true,
+      "overflow": false,
+      "width": 375,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 932,
+      "map": true,
+      "overflow": false,
+      "width": 430,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 375,
+      "map": true,
+      "overflow": false,
+      "width": 667,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 1024,
+      "map": true,
+      "overflow": false,
+      "width": 768,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 768,
+      "map": true,
+      "overflow": false,
+      "width": 1024,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 768,
+      "map": true,
+      "overflow": false,
+      "width": 1366,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 1080,
+      "map": true,
+      "overflow": false,
+      "width": 1920,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    },
+    {
+      "attribution": "OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+      "height": 1440,
+      "map": true,
+      "overflow": false,
+      "width": 2560,
+      "zoom": [
+        {
+          "height": 44,
+          "width": 44
+        },
+        {
+          "height": 44,
+          "width": 44
+        }
+      ]
+    }
+  ],
+  "tabNavigation": "Schedule → Maps passed",
+  "apiNote": "Preview messaging API offline; initial Failed to fetch expected. Geographic HTTP tested separately.",
+  "native": "CoreSimulator connection refused; physical iOS and Android not tested",
+  "logs": [
+    {
+      "level": "warn",
+      "message": "Image \"swimming_pool\" could not be loaded. Please make sure you have added the image before it is needed with map.addImage(), resolved it with map.setMissingStyleImageResolver(), or included it in a \"sprite\" property in your style.",
+      "timestamp": "2026-10-13T20:55:19.197Z",
+      "url": "http://127.0.0.1:18082/_expo/static/js/web/maplibre-gl-ccf3742e4b07b90d91c1f5332b01d45a.js"
+    },
+    {
+      "level": "warn",
+      "message": "Image \"gate\" could not be loaded. Please make sure you have added the image before it is needed with map.addImage(), resolved it with map.setMissingStyleImageResolver(), or included it in a \"sprite\" property in your style.",
+      "timestamp": "2026-10-13T20:55:19.202Z",
+      "url": "http://127.0.0.1:18082/_expo/static/js/web/maplibre-gl-ccf3742e4b07b90d91c1f5332b01d45a.js"
+    },
+    {
+      "level": "warn",
+      "message": "Image \"office\" could not be loaded. Please make sure you have added the image before it is needed with map.addImage(), resolved it with map.setMissingStyleImageResolver(), or included it in a \"sprite\" property in your style.",
+      "timestamp": "2026-10-13T20:55:19.218Z",
+      "url": "http://127.0.0.1:18082/_expo/static/js/web/maplibre-gl-ccf3742e4b07b90d91c1f5332b01d45a.js"
+    },
+    {
+      "level": "warn",
+      "message": "Image \"running\" could not be loaded. Please make sure you have added the image before it is needed with map.addImage(), resolved it with map.setMissingStyleImageResolver(), or included it in a \"sprite\" property in your style.",
+      "timestamp": "2026-10-13T20:55:19.242Z",
+      "url": "http://127.0.0.1:18082/_expo/static/js/web/maplibre-gl-ccf3742e4b07b90d91c1f5332b01d45a.js"
+    }
+  ]
+}

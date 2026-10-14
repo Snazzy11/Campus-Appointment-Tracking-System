@@ -1,10 +1,13 @@
+import { HeaderSignIn } from './HeaderSignIn';
 import { Link } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { Avatar } from './Avatar';
 import { useAuth } from '../context/AuthContext';
 
 export function ProfileButton() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return <ActivityIndicator accessibilityLabel="Loading account" style={{marginRight:24}} />;
+  if (!user) return <HeaderSignIn />;
   return <Link href="/profile" asChild>
     <Pressable accessibilityRole="button" accessibilityLabel={user ? 'Open your profile and account settings' : 'Open account and sign-in options'} style={styles.button}>
       <Avatar profile={user} fallback={user?.email} />

@@ -110,6 +110,7 @@ def test_failed_photo_commit_cleans_new_object_and_keeps_old(client, monkeypatch
 def test_cloud_without_bucket_fails_without_losing_profile(client, monkeypatch):
     headers, _ = login(client, 'alice')
     monkeypatch.setenv('COOKIE_SECURE', 'true')
+    monkeypatch.delenv('AVATAR_LOCAL_DIR')
     assert client.post('/api/me/avatar', headers=headers, content=photo()).status_code == 503
     assert client.post('/api/me/profile', headers=headers, json={'bio': 'Still works'}).status_code == 200
 
@@ -151,3 +152,11 @@ def test_s3_storage_uses_private_encrypted_objects_and_cleanup(client, monkeypat
     assert client.get(upload.json()['avatar_url']).status_code == 200
     assert client.post('/api/me/avatar/remove', headers=headers).status_code == 200
     assert objects == {}
+
+
+def test_https_with_explicit_persistent_directory_supports_photos(client, monkeypatch):
+    monkeypatch.setenv('COOKIE_SECURE', 'true')
+    headers, _ = login(client, 'alice')
+    result = client.post('/api/me/avatar', headers=headers, content=photo())
+    assert result.status_code == 200
+    assert client.get(result.json()['avatar_url']).status_code == 200

@@ -14,6 +14,11 @@ from .routers.groups import router as groups_router
 
 from .routers.profiles import router as profiles_router
 
+from .routers.geographic import router as geographic_router
+from .routers.blips import router as blips_router
+
+from .routers.schedules import router as schedules_router
+
 app = FastAPI()
 
 # CORS configuration
@@ -35,6 +40,9 @@ app.include_router(private_stream_router)
 app.include_router(users_router)
 app.include_router(groups_router)
 app.include_router(profiles_router)
+app.include_router(geographic_router)
+app.include_router(blips_router)
+app.include_router(schedules_router)
 
 
 

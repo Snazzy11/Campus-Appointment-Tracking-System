@@ -277,4 +277,8 @@ def app_logout(request: Request):
     if get_request_session(request) is None:
         raise HTTPException(status_code=401, detail="Authentication required")
     delete_session(request_session_id(request))
-    return Response(status_code=204)
+    # Also expire a legacy same-origin browser cookie, if present.
+    delete_session(request.cookies.get("campus_session"))
+    response = Response(status_code=204)
+    response.delete_cookie("campus_session", path="/", secure=COOKIE_SECURE, httponly=True, samesite="lax")
+    return response

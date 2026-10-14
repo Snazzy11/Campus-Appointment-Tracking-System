@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { beginWebAuth } from '../services/web-auth';
 import { AuthConfig } from '../types';
 
-export function LoginButton({ config, onError }: { config: AuthConfig; onError: (error: string) => void }) {
+export function LoginButton({ config, onError, compact = false }: { config: AuthConfig; onError: (error: string) => void; compact?: boolean }) {
   const { signIn } = useAuth();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -16,7 +16,7 @@ export function LoginButton({ config, onError }: { config: AuthConfig; onError: 
   const [request, , promptAsync] = AuthSession.useAuthRequest({
     clientId: config.client_id, redirectUri,
     responseType: AuthSession.ResponseType.Code,
-    scopes: ['openid', 'email', 'profile'], usePKCE: true,
+    scopes: ['openid', 'email', 'profile'], usePKCE: true, prompt: AuthSession.Prompt.Login,
   }, { authorizationEndpoint: `${config.domain}/oauth2/authorize` });
 
   async function login() {
@@ -51,6 +51,6 @@ export function LoginButton({ config, onError }: { config: AuthConfig; onError: 
   }
   return <Pressable accessibilityRole="button" disabled={!request || busy} onPress={() => void login()}
     style={{ backgroundColor: '#4f46e5', padding: 12, borderRadius: 10, opacity: !request || busy ? 0.5 : 1 }}>
-    <Text style={{ color: 'white', fontWeight: '600' }}>{busy ? 'Signing in…' : 'Sign in with Cognito'}</Text>
+    <Text style={{ color: 'white', fontWeight: '600' }}>{busy ? 'Signing in…' : compact ? 'Sign in' : 'Sign in with Cognito'}</Text>
   </Pressable>;
 }

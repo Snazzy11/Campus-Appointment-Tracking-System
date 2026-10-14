@@ -3,6 +3,7 @@ import { API_URL, ApiError, sessionHeaders } from './api';
 import { createSseParser, StreamEvent } from './sse-parser';
 
 export function subscribe(path: string, token: string | null, callbacks: {
+  idleTimeoutMs?: number;
   onOpen: () => void;
   onEvent: (event: StreamEvent) => void;
   onError: (error: Error) => void;
@@ -10,14 +11,19 @@ export function subscribe(path: string, token: string | null, callbacks: {
   const controller = new AbortController();
   let retryTimer: ReturnType<typeof setTimeout> | undefined;
   let retryResolve: (() => void) | undefined;
+  let idleTimer: ReturnType<typeof setTimeout> | undefined;
+  let attemptAbort: AbortController | undefined;
   let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
 
   async function connect() {
     while (!controller.signal.aborted) {
       try {
+        attemptAbort = callbacks.idleTimeoutMs ? new AbortController() : undefined;
+        const armDeadline = () => { clearTimeout(idleTimer); if(callbacks.idleTimeoutMs) idleTimer=setTimeout(()=>attemptAbort?.abort(),callbacks.idleTimeoutMs); };
+        armDeadline();
         const response = await fetch(`${API_URL}${path}`, {
           headers: { Accept: 'text/event-stream', ...sessionHeaders(token) },
-          credentials: 'omit', signal: controller.signal,
+          credentials: 'omit', signal: attemptAbort?.signal || controller.signal,
         });
         if (!response.ok) throw new ApiError(response.status, `Stream failed (${response.status})`);
         if (!response.body) throw new Error('Streaming is unavailable');
@@ -28,6 +34,7 @@ export function subscribe(path: string, token: string | null, callbacks: {
         while (!controller.signal.aborted) {
           const { done, value } = await reader.read();
           if (done) break;
+          armDeadline();
           parse(decoder.decode(value, { stream: true }));
         }
         if (!controller.signal.aborted) throw new Error('Stream disconnected');
@@ -36,8 +43,9 @@ export function subscribe(path: string, token: string | null, callbacks: {
         const failure = error instanceof Error ? error : new Error(String(error));
         callbacks.onError(failure);
         // An expired session must be cleared, not retried forever.
-        if (failure instanceof ApiError && failure.status === 401) break;
+        if (failure instanceof ApiError && [401, 403].includes(failure.status)) break;
       } finally {
+        clearTimeout(idleTimer);
         await reader?.cancel().catch(() => {});
         reader = undefined;
       }
@@ -51,6 +59,8 @@ export function subscribe(path: string, token: string | null, callbacks: {
   void connect();
   return () => {
     controller.abort();
+    attemptAbort?.abort();
+    clearTimeout(idleTimer);
     clearTimeout(retryTimer);
     retryResolve?.();
     void reader?.cancel().catch(() => {});

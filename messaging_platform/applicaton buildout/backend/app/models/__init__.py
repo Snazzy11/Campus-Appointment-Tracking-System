@@ -13,3 +13,4 @@ __all__ = [
     "ConversationMember",
     "ConversationOwner",
 ]
+from .schedule import ScheduleTerm, ScheduleCourse, ScheduleEvent

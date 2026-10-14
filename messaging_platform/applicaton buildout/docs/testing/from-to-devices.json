@@ -1,0 +1,173 @@
+{
+  "viewports": [
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 568,
+      "overflow": false,
+      "route": true,
+      "width": 320
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 667,
+      "overflow": false,
+      "route": true,
+      "width": 375
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 932,
+      "overflow": false,
+      "route": true,
+      "width": 430
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 375,
+      "overflow": false,
+      "route": true,
+      "width": 667
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 1024,
+      "overflow": false,
+      "route": true,
+      "width": 768
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 768,
+      "overflow": false,
+      "route": true,
+      "width": 1024
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 768,
+      "overflow": false,
+      "route": true,
+      "width": 1366
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 1080,
+      "overflow": false,
+      "route": true,
+      "width": 1920
+    },
+    {
+      "fields": [
+        {
+          "height": 46,
+          "label": "From — starting building",
+          "value": "CMU Park Library"
+        },
+        {
+          "height": 46,
+          "label": "To — destination building",
+          "value": "Bovee University Center"
+        }
+      ],
+      "height": 1440,
+      "overflow": false,
+      "route": true,
+      "width": 2560
+    }
+  ],
+  "checks": [
+    "From keyboard autocomplete and To selection produced 136.6m route",
+    "Clearing From retained To and disabled Get directions",
+    "Reselecting From restored route"
+  ],
+  "location": "No actual device location requested; success/options/denial/unavailable/timeout tested with controlled callbacks",
+  "native": "JS exports passed; runtime remains unverified due previously documented unavailable CoreSimulator/device services and absent Android tools"
+}

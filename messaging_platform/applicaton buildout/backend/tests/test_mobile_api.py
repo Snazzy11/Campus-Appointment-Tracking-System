@@ -56,7 +56,10 @@ def test_bearer_sessions_provision_users_and_logout(client):
     client.cookies.set("campus_session", headers["Authorization"].split()[1])
     assert client.get("/api/me", headers={"Authorization": "Bearer invalid"}).status_code == 401
     assert client.post("/api/auth/logout").status_code == 401
-    assert client.post("/api/auth/logout", headers=headers).status_code == 204
+    response = client.post("/api/auth/logout", headers=headers)
+    assert response.status_code == 204
+    assert 'campus_session=""' in response.headers['set-cookie']
+    assert 'Max-Age=0' in response.headers['set-cookie']
     assert client.get("/api/me", headers=headers).status_code == 401
 
 
