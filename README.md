@@ -58,13 +58,27 @@ Join our community of developers creating universal apps.
 # CATS
 The Campus Appointment Tracking System
 
+## Setup
+### Things to install first
+ - A python 3.14 runtime
+ - uv python package manager
+ - pnpm js runtime
+ - Make
+
+### Getting it working
+ - Run `make setup` from the root directory to get packages working
+
+### IDE
+#### JetBrains (Like PyCharm)
+ - Right-click the "cats" directory, then click "mark directory as" and choose "sources root"
+
 ## Project Structure
 ### Technologies
 - Frontend: React Native
 - Backend: Python, FastAPI
 - Database: PostgreSQL
 - Map Provider: MapLibre
-- Frontend package manager: npm
+- Frontend package manager: pnpm
 - Backend package manager: uv
 
 ### Folders
@@ -74,3 +88,13 @@ The Campus Appointment Tracking System
   - Frontend assets go here
 - cats/
   - Backend code goes here
+
+## Adding Code
+Please make sure you have read project structure and setup first.
+
+1. Always make a branch from main. We have main protected and pushes will fail
+2. Run `make validate` before pushing and fix any printed errors
+
+### Adding Dependencies
+For a Python dependency, use `uv add <package>`
+If it is a dev-only dependency, like a debugger or linter, use `uv add --dev <package>`
