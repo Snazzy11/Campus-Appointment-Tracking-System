@@ -9,12 +9,10 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.143.0",
+    "psycopg2-binary>=2.9.13",
     "sqlalchemy>=2.1.4",
     "uvicorn>=0.54.0",
 ]
-
-[project.scripts]
-cats = "cats:main"
 
 [build-system]
 requires = ["uv_build>=0.12.23,<0.13.0"]
@@ -22,3 +20,16 @@ build-backend = "uv_build"
 
 [tool.uv]
 package = false
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "ruff>=0.17.0",
+]
+
+[tool.pyright]
+include = ["cats"]
+pythonVersion = "3.14"
+typeCheckingMode = "standard"
+venvPath = "."
+venv = ".venv"
