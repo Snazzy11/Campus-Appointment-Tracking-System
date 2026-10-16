@@ -8,7 +8,9 @@ COPY backend/pyproject.toml backend/uv.lock backend/.python-version ./
 RUN uv sync --locked --no-dev
 COPY backend/app ./app
 COPY backend/migrations ./migrations
-COPY backend/alembic.ini ./
+COPY backend/alembic.ini backend/geo-alembic.ini ./
+COPY backend/geo_migrations ./geo_migrations
+COPY backend/scripts ./scripts
 RUN useradd --uid 10001 --create-home campus && mkdir -p /app/.data/avatars && chown -R campus:campus /app/.data
 USER campus
 EXPOSE 8000

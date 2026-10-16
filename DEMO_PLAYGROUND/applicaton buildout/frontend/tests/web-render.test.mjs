@@ -51,6 +51,12 @@ const inbox = loadComponent('../src/services/inbox.ts');
 const conversationInbox = loadComponent('../src/components/ConversationInbox.tsx', { '../services/inbox': inbox });
 const chatMessage = loadComponent('../src/components/ChatMessage.tsx', { '../services/inbox': inbox });
 
+const calendar = loadComponent('../src/features/schedule/calendar.ts');
+const chatUI = loadComponent('../src/features/schedule/ui.tsx');
+const chatImports = { '../../services/api': { api() { throw new Error('No network during render'); } }, '../schedule/ui': chatUI, '../schedule/calendar': calendar };
+const chatTools = loadComponent('../src/features/chat/ChatTools.tsx', chatImports);
+const messageActions = loadComponent('../src/features/chat/MessageActions.tsx', chatImports);
+
 function renderScreen(account, width = 390) {
   const imports = {
     'react-native': { ...web, useWindowDimensions: () => ({ width, height: 844, scale: 1, fontScale: 1 }) },
@@ -63,6 +69,8 @@ function renderScreen(account, width = 390) {
     }) },
     '../components/ConversationInbox': conversationInbox,
     '../components/ChatMessage': chatMessage,
+    '../features/chat/ChatTools': chatTools,
+    '../features/chat/MessageActions': messageActions,
     '../services/inbox': inbox,
     '../components/LoginButton': { LoginButton: () => null },
     '../components/RecipientPicker': pickerModule.exports,
@@ -124,4 +132,18 @@ test('campus report cards escape untrusted text and require sign-in for submissi
   assert.doesNotMatch(html,/<script>/);
   assert.match(html,/Use Sign in in the header/);
   assert.match(html,/Show report 1 on map/);
+});
+
+test('availability card starts with opt-in access and reveals no schedule details', () => {
+  const html = renderToStaticMarkup(React.createElement(chatTools.ChatCard, { token: 'test', userId: 1, conversation: { members: [] }, message: { id: 1, version: 1, attachment: { type: 'availability', start_date: '2026-10-14', end_date: '2026-10-20' } } }));
+  assert.match(html, /View \/ opt in/);
+  assert.doesNotMatch(html, /Pearce|CPS 410/);
+});
+
+const agenda = loadComponent('../src/features/schedule/Agenda.tsx', { './calendar': calendar, './ui': chatUI });
+test('phone agenda exposes complete class and lab times without a nested timeline', () => {
+  const term = { season: 'Fall', year: 2026, start_date: '2026-08-31', end_date: '2026-12-18', courses: [{ section: 'BIO', course: 'BIO 213', title: 'Foundations of Ecology', meetings: [{ days: [2], start: 660, end: 710, start_date: '2026-08-31', end_date: '2026-12-18', location: 'Biosciences Building 1010' }, { days: [2], start: 720, end: 890, start_date: '2026-08-31', end_date: '2026-12-18', location: 'Biosciences Building 2016' }] }] };
+  const html = renderToStaticMarkup(React.createElement(agenda.Agenda, { term, days: ['2026-10-14'], today: '2026-10-14', select() {} }));
+  assert.match(html, /11:00 AM/); assert.match(html, /12:00 PM/); assert.match(html, /2:50 PM/);
+  assert.match(html, /Biosciences Building 2016/); assert.match(html, /Foundations of Ecology/);
 });

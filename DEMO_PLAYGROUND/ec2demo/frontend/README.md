@@ -51,7 +51,7 @@ Native sign-in requires a development build; Expo Go cannot own the custom callb
 
 ## Message state and UI
 
-The UI uses SafeAreaView, KeyboardAvoidingView, native TextInput/Pressable, horizontal chat choices, and a virtualized FlatList. Signed-in users see their numeric ID and can open a DM with a positive safe-integer recipient ID. Backend membership, not client display logic, controls access.
+The UI uses SafeAreaView, KeyboardAvoidingView, native TextInput/Pressable, horizontal chat choices, and a virtualized FlatList. Signed-in users find a recipient by email prefix and tap a suggestion to open a DM. The picker sends the selected numeric ID internally. Backend membership, not client display logic, controls access.
 
 `activeId === null` selects public chat. Separate public history and a map of private histories prevent switching chats from applying another chat's response to the visible list. Histories merge by numeric ID, sort ascending, and cap local retention at 500 rows per chat. Selection/loading flags are set by user actions. Selection clears the draft; requests merge only into their intended chat cache. A ref tracks current selection when an in-flight send finishes. A synchronous ref lock prevents duplicate send submissions before React re-renders.
 
@@ -65,7 +65,7 @@ Public history loads at startup and on stream open. Private stream opens only wh
 
 Streams reconnect after two seconds on network errors/EOF. A private 401 ends retries and expires the account. AbortController, reader cancellation, and retry-timer cleanup stop inactive effects. AppState backgrounding closes subscriptions; foregrounding opens fresh streams and reloads histories. Stream flags show Live/Connecting/Paused; the Refresh action reopens streams and refetches state/config. No background notification delivery is implemented.
 
-Recovery can only retrieve the latest 100 rows per history endpoint; longer offline gaps can omit older unseen messages. Conversation creation alone emits no event until a private message is sent. Conversation list ordering is by creation time, not activity, and there are no unread counts or directory/search.
+Recovery can only retrieve the latest 100 rows per history endpoint; longer offline gaps can omit older unseen messages. Conversation creation alone emits no event until a private message is sent. Conversation list ordering is by creation time, not activity, and there are no unread counts. The email directory is available through authenticated prefix search.
 
 ## Verification and device checks
 
@@ -92,3 +92,9 @@ npx expo run:ios --device
 Expo generates the ignored native project from app.json, installs pods, and builds for a selected device. If signing needs configuration, open ios/CampusMessaging.xcworkspace (after pod installation), choose the CampusMessaging app target → Signing & Capabilities, and select your Personal Team with automatic signing. A bundle identifier registered by another team must be replaced with your own unique identifier in app.json, followed by prebuild regeneration.
 
 After installation, start Metro with `npm start -- --dev-client --lan` and keep FastAPI reachable at EXPO_PUBLIC_API_URL. The native Cognito callback remains campusmessaging://auth/callback and must be allowed by Cognito. Successful native login navigates back to chat after establishing the session.
+
+## Recipient picker
+
+`RecipientPicker.tsx` replaces the numeric recipient input. At least three trimmed characters are required. The `recipient-search.ts` controller debounces 300 ms, cancels superseded fetches, clears old results immediately, and ignores out-of-order responses even if an abort is not honored. It exposes loading, no-match, verification/rate-limit, and network-error states. A 401 expires the account. Suggestions return only email/ID and use accessible buttons and an email keyboard; selecting one creates or reuses a DM. Session changes remount the picker to clear private directory state.
+
+Search uses `/api/users/search?q=<encoded-prefix>` with a bearer session. Matching is case-insensitive and literal, not fuzzy. Only verified, uniquely identified email accounts appear; self is excluded. Existing accounts may need to sign in again after the migration. Conversation opening has a synchronous lock to prevent double-tap submissions.

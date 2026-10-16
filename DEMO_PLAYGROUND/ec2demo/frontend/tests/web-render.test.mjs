@@ -14,6 +14,17 @@ const compiled = ts.transpileModule(screenSource, {
   compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
+const pickerCompiled = ts.transpileModule(readFileSync(new URL('../src/components/RecipientPicker.tsx', import.meta.url), 'utf8'), {
+  compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText;
+const pickerModule = { exports: {} };
+runInThisContext(`(function(require, module, exports) { ${pickerCompiled}\n})`)(name => {
+  if (name === 'react-native') return web;
+  if (name === '../services/api') return { api() { throw new Error('Search must not run during static rendering'); }, ApiError: Error };
+  if (name === '../services/recipient-search') return { emptySearch: { status: 'idle', matches: [], error: '' } };
+  return require(name);
+}, pickerModule, pickerModule.exports);
+
 function renderScreen(account) {
   const imports = {
     'react-native': web,
@@ -24,6 +35,7 @@ function renderScreen(account) {
       expire() {}, async signOut() {}, clearError() {},
     }) },
     '../components/LoginButton': { LoginButton: () => null },
+    '../components/RecipientPicker': pickerModule.exports,
     '../services/api': { api: () => { throw new Error('Network requests must not run during rendering'); }, ApiError: Error },
     '../services/stream': { subscribe: () => { throw new Error('Streams must not start during rendering'); } },
   };
@@ -47,5 +59,9 @@ test('anonymous web screen renders without raw text inside a View when errors ar
 
 test('signed-in web screen renders without raw text inside a View when errors are empty', () => {
   const account = { authenticated: true, id: 7, sub: 'student', email: 'student@example.test' };
-  assert.match(renderScreen(account), /student@example.test/);
+  const html = renderScreen(account);
+  assert.match(html, /student@example.test/);
+  assert.match(html, /Recipient email/);
+  assert.match(html, /Type at least 3 characters/);
+  assert.doesNotMatch(html, /Recipient user ID/);
 });

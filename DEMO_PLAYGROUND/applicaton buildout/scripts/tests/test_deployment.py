@@ -8,6 +8,7 @@ import os
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1]
@@ -26,6 +27,7 @@ file=Path(args[args.index('-f')+1]);new=file.name=='compose.yaml'
 if 'config' in args:
     conf={'networks':{},'volumes':{},'services':{'db':{'image':'postgres:17'},'api':{'environment':{'FRONTEND_URL':'https://demo.example'}},'web':{'ports':[{'published':'18080'}]}}}
     if new and os.getenv('TEST_DB_CHANGE'):conf['services']['db']['image']='postgres:18'
+    if new and os.getenv('TEST_GEO_CONFIG_FAIL'):conf['services']['api']['environment']['GEO_DATA_ENABLED']='true'
     print(json.dumps(conf))
 elif 'exec' in args:
     if 'pg_restore' in args:sys.stdin.buffer.read()
@@ -91,6 +93,59 @@ class DeploymentTests(unittest.TestCase):
                 path.write_text(json.dumps(config))
                 with self.assertRaises(ValueError):
                     deploy.settings(path)
+
+    def test_cloud_maps_default_and_explicit_overrides(self):
+        self.assertEqual(deploy.web_build_settings({}, {})["EXPO_PUBLIC_MAPS_ENABLED"], "true")
+        values = deploy.web_build_settings({"web_build": {"EXPO_PUBLIC_MAPS_ENABLED": "false"}},
+                                          {"EXPO_PUBLIC_MAPS_ENABLED": "true"})
+        self.assertEqual(values["EXPO_PUBLIC_MAPS_ENABLED"], "true")
+        for invalid in ({"DB_PASSWORD": "secret"}, {"EXPO_PUBLIC_MAPS_ENABLED": True},
+                        {"EXPO_PUBLIC_MAPS_ENABLED": "yes"}):
+            with self.assertRaises(ValueError):
+                deploy.web_build_settings({"web_build": invalid}, {})
+
+    def test_cloud_street_style_is_available_without_local_dotenv(self):
+        expected = "https://tiles.openfreemap.org/styles/liberty"
+        self.assertEqual(deploy.web_build_settings({}, {})["EXPO_PUBLIC_MAP_STREET_STYLE"], expected)
+        self.assertEqual(deploy.web_build_settings({"web_build": {"EXPO_PUBLIC_MAP_STREET_STYLE": ""}}, {})["EXPO_PUBLIC_MAP_STREET_STYLE"], expected)
+        custom = "https://example.com/style.json"
+        self.assertEqual(deploy.web_build_settings({}, {"EXPO_PUBLIC_MAP_STREET_STYLE": custom})["EXPO_PUBLIC_MAP_STREET_STYLE"], custom)
+        self.assertEqual(deploy.web_build_settings({}, {"EXPO_PUBLIC_MAPTILER_KEY": "public-key"})["EXPO_PUBLIC_MAP_STREET_STYLE"], "")
+
+    def test_full_local_pipeline_builds_uploads_and_invokes_remote(self):
+        # Exercise the real non-dry-run orchestration without Docker or a server.
+        with tempfile.TemporaryDirectory() as tmp:
+            key = Path(tmp) / "key.pem"
+            key.touch()
+            config = {"host": "ubuntu@demo.example", "key": str(key),
+                      "remote_dir": "/home/ubuntu/apps/ec2demo",
+                      "origin": "https://demo.example", "compose_project": "campus-existing"}
+            path = Path(tmp) / "settings.json"
+            path.write_text(json.dumps(config))
+            calls = []
+
+            def fake_run(args, **kwargs):
+                calls.append(args)
+                if args[:3] == ["docker", "image", "save"]:
+                    Path(args[args.index("-o") + 1]).write_bytes(b"images")
+                if args[0] == "scp":
+                    compose = next(Path(arg) for arg in args if arg.endswith("/compose.yaml"))
+                    self.assertIn("name: campus-existing", compose.read_text())
+                    self.assertTrue((compose.parent / "SHA256SUMS").is_file())
+
+            with patch.object(deploy, "run", side_effect=fake_run), \
+                 patch.object(deploy, "ssh", side_effect=["aarch64", None, None]) as remote, \
+                 patch.object(deploy.shutil, "which", return_value="/mock/tool"), \
+                 patch.dict(os.environ, {}, clear=True), \
+                 patch.object(deploy.sys, "argv", ["deploy", "--config", str(path), "--migrate"]):
+                deploy.main()
+            builds = [call for call in calls if call[:2] == ["docker", "build"]]
+            self.assertEqual(len(builds), 2)
+            self.assertTrue(all("linux/arm64" in call for call in builds))
+            self.assertIn("EXPO_PUBLIC_MAPS_ENABLED=true", builds[1])
+            self.assertIn("EXPO_PUBLIC_MAP_STREET_STYLE=https://tiles.openfreemap.org/styles/liberty", builds[1])
+            self.assertIn("EXPO_PUBLIC_API_URL=https://demo.example", builds[1])
+            self.assertEqual(remote.call_args.args[2][-2:], ["yes", "campus-existing"])
 
     def exercise(self, flag=None, migrate=False):
         with tempfile.TemporaryDirectory() as tmp:
@@ -181,6 +236,11 @@ class DeploymentTests(unittest.TestCase):
         r, calls = self.exercise("TEST_DB_CHANGE")
         self.assertIn("changes the database service", r.stderr)
         self.assertFalse(any("up" in call or "run" in call for call in calls))
+
+    def test_incomplete_spatial_configuration_is_refused_before_backup(self):
+        r, calls = self.exercise("TEST_GEO_CONFIG_FAIL")
+        self.assertIn("GEO_DATA_ENABLED requires GEO_DATABASE_URL", r.stderr)
+        self.assertFalse(any("stop" in call or "run" in call or "exec" in call for call in calls))
 
     def test_schema_mismatch_does_not_stop_existing_app(self):
         _r, calls = self.exercise("TEST_SCHEMA_FAIL")

@@ -23,7 +23,7 @@ export function createRoutePlanner(request: (body: { origin: RouteEndpoint; dest
     destination: (destination: RouteEndpoint | null) => { if (JSON.stringify(destination) !== JSON.stringify(state.destination)) reset({ destination }); },
     profile: (profile: RouteProfile) => reset({ profile }),
     clear: () => reset(),
-    invalidate: () => { if (state.result || state.status === 'loading') reset({status:'error',error:'Live map conditions changed or updates were interrupted. Get directions again to check the latest path availability.'}); },
+    invalidate: () => { if (state.result || state.status === 'loading') reset({status:'error',error:'Mapped path conditions changed. Get directions again to check the latest path availability.'}); },
     async directions(getLocation: () => Promise<{ longitude: number; latitude: number; accuracy: number | null }>) {
       update({ directionsOpen: true });
       if (!state.origin && !(await planner.locate(getLocation))) return;

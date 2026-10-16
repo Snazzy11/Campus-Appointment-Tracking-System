@@ -6,11 +6,12 @@ SESSION_LIFETIME = 8 * 60 * 60
 _sessions: dict[str, dict] = {}
 
 
-def create_session(sub: str, email: str | None) -> str:
+def create_session(sub: str, email: str | None, email_verified: bool = False) -> str:
     session_id = secrets.token_urlsafe(32)
     _sessions[session_id] = {
         "sub": sub,
         "email": email,
+        "email_verified": email_verified is True,
         "expires": time.time() + SESSION_LIFETIME,
     }
     return session_id

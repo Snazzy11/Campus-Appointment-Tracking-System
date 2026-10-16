@@ -1,6 +1,6 @@
 # Local Expo + uv scripts
 
-Run from groupdemo/. Each launcher resolves project paths from its own script directory.
+Run from `applicaton buildout/`. Each launcher resolves project paths from its own script directory.
 
 | Script | Behavior |
 | --- | --- |
@@ -66,3 +66,11 @@ Backend tests use an isolated SQLite database and mocked Cognito, never the conf
 ## Automated updates
 
 To redeploy updated local source to the existing EC2 app, run `./scripts/deploy-ec2.sh --dry-run`, then `./scripts/deploy-ec2.sh --migrate` from groupdemo for the first group-chat release. The script retains the existing cloud Compose project/database; subsequent code-only updates can omit `--migrate`. See [the redeployment guide](../deploy/REDEPLOY.md) for setup, backups, migrations, and recovery.
+
+## Cloud updates
+
+Run `./scripts/deploy-ec2.sh --dry-run` to inspect the target without connecting.
+Run `./scripts/deploy-ec2.sh --migrate` for the current schema update, or omit
+`--migrate` when no migrations are pending. Docker must be running on the Mac.
+See [redeployment instructions](../deploy/REDEPLOY.md) for settings, backups,
+rollback behavior, and the separate spatial database requirements.

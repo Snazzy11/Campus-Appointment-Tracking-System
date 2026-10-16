@@ -1,6 +1,6 @@
 # Local Expo + uv scripts
 
-Run from pmingdemo/. Each launcher resolves project paths from its own script directory.
+Run from ec2demo/. Each launcher resolves project paths from its own script directory.
 
 | Script | Behavior |
 | --- | --- |
@@ -56,7 +56,7 @@ Backend tests use an isolated SQLite database and mocked Cognito, never the conf
 
 1. Set a reachable API URL; open public chat on two clients and check live delivery/history.
 2. Register app/web callback URIs and create a development build for native Cognito login.
-3. Login with two distinct accounts. Each sees a database ID in the header; use the other's ID to create a DM.
+3. Login with two distinct accounts. Ensure both Cognito emails are verified, then type three characters of the other's email and select the suggestion to create a DM.
 4. Recreate the same pair from both sides and verify one conversation ID, private live delivery, and history after reopening.
 5. Check that a third account receives 404 for private reads/writes and anonymous requests receive 401. Public history/stream must exclude DMs.
 6. Background/foreground the app and interrupt network access; check history reload and reconnect.

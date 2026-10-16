@@ -5,6 +5,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import os
 import re
 import shlex
 import shutil
@@ -51,6 +52,31 @@ def settings(path):
     config["origin"] = config["origin"].rstrip("/")
     config["key"] = str(Path(config["key"]).expanduser().resolve())
     return config
+
+
+# Public frontend configuration only; backend credentials stay on EC2.
+WEB_BUILD_DEFAULTS = {
+    "EXPO_PUBLIC_MAPS_ENABLED": "true",
+    "EXPO_PUBLIC_MAPTILER_KEY": "",
+    "EXPO_PUBLIC_MAP_STREET_STYLE": "",
+    "EXPO_PUBLIC_MAP_SATELLITE_STYLE": "",
+    "EXPO_PUBLIC_MAP_HYBRID_STYLE": "",
+}
+
+
+def web_build_settings(config, environ):
+    overrides = config.get("web_build", {})
+    if not isinstance(overrides, dict) or set(overrides) - WEB_BUILD_DEFAULTS.keys():
+        raise ValueError("web_build must contain only the documented public map build settings")
+    values = {**WEB_BUILD_DEFAULTS, **overrides}
+    values.update({key: environ[key] for key in values if key in environ})
+    if any(not isinstance(value, str) or "\n" in value or "\r" in value for value in values.values()):
+        raise ValueError("web_build values must be single-line strings")
+    if values["EXPO_PUBLIC_MAPS_ENABLED"] not in ("true", "false"):
+        raise ValueError("EXPO_PUBLIC_MAPS_ENABLED must be true or false")
+    if not values["EXPO_PUBLIC_MAP_STREET_STYLE"].strip() and not values["EXPO_PUBLIC_MAPTILER_KEY"].strip():
+        values["EXPO_PUBLIC_MAP_STREET_STYLE"] = "https://tiles.openfreemap.org/styles/liberty"
+    return values
 
 
 def render_compose(source, project, api_image, web_image):
@@ -112,12 +138,14 @@ def main():
     )
     args = parser.parse_args()
     config = settings(args.config)
+    build_settings = web_build_settings(config, os.environ)
     print(
         f"Source: {ROOT}\nTarget: {config['host']}:{config['remote_dir']}\nCompose project: {config['compose_project']}\nWebsite: {config['origin']}"
     )
     # Validate local rendering before any remote connection or expensive image build.
     compose_source = (ROOT / "compose.yaml").read_text()
     render_compose(compose_source, config["compose_project"], "campus-buildout-api:check", "campus-buildout-web:check")
+    print("Maps in web build: " + build_settings["EXPO_PUBLIC_MAPS_ENABLED"])
     if args.dry_run:
         print(
             "Plan: inspect existing stack/architecture; build API and web images locally; upload a checksummed release;"
@@ -142,6 +170,7 @@ def main():
             raise ValueError(f"Required command unavailable: {tool}")
     if not Path(config["key"]).is_file():
         raise ValueError("SSH key file does not exist")
+    run(["docker", "info"], stdout=subprocess.DEVNULL)
     # Fail before building if the established target is unavailable.
     arch = ssh(
         config,
@@ -178,9 +207,8 @@ uname -m
             cwd=ROOT,
         )
         map_args = []
-        for name in ("EXPO_PUBLIC_MAPS_ENABLED", "EXPO_PUBLIC_MAPTILER_KEY", "EXPO_PUBLIC_MAP_STREET_STYLE", "EXPO_PUBLIC_MAP_SATELLITE_STYLE", "EXPO_PUBLIC_MAP_HYBRID_STYLE"):
-            if name in os.environ:
-                map_args += ["--build-arg", name + "=" + os.environ[name]]
+        for name, value in build_settings.items():
+            map_args += ["--build-arg", name + "=" + value]
         run(["docker", "build", "--platform", platform, "-f", "frontend/Dockerfile",
              "--build-arg", "EXPO_PUBLIC_API_URL=" + config["origin"], *map_args, "-t", web, "."], cwd=ROOT)
         image_tar = bundle / "images.tar"

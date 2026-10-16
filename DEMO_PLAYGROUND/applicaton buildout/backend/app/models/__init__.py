@@ -6,6 +6,7 @@ from .conversation_member import ConversationMember
 from .conversation_owner import ConversationOwner
 
 __all__ = [
+    "ChatParticipation", "ScheduleTerm", "ScheduleCourse", "ScheduleEvent",
     "Base",
     "User",
     "Message",
@@ -14,3 +15,5 @@ __all__ = [
     "ConversationOwner",
 ]
 from .schedule import ScheduleTerm, ScheduleCourse, ScheduleEvent
+
+from .chat_participation import ChatParticipation

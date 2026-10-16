@@ -25,7 +25,7 @@ class MessageInput(BaseModel):
 
 def serialize_message(message: Message) -> dict:
     return {
-        "id": message.id,
+        "id": message.id, "kind": message.kind, "version": message.version, "edited": message.edited,
         "sender": message.sender,
         "user_id": message.user_id,
         "profile": public_profile(message.user) if message.user else None,

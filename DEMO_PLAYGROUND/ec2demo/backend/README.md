@@ -1,6 +1,6 @@
 # FastAPI messaging backend
 
-Entry point: `app.main:app`, run with the backend directory as the working directory. `main.py` registers authentication, public messages, conversations, and private-stream routers. CORS permits GET/POST with Content-Type and Authorization for FRONTEND_ORIGINS. The Expo app calls an absolute API URL and sends bearer sessions, so cross-origin cookies are not required. Legacy browser cookie routes remain available.
+Entry point: `app.main:app`, run with the backend directory as the working directory. `main.py` registers authentication, public messages, conversations, private-stream, and directory routers. CORS permits GET/POST with Content-Type and Authorization for FRONTEND_ORIGINS. The Expo app calls an absolute API URL and sends bearer sessions, so cross-origin cookies are not required. Legacy browser cookie routes remain available.
 
 ## Configuration
 
@@ -154,3 +154,13 @@ Private streams emit a keepalive comment after 20 seconds without events and uns
 - `services/messaging.py`: leftover in-memory MessageStore; not imported by active routers.
 
 There are no pagination cursors, read receipts, group management endpoints, message moderation, search, rate limiting, or general CSRF enforcement. Membership is enforced at the application level; the schema does not itself enforce two-member conversations or require message senders to be members. These observations describe existing code, not changes made by this documentation pass.
+
+## Email recipient directory
+
+`GET /api/users/search?q=car` requires an authenticated user whose Cognito email was verified. Returns at most ten `{id,email}` objects in deterministic case-insensitive email order, excluding self, unverified users, and ambiguous duplicate verified emails. Searches require 3–320 characters (after trim, at least 3); `%`, `_`, and backslash are escaped as literal input. Successful responses use `Cache-Control: no-store`. There is no unrestricted list/pagination endpoint. Numeric conversation creation and membership enforcement remain unchanged.
+
+An in-process, lock-protected sliding window allows 30 searches per database user per minute. Signing in again with a new token does not reset that user's bucket. Exceeding the limit returns 429 with Retry-After; idle buckets expire and active buckets are capped at 4096. At capacity a new bucket receives 503. Limits are not shared between workers and reset on process restart, consistent with this application's single-worker session/event model.
+
+Migration b63d129fe407 adds users.email_verified, default false, and a partial PostgreSQL index on lower(email) with text_pattern_ops for verified users. Existing emails are not assumed verified. Both OAuth callbacks preserve the boolean email_verified claim in the session; user provisioning and public-message updates copy it into the database. Search blocks unverified callers with 403. It does not enforce a university email-domain allowlist; Cognito access must define the intended community. Ambiguous accounts are omitted rather than picking an arbitrary recipient.
+
+Validation: 24 isolated backend tests, 15 frontend tests, and an isolated PostgreSQL 17 integration run. The latter exercised upgrade/downgrade with legacy data, verified lookup, ID-based conversation creation, and indexed prefix lookup against 5000 synthetic accounts. Local/source and cloud databases were not modified by these tests.

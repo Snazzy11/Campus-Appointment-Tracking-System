@@ -4,9 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../context/AuthContext';
 import { LoginButton } from '../components/LoginButton';
+import { RecipientPicker } from '../components/RecipientPicker';
 import { api, ApiError, jsonBody } from '../services/api';
 import { subscribe } from '../services/stream';
-import { AuthConfig, Conversation, Message } from '../types';
+import { AuthConfig, Conversation, Message, Recipient } from '../types';
 
 function merge(previous: Message[], incoming: Message[]) {
   const byId = new Map(previous.map(message => [message.id, message]));
@@ -23,7 +24,6 @@ export function MessagingScreen() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<number | null>(null);
   const [text, setText] = useState('');
-  const [recipientId, setRecipientId] = useState('');
   const [sending, setSending] = useState(false);
   const [creating, setCreating] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
@@ -34,6 +34,7 @@ export function MessagingScreen() {
   const activeIdRef = useRef(activeId);
   const listRef = useRef<FlatList<Message>>(null);
   const sendLock = useRef(false);
+  const createLock = useRef(false);
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
   useEffect(() => {
     const listener = AppState.addEventListener('change', state => setForeground(state === 'active'));
@@ -131,16 +132,16 @@ export function MessagingScreen() {
   function select(id: number | null) {
     setActiveId(id); setText(''); setError(''); setLoadingHistory(id !== null);
   }
-  async function createConversation() {
-    const id = Number(recipientId);
-    if (!Number.isSafeInteger(id) || id < 1) { setError('Enter a positive numeric user ID.'); return; }
-    setCreating(true); setError('');
+  async function createConversation(recipient: Recipient): Promise<boolean> {
+    if (createLock.current || !token) return false;
+    createLock.current = true; setCreating(true); setError('');
     try {
-      const saved = await api<Conversation>('/api/conversations', token, jsonBody({ recipient_id: id }));
+      const saved = await api<Conversation>('/api/conversations', token, jsonBody({ recipient_id: recipient.id }));
       setConversations(previous => [saved, ...previous.filter(item => item.id !== saved.id)]);
-      select(saved.id); setRecipientId('');
-    } catch (failure) { report(failure); }
-    finally { setCreating(false); }
+      select(saved.id);
+      return true;
+    } catch (failure) { report(failure); return false; }
+    finally { createLock.current = false; setCreating(false); }
   }
   async function send() {
     const draft = text;
@@ -170,7 +171,7 @@ export function MessagingScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Campus Messaging</Text>
         {loading ? <ActivityIndicator /> : user ? <View style={styles.row}>
-          <Text numberOfLines={1} style={styles.account}>{user.email} · ID {user.id}</Text>
+          <Text numberOfLines={1} style={styles.account}>{user.email}</Text>
           <Pressable accessibilityRole="button" onPress={() => { void signOut().catch(report); }}><Text style={styles.link}>Logout</Text></Pressable>
         </View> : config ? <LoginButton config={config} onError={setError} /> : <Pressable accessibilityRole="button" onPress={() => setRefreshKey(value => value + 1)}><Text style={styles.link}>Retry connection</Text></Pressable>}
       </View>
@@ -181,10 +182,7 @@ export function MessagingScreen() {
             <Text numberOfLines={1}>{item.members.find(member => member.id !== user.id)?.email || `Chat ${item.id}`}</Text>
           </Pressable>)}
         </ScrollView>
-        {user && <View style={styles.row}>
-          <TextInput accessibilityLabel="Recipient user ID" style={[styles.input, styles.flex]} keyboardType="number-pad" placeholder="Recipient user ID" value={recipientId} onChangeText={setRecipientId} />
-          <Pressable accessibilityRole="button" style={styles.button} disabled={creating} onPress={() => { void createConversation(); }}><Text style={styles.buttonText}>{creating ? 'Opening…' : 'New DM'}</Text></Pressable>
-        </View>}
+        {user && token ? <RecipientPicker key={token} token={token} opening={creating} onChoose={createConversation} onExpired={expire} /> : null}
       </View>
       <View style={styles.chatHeader}>
         <Text style={styles.heading} numberOfLines={1}>{activeId === null ? 'Public chat' : peer?.email || 'Direct message'}</Text>

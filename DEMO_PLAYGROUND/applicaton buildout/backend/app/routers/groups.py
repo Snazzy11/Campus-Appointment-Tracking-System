@@ -132,6 +132,9 @@ async def change(group_id, actor_id, operation, target_id=None, name=None):
                             raise HTTPException(409, "Promote another member before the last owner leaves or is removed")
                         db.delete(owner)
                         db.flush()
+                    from sqlalchemy import delete
+                    from ..models.chat_participation import ChatParticipation
+                    db.execute(delete(ChatParticipation).where(ChatParticipation.user_id == target_id_value, ChatParticipation.message_id.in_(select(Message.id).where(Message.conversation_id == group_id))))
                     db.delete(membership)
                     text = f'{target.email} left the group.' if target_id_value == actor_id else f'{actor.email} removed {target.email} from the group.'
                     notices.append(status(db, group, text))

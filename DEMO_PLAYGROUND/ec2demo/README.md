@@ -89,7 +89,7 @@ No ios/ or android/ source directories are checked in; Expo generates them from 
 
 Users, conversations, memberships, and messages persist in PostgreSQL. Login sessions and SSE subscriptions live in a single backend process, so API restarts sign everyone out and multiple workers do not share auth/events. Browser drafts, selection, and per-chat caches are local state. History endpoints return the latest 100 messages; frontend caches retain at most 500 per chat without pagination.
 
-Users can see their numeric database ID after signing in and enter another user's ID to start a DM. Membership checks guard private reads and writes; public data/stream exclude DMs. There are no search, read-receipt, edit/delete, group-management, moderation, or attachment endpoints.
+Signed-in users find DM recipients by email prefix and select a match; numeric IDs remain internal to conversation creation and membership checks. Search requires a verified email, at least three characters, and returns at most ten verified accounts excluding yourself and ambiguous duplicate addresses. Public data/stream still exclude DMs. There are no read-receipt, edit/delete, group-management, moderation, or attachment endpoints.
 
 ## Checks
 
@@ -112,3 +112,18 @@ The tracked `backend/campus_messaging_before_dm.dump` was not inspected or resto
 ## Automated updates
 
 To redeploy updated local source to the existing EC2 app, run `./scripts/deploy-ec2.sh --dry-run`, then `./scripts/deploy-ec2.sh` from ec2demo. See [the redeployment guide](deploy/REDEPLOY.md) for setup, backups, migrations, and recovery.
+
+## Email recipient autocomplete
+
+This feature is implemented only in ec2demo. Type `car` to find addresses such as carter@… and carson@…; `car-` matches a literal hyphen. Searches wait 300 ms after typing, abort stale requests, and clear obsolete suggestions. Selecting a result opens or reuses a private conversation with its numeric ID.
+
+Apply the new migration before running the updated API:
+
+```sh
+cd backend
+uv run --locked alembic upgrade head
+```
+
+For the existing cloud deployment, use `./scripts/deploy-ec2.sh --migrate` from ec2demo during a messaging maintenance window. Existing users must sign in again so Cognito's verified-email claim can be recorded; migration does not assume old addresses were verified. No cloud deployment is performed by this source change.
+
+Directory access is limited to authenticated accounts with verified email in the configured Cognito app, not automatically to a university domain. Any such account can discover matching verified users; restrict Cognito membership appropriately for a campus-only directory. The per-user 30/minute limit helps reduce bulk searches but does not make enumeration impossible. Only users already recorded by this application are searchable.

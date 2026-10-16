@@ -31,6 +31,7 @@ def require_user(
         user = User(
             cognito_sub=session["sub"],
             email=session["email"],
+            email_verified=session.get("email_verified") is True,
         )
 
         db.add(user)
@@ -38,8 +39,9 @@ def require_user(
         db.commit()
         db.refresh(user)
 
-    elif user.email != session["email"]:
+    elif user.email != session["email"] or user.email_verified != (session.get("email_verified") is True):
         user.email = session["email"]
+        user.email_verified = session.get("email_verified") is True
         db.commit()
 
     return user

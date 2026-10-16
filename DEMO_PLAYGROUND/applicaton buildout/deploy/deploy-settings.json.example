@@ -3,5 +3,8 @@
   "key": "~/path/to/your-existing-key.pem",
   "remote_dir": "/home/ubuntu/apps/ec2demo",
   "origin": "https://your-messaging-domain.example",
-  "compose_project": "campus-ec2demo"
+  "compose_project": "campus-ec2demo",
+  "web_build": {
+    "EXPO_PUBLIC_MAPS_ENABLED": "true"
+  }
 }
