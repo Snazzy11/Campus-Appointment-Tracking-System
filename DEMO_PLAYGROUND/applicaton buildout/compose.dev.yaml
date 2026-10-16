@@ -1,0 +1,8 @@
+# Dedicated database for uv + Expo development. Never expose it beyond localhost.
+services:
+  db:
+    ports:
+      - "127.0.0.1:5434:5432"
+networks:
+  database:
+    internal: false

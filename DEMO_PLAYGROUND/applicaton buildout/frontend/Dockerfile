@@ -1,0 +1,28 @@
+FROM node:24-bookworm-slim AS build
+WORKDIR /app
+ENV EXPO_NO_TELEMETRY=1 CI=1
+COPY frontend/package.json frontend/package-lock.json ./
+COPY frontend/scripts ./scripts
+RUN npm ci
+COPY frontend/app.json frontend/tsconfig.json ./
+COPY frontend/src ./src
+COPY frontend/public ./public
+ARG EXPO_PUBLIC_API_URL
+RUN test -n "$EXPO_PUBLIC_API_URL"
+ENV EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL
+ARG EXPO_PUBLIC_MAPS_ENABLED=false
+ARG EXPO_PUBLIC_MAPTILER_KEY
+ARG EXPO_PUBLIC_MAP_STREET_STYLE
+ARG EXPO_PUBLIC_MAP_SATELLITE_STYLE
+ARG EXPO_PUBLIC_MAP_HYBRID_STYLE
+ENV EXPO_PUBLIC_MAPS_ENABLED=$EXPO_PUBLIC_MAPS_ENABLED \
+    EXPO_PUBLIC_MAPTILER_KEY=$EXPO_PUBLIC_MAPTILER_KEY \
+    EXPO_PUBLIC_MAP_STREET_STYLE=$EXPO_PUBLIC_MAP_STREET_STYLE \
+    EXPO_PUBLIC_MAP_SATELLITE_STYLE=$EXPO_PUBLIC_MAP_SATELLITE_STYLE \
+    EXPO_PUBLIC_MAP_HYBRID_STYLE=$EXPO_PUBLIC_MAP_HYBRID_STYLE
+RUN npm run build
+
+FROM nginx:1.28-alpine
+COPY deploy/container-nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80

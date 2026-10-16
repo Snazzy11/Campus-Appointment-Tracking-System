@@ -1,0 +1,94 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createRoutePlanner, distanceLabel } from '../src/features/maps/routing.ts';
+const from = { kind: 'building', id: 61 }, to = { kind: 'building', id: 62 };
+const result = { type: 'Feature', geometry: { type: 'LineString', coordinates: [[0,0],[1,1]] }, properties: { distance_m: 140 } };
+const deferred = () => { let resolve, reject; const promise = new Promise((a,b) => { resolve=a; reject=b; }); return { promise, resolve, reject }; };
+test('routing submits endpoints/profile and clears stale geometry on changes', async () => {
+  let sent;
+  const planner = createRoutePlanner(async body => { sent=body; return result; }, () => {});
+  planner.origin(from, 'Library'); planner.destination(to); await planner.calculate();
+  assert.deepEqual(sent, { origin: from, destination: to, profile: 'walking' });
+  assert.equal(planner.snapshot().result, result);
+  planner.profile('step_free'); assert.equal(planner.snapshot().result, null);
+  await planner.calculate(); assert.equal(sent.profile, 'step_free');
+  planner.destination(null); assert.equal(planner.snapshot().result, null);
+  assert.equal(planner.snapshot().originLabel, 'Library'); planner.stop();
+});
+test('late routes cannot overwrite changed destinations, cancellation, or unmount', async () => {
+  const responses=[];
+  const planner=createRoutePlanner((body,signal) => { const d=deferred(); responses.push({ ...d, signal }); return d.promise; }, () => {});
+  planner.origin(from); planner.destination(to); const first=planner.calculate();
+  planner.destination(from); assert.equal(responses[0].signal.aborted, true);
+  responses[0].resolve(result); await first; assert.equal(planner.snapshot().result,null);
+  const second=planner.calculate(); planner.clear(); responses[1].resolve(result); await second;
+  assert.equal(planner.snapshot().result,null);
+  const third=planner.calculate(); planner.stop(); responses[2].resolve(result); await third;
+  assert.equal(planner.snapshot().result,null);
+});
+test('routing errors remain actionable and stalled requests have a deadline', async t => {
+  t.mock.timers.enable({ apis:['setTimeout'] });
+  let signal;
+  const planner=createRoutePlanner((_,s) => { signal=s; return new Promise(() => {}); }, () => {});
+  planner.origin(from); planner.destination(to); void planner.calculate();
+  t.mock.timers.tick(12001); assert.equal(signal.aborted,true); assert.match(planner.snapshot().error,/timed out/); planner.stop();
+  const error=createRoutePlanner(async () => { throw new Error('No connected route'); }, () => {});
+  error.origin(from); error.destination(to); await error.calculate(); assert.equal(error.snapshot().error,'No connected route'); error.stop();
+});
+test('location is explicit, bounded, accurate and ignores stale results', async () => {
+  const planner=createRoutePlanner(async () => result, () => {});
+  await planner.locate(async () => ({ longitude:0,latitude:0,accuracy:2 })); assert.match(planner.snapshot().error,/outside/); assert.equal(planner.snapshot().origin,null);
+  await planner.locate(async () => ({ longitude:-84.78,latitude:43.59,accuracy:100 })); assert.match(planner.snapshot().error,/accuracy/);
+  await planner.locate(async () => { throw new Error('Permission denied'); }); assert.match(planner.snapshot().error,/Permission denied/);
+  await planner.locate(async () => ({ longitude:-84.78,latitude:43.59,accuracy:3 })); assert.equal(planner.snapshot().origin.kind,'coordinate');
+  const d=deferred(); const locating=planner.locate(() => d.promise); planner.origin(from,'Library');
+  d.resolve({ longitude:-84.78,latitude:43.59,accuracy:3 }); await locating;
+  assert.equal(planner.snapshot().origin,from); planner.stop();
+});
+test('location deadlines preserve manually selected origin and distance labels use meters', async t => {
+  t.mock.timers.enable({ apis:['setTimeout'] });
+  const planner=createRoutePlanner(async () => result, () => {});
+  planner.origin(from); void planner.locate(() => new Promise(() => {}));
+  t.mock.timers.tick(30001); assert.match(planner.snapshot().error,/timed out/); assert.equal(planner.snapshot().origin,from);
+  assert.equal(distanceLabel(850),'850 m'); assert.equal(distanceLabel(1200),'1.2 km'); planner.stop();
+});
+test('directions reveals From and defaults to location only when no origin exists', async () => {
+  let requests = 0, locations = 0;
+  const planner = createRoutePlanner(async () => { requests++; return result; }, () => {});
+  planner.destination(to);
+  const locate = async () => { locations++; return { longitude:-84.78, latitude:43.59, accuracy:3 }; };
+  assert.equal(planner.snapshot().directionsOpen, false);
+  await planner.directions(locate);
+  assert.equal(planner.snapshot().directionsOpen, true);
+  assert.equal(requests, 1);
+  planner.origin(from);
+  await planner.directions(locate);
+  assert.equal(locations, 1);
+  assert.equal(requests, 2);
+  planner.origin(null);
+  await planner.directions(async () => { throw new Error('Permission denied'); });
+  assert.equal(requests, 2);
+  assert.match(planner.snapshot().error, /Permission denied/);
+  planner.stop();
+});
+test('editing origin while locating cancels automatic directions', async () => {
+  let requests = 0;
+  const planner = createRoutePlanner(async () => { requests++; return result; }, () => {});
+  planner.destination(to);
+  const d = deferred();
+  const pending = planner.directions(() => d.promise);
+  planner.origin(from);
+  d.resolve({ longitude:-84.78, latitude:43.59, accuracy:3 });
+  await pending;
+  assert.equal(requests, 0);
+  assert.equal(planner.snapshot().origin, from);
+  planner.stop();
+});
+test('live route invalidation removes old geometry and explains recalculation',async()=>{
+ const planner=createRoutePlanner(async()=>result,()=>{});
+ planner.origin(from);planner.destination(to);await planner.calculate();
+ planner.invalidate();
+ assert.equal(planner.snapshot().result,null);
+ assert.match(planner.snapshot().error,/latest path availability/);
+ planner.stop();
+});

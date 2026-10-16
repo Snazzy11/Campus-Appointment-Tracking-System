@@ -1,0 +1,41 @@
+{
+  "environment": "Local reader-backed PostGIS 3.6 / pgRouting 4.0.1, one HTTP client",
+  "graph": {
+    "nodes": 3910,
+    "edges": 4321,
+    "components_before_restrictions": 9
+  },
+  "routes": [
+    {
+      "profile": "walking",
+      "status": 200,
+      "bytes": 2260,
+      "latency_ms": 197.43,
+      "distance_m": 136.6,
+      "duration_s": 105,
+      "path_count": 6,
+      "geometry_type": "LineString"
+    },
+    {
+      "profile": "shortest",
+      "status": 200,
+      "bytes": 2261,
+      "latency_ms": 77.41,
+      "distance_m": 136.6,
+      "duration_s": 105,
+      "path_count": 6,
+      "geometry_type": "LineString"
+    },
+    {
+      "profile": "step_free",
+      "status": 200,
+      "bytes": 2371,
+      "latency_ms": 81.32,
+      "distance_m": 136.6,
+      "duration_s": 105,
+      "path_count": 6,
+      "geometry_type": "LineString"
+    }
+  ],
+  "scope": "Park Library to Bovee University Center; not a production load test"
+}
