@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urljoin
 import time
 from dataclasses import dataclass
+from selenium.common.exceptions import NoSuchElementException
 
 BASE_URL = "https://engage.apps.cmich.edu"
 ORGANIZATIONS_URL = f"{BASE_URL}/organizations"
@@ -18,18 +19,20 @@ driver = webdriver.Chrome(options=options)
 
 organizations = {}
 RSOs = [] 
+id_count = 0
 
 @dataclass
 class RSO:
+    id: int
     name: str
     description: str
     link: str
     
-    def __init__(self, name: str, description: str , link: str):
+    def __init__(self, id: int, name: str, description: str , link: str):
+        self.id = id
         self.name = name
         self.description = description
         self.link = link
-        
 
 try:
     print("Opening organizations page...")
@@ -43,15 +46,25 @@ try:
     )
 
     # Give React time to populate organizations
-    time.sleep(5)
+    # time.sleep(5)
 
     print("Loaded:", driver.title)
-    print()
 
-
-    # --------------------------------------------------
+    loading_sites = True
+    
+    while(loading_sites):
+        try:
+            load_button = driver.find_element(By.XPATH, "//span[contains(text(), 'Load More')]")
+            if load_button:
+                load_button.click()
+                time.sleep(1)
+                print("Load More button clicked")
+        except NoSuchElementException:
+            print("Load button was not loaded, continue on with scraping the URLs");
+            loading_sites = False;
+        
+        
     # Find organization links
-    # --------------------------------------------------
 
     links = driver.find_elements(
         By.CSS_SELECTOR,
@@ -59,7 +72,6 @@ try:
     )
 
     for link in links:
-
         href = link.get_attribute("href");
 
         if not href:
@@ -69,7 +81,7 @@ try:
         href = href.split("?")[0]
         href = href.split("#")[0]
 
-        # Only actual organization pages
+        # Skips links that don't have the /organization/ path inside of it
         if "/organization/" not in href:
             continue
 
@@ -82,100 +94,84 @@ try:
         # Store info into a RSO object
         name = info[0]
         desc = info[1]
-        RSOs.append(RSO(name, desc, href))
+        id_count = id_count + 1
+        
+        #TODO: implement sqlachemy to make sqlalchemy objects
+        RSOs.append(RSO(id_count, name, desc, href))
 
     print(
         f"Found {len(organizations)} organization URLs\n"
     )
     
     for rso in RSOs:
-        print(rso.name + ": " + rso.link)
+        print(rso.name + "\n" + rso.link + "\n\n")
+    
+    #after revealing all url links, it goes through each one and get info from them.
+
+    # if organizations:
+
+    #     url = next(iter(organizations))
+
+    #     print("\n--------------------------------")
+    #     print("Opening organization:")
+    #     print(url)
+    #     print("--------------------------------\n")
+
+    #     driver.get(url)
+
+    #     WebDriverWait(driver, 5).until(
+    #         EC.presence_of_element_located(
+    #             (By.TAG_NAME, "body")
+    #         )
+    #     )
+
+    #     print("=" * 80)
 
 
-    # --------------------------------------------------
-    # DISCOVERY:
-    # Open the first organization
-    # --------------------------------------------------
+    #     # --------------------------------------------------
+    #     # Print links found on organization page
+    #     # --------------------------------------------------
 
-    if organizations:
+    #     print("\nLINKS ON ORGANIZATION PAGE:\n")
 
-        first_url = next(iter(organizations))
+    #     page_links = driver.find_elements(
+    #         By.TAG_NAME,
+    #         "a"
+    #     )
 
-        print("\n--------------------------------")
-        print("Opening first organization:")
-        print(first_url)
-        print("--------------------------------\n")
+    #     for i, link in enumerate(page_links):
 
-        driver.get(first_url)
+    #         text = link.text.strip()
+    #         href = link.get_attribute("href")
 
-        WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located(
-                (By.TAG_NAME, "body")
-            )
-        )
-
-        time.sleep(3)
-
-        print("TITLE:")
-        print(driver.title)
-
-        print("\nVISIBLE TEXT:")
-        print("=" * 80)
-
-        body = driver.find_element(
-            By.TAG_NAME,
-            "body"
-        )
-
-        print(body.text)
-
-        print("=" * 80)
+    #         if text or href:
+    #             print(
+    #                 f"[{i}] "
+    #                 f"text={text!r} "
+    #                 f"href={href!r}"
+    #             )
 
 
-        # --------------------------------------------------
-        # Print links found on organization page
-        # --------------------------------------------------
+        # # --------------------------------------------------
+        # # Print buttons
+        # # --------------------------------------------------
 
-        print("\nLINKS ON ORGANIZATION PAGE:\n")
+        # print("\nBUTTONS ON ORGANIZATION PAGE:\n")
 
-        page_links = driver.find_elements(
-            By.TAG_NAME,
-            "a"
-        )
+        # buttons = driver.find_elements(
+        #     By.TAG_NAME,
+        #     "button"
+        # )
 
-        for i, link in enumerate(page_links):
+        # for i, button in enumerate(buttons):
 
-            text = link.text.strip()
-            href = link.get_attribute("href")
-
-            if text or href:
-                print(
-                    f"[{i}] "
-                    f"text={text!r} "
-                    f"href={href!r}"
-                )
-
-
-        # --------------------------------------------------
-        # Print buttons
-        # --------------------------------------------------
-
-        print("\nBUTTONS ON ORGANIZATION PAGE:\n")
-
-        buttons = driver.find_elements(
-            By.TAG_NAME,
-            "button"
-        )
-
-        for i, button in enumerate(buttons):
-
-            print(
-                f"[{i}] "
-                f"text={button.text!r} "
-                f"id={button.get_attribute('id')!r} "
-                f"aria-label="
-                f"{button.get_attribute('aria-label')!r}"
-            )
+        #     print(
+        #         f"[{i}] "
+        #         f"text={button.text!r} "
+        #         f"id={button.get_attribute('id')!r} "
+        #         f"aria-label="
+        #         f"{button.get_attribute('aria-label')!r}"
+        #     )
 
 
     input("\nPress Enter to quit...")
