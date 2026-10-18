@@ -6,8 +6,9 @@ on:
   pull_request:
 
 jobs:
-  check:
+  backend_validation:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
@@ -17,6 +18,23 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --locked
-
+      # TODO: Change to backend-specific validation step later
       - name: Lint, format, and type check
         run: make validate
+  build:
+    needs: backend_validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
+          tags: app:${{ github.sha }}
