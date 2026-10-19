@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: setup lint format format-check typecheck validate
+.PHONY: setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-api lint format format-check typecheck validate
 
 setup: setup-hooks setup-backend setup-frontend
 
@@ -20,10 +20,10 @@ setup-hooks:
 	git config core.hooksPath .githooks
 
 application-up: backend-up
-	$(MAKE) web-up
-	$(MAKE) heatlh
+	$(MAKE) health
+	$(MAKE) test-api
 	$(MAKE) status
-	$(MAKE) logs
+	$(MAKE) web-up
 
 web-up:
 	@echo "using pnpm to start the front-end"
@@ -59,6 +59,9 @@ status:
 logs:
 	docker compose logs --follow --tail=100 app
 
+test-api:
+	@echo "runnning api tests..."
+	PYTHONPATH=back_end/app uv run pytest back_end/app/api/test_api.py -v	
 lint: ## Run linter
 	@echo "Running linter checks"
 	uv run ruff check ./cats
