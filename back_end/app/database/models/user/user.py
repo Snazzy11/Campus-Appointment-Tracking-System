@@ -1,5 +1,5 @@
 from database.database import Base
-from sqlalchemy import String
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -7,7 +7,6 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    username: Mapped[str] = mapped_column(String(50))
-    first_name: Mapped[str] = mapped_column(String(50))
-    last_name: Mapped[str] = mapped_column(String(50))
+    email: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+    verified: Mapped[bool] = mapped_column(Boolean) # i think this works 
+
