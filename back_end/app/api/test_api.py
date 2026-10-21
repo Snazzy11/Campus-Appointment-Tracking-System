@@ -7,15 +7,20 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
 import pytest
-from api.main import app
-from api.routers.message.messages import (MessageInput, post_message,
-                                          stream_messages, subscribers)
-from api.routers.testing.counting import stream
 from database.database import get_db
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
+
+from api.main import app
+from api.routers.message.messages import (
+    MessageInput,
+    post_message,
+    stream_messages,
+    subscribers,
+)
+from api.routers.testing.counting import stream
 
 
 @pytest.fixture
@@ -90,7 +95,9 @@ def test_message_broadcast_and_disconnect():
         try:
             await asyncio.sleep(0)  # Let both listeners register before posting.
             assert len(subscribers) == initial_count + 2
-            assert await post_message(MessageInput(message="Hello")) == {"status": "sent"}
+            assert await post_message(MessageInput(message="Hello")) == {
+                "status": "sent"
+            }
             received = await asyncio.wait_for(asyncio.gather(*pending), 1)
             assert received == [{"message": "Hello"}, {"message": "Hello"}]
         finally:

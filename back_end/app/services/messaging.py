@@ -7,5 +7,3 @@ class MessagingService:
 
     def stream(self):
         return
-
-        

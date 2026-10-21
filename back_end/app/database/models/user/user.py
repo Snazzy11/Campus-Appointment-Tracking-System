@@ -8,5 +8,4 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(50), unique=True, index=True)
-    verified: Mapped[bool] = mapped_column(Boolean) # i think this works 
-
+    verified: Mapped[bool] = mapped_column(Boolean)  # i think this works

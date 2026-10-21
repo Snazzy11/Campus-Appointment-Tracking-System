@@ -1,7 +1,8 @@
 # class to handle subscription services using subscription model
-#unimplemented class
+# unimplemented class
 import asyncio
-from typing import Any, AsyncIterator, Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
+from typing import Any
 
 
 class SubscriptionService:
@@ -21,7 +22,11 @@ class SubscriptionService:
         return
 
     # stream method to stream events to subscribers in real-time
-    def stream(self, user_id: int, queue: asyncio.Queue, authorized: Callable[[], bool] = lambda: True, permitted: Callable[[dict], Awaitable[bool]] | None = None) -> AsyncIterator[str]:
-        return 
-
-        
+    def stream(
+        self,
+        user_id: int,
+        queue: asyncio.Queue,
+        authorized: Callable[[], bool] = lambda: True,
+        permitted: Callable[[dict], Awaitable[bool]] | None = None,
+    ) -> AsyncIterator[str]:
+        raise NotImplementedError

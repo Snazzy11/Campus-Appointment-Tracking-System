@@ -8,8 +8,8 @@ router = APIRouter(tags=["Messaging"])
 # Each connected browser gets its own queue.
 subscribers: set[asyncio.Queue] = set()
 
-@router.get("/messaging", response_class=EventSourceResponse)
 
+@router.get("/messaging", response_class=EventSourceResponse)
 async def stream_messages():
     message_queue = asyncio.Queue()
     subscribers.add(message_queue)
@@ -24,7 +24,6 @@ async def stream_messages():
     finally:
         # Remove this subscription when the connection closes.
         subscribers.discard(message_queue)
-
 
 
 class MessageInput(BaseModel):
