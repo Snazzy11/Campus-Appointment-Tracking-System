@@ -22,6 +22,9 @@ organizations = {}
 RSOs = {} 
 id_count = 0
 
+def addRSOsToDatabase():
+    pass
+
 # TODO: translate RSO object to a model... make it in models/RSO.py?
 @dataclass
 class RSO:
@@ -178,3 +181,6 @@ try:
         
 finally:
     driver.quit()
+    
+addRSOsToDatabase()
+
