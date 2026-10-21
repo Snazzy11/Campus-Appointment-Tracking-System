@@ -51,3 +51,5 @@ example
 *__pycache*
 *.vscode
 *node_modules
+# Local pnpm package cache
+.pnpm-store/
