@@ -1,0 +1,123 @@
+name: campus-buildout
+
+x-api-environment: &api-environment
+  DB_HOST: db
+  DB_PORT: "5432"
+  DB_USER: ${DB_USER:?Set DB_USER in deploy/local.env}
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in deploy/local.env}
+  DB_NAME: ${DB_NAME:?Set DB_NAME in deploy/local.env}
+  COGNITO_DOMAIN: ${COGNITO_DOMAIN:?Set COGNITO_DOMAIN}
+  COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID:?Set COGNITO_CLIENT_ID}
+  COGNITO_REGION: ${COGNITO_REGION:?Set COGNITO_REGION}
+  COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID:?Set COGNITO_USER_POOL_ID}
+  COGNITO_REDIRECT_URI: ${APP_ORIGIN:-http://localhost:18083}/auth/callback
+  COGNITO_APP_REDIRECT_URIS: campusmessaging://auth/callback,${APP_ORIGIN:-http://localhost:18083}/auth/callback
+  FRONTEND_URL: ${APP_ORIGIN:-http://localhost:18083}
+  FRONTEND_ORIGINS: ${APP_ORIGIN:-http://localhost:18083}
+  AVATAR_LOCAL_DIR: /app/.data/avatars
+  AVATAR_S3_BUCKET: ${AVATAR_S3_BUCKET:-}
+  AWS_REGION: ${AWS_REGION:-us-east-2}
+  COOKIE_SECURE: ${COOKIE_SECURE:-false}
+  # Separate spatial database; never point these at the messaging database.
+  GEO_DATA_ENABLED: ${GEO_DATA_ENABLED:-false}
+  GEO_DATABASE_URL: ${GEO_DATABASE_URL:-}
+  GEO_ROUTING_ENABLED: ${GEO_ROUTING_ENABLED:-false}
+  GEO_REPORTS_ENABLED: ${GEO_REPORTS_ENABLED:-false}
+  GEO_REPORT_DATABASE_URL: ${GEO_REPORT_DATABASE_URL:-}
+  GEO_WALK_SPEED_MPS: ${GEO_WALK_SPEED_MPS:-1.3}
+  GEO_STAIRS_FACTOR: ${GEO_STAIRS_FACTOR:-2}
+  GEO_ROUGH_FACTOR: ${GEO_ROUGH_FACTOR:-1.4}
+  GEO_SLOPE_FACTOR: ${GEO_SLOPE_FACTOR:-4}
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [database]
+    mem_limit: ${DB_MEMORY:-512m}
+    cpus: 0.50
+    logging: *logging
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: campus-buildout-api:local
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment: *api-environment
+    volumes:
+      - avatar-data:/app/.data/avatars
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [application, database]
+    mem_limit: ${API_MEMORY:-384m}
+    cpus: 0.50
+    logging: *logging
+    healthcheck:
+      test: [CMD, python, -c, 'from app.services.database import check_database_connection; import urllib.request; check_database_connection(); urllib.request.urlopen("http://127.0.0.1:8000/api/health", timeout=3)']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  web:
+    image: campus-buildout-web:local
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        EXPO_PUBLIC_API_URL: ${APP_ORIGIN:-http://localhost:18083}
+        EXPO_PUBLIC_MAPS_ENABLED: ${EXPO_PUBLIC_MAPS_ENABLED:-false}
+        EXPO_PUBLIC_MAPTILER_KEY: ${EXPO_PUBLIC_MAPTILER_KEY:-}
+        EXPO_PUBLIC_MAP_STREET_STYLE: ${EXPO_PUBLIC_MAP_STREET_STYLE:-}
+        EXPO_PUBLIC_MAP_SATELLITE_STYLE: ${EXPO_PUBLIC_MAP_SATELLITE_STYLE:-}
+        EXPO_PUBLIC_MAP_HYBRID_STYLE: ${EXPO_PUBLIC_MAP_HYBRID_STYLE:-}
+    ports:
+      - "127.0.0.1:${APP_PORT:-18083}:80"
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [application]
+    mem_limit: ${WEB_MEMORY:-128m}
+    cpus: 0.25
+    logging: *logging
+
+  migrate:
+    image: campus-buildout-api:local
+    profiles: [tools]
+    environment: *api-environment
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [database]
+    mem_limit: ${API_MEMORY:-384m}
+    cpus: 0.50
+    logging: *logging
+    command: [alembic, upgrade, head]
+
+networks:
+  application:
+  database:
+    internal: true
+volumes:
+  postgres-data:
+  avatar-data:
