@@ -79,6 +79,7 @@ typecheck: ## Run static type checker
 	uv run pyright
 
 validate: ## Run all validations
+	## TODO: It will eventually be important to mark this as 'validate_backend' or similar as we add more tests
 	@echo "Running all validations"
 	make format-check
 	make lint
