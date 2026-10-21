@@ -11,15 +11,15 @@ setup:
 
 lint: ## Run linter
 	@echo "Running linter checks"
-	uv run ruff check ./cats
+	uv run ruff check ./back_end
 
 format: ## Run formatter
 	@echo "Running automatic formatting"
-	uv run ruff format ./cats
+	uv run ruff format ./back_end
 
 format-check: ## Run formatter with only checks
 	@echo "Running formatter without auto-fixing"
-	uv run ruff format --check ./cats
+	uv run ruff format --check ./back_end
 
 typecheck: ## Run static type checker
 	@echo "Running type checks"

@@ -28,7 +28,8 @@ dev = [
 ]
 
 [tool.pyright]
-include = ["cats"]
+include = ["back_end/app"]
+extraPaths = ["back_end/app"]
 pythonVersion = "3.14"
 typeCheckingMode = "standard"
 venvPath = "."
