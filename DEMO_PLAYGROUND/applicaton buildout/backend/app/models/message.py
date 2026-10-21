@@ -1,7 +1,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func, Index
+from sqlalchemy import Boolean, JSON, DateTime, ForeignKey, Integer, String, Text, func, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -32,6 +32,10 @@ class Message(Base):
     )
 
     kind: Mapped[str] = mapped_column(String(16), nullable=False, default="user", server_default="user")
+
+    attachment: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
+    edited: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

@@ -9,6 +9,8 @@ from .routers.messages import router as messages_router
 from .routers.conversations import router as conversations_router
 from .routers.private_stream import router as private_stream_router
 
+from .routers.users import router as users_router
+
 app = FastAPI()
 
 # CORS configuration
@@ -27,6 +29,7 @@ app.include_router(auth_router)
 app.include_router(messages_router)
 app.include_router(conversations_router)
 app.include_router(private_stream_router)
+app.include_router(users_router)
 
 
 

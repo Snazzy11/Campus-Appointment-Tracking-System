@@ -13,7 +13,7 @@ export const s = StyleSheet.create({
   button: { minHeight: 44, paddingVertical: 11, paddingHorizontal: 16, borderRadius: 10, borderWidth: 1, borderColor: '#dbe1eb', backgroundColor: '#fff', justifyContent: 'center' },
   primary: { backgroundColor: '#4338ca', borderColor: '#4338ca' },
   buttonText: { color: '#334155', fontSize: 14, fontWeight: '600' },
-  input: { borderWidth: 1, borderColor: '#cbd5e1', borderRadius: 8, minHeight: 44, padding: 10, color: '#172033', backgroundColor: '#fff' },
+  input: { fontSize: 16, borderWidth: 1, borderColor: '#cbd5e1', borderRadius: 8, minHeight: 44, padding: 10, color: '#172033', backgroundColor: '#fff' },
   overlay: { flex: 1, backgroundColor: '#0f172a77', justifyContent: 'center', alignItems: 'center', padding: 16 },
   modal: { width: '100%', maxWidth: 720, maxHeight: '94%', backgroundColor: '#f8fafc', borderRadius: 20, padding: 20, gap: 16 },
   warning: { backgroundColor: '#fffbeb', borderColor: '#fcd34d', borderWidth: 1, borderRadius: 10, padding: 12, gap: 6 },

@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Avatar, profileName } from './Avatar';
 import { Message, PublicProfile } from '../types';
 import { dayLabel } from '../services/inbox';
 
-export function ChatMessage({ message, previous, mine, author }: { message: Message; previous?: Message; mine: boolean; author?: PublicProfile | null }) {
+export function ChatMessage({ message, previous, mine, author, onManage }: { message: Message; previous?: Message; mine: boolean; author?: PublicProfile | null; onManage?: () => void }) {
   const dayChanged = !previous || new Date(previous.created_at).toDateString() !== new Date(message.created_at).toDateString();
   const time = new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   return <View style={{ gap: 12 }}>
@@ -12,8 +12,9 @@ export function ChatMessage({ message, previous, mine, author }: { message: Mess
       {!mine ? <Avatar profile={author} fallback={message.sender} size={30} /> : null}
       <View style={styles.column}>
         {!mine ? <Text style={styles.name}>{profileName(author, message.sender)}</Text> : null}
-        <View style={[styles.bubble, mine && styles.mine]}><Text selectable style={[styles.text, mine && { color: 'white' }]}>{message.text}</Text></View>
-        <Text style={[styles.time, mine && { textAlign: 'right' }]}>{mine ? 'You · ' : ''}{time}</Text>
+        <Pressable onLongPress={onManage} {...(Platform.OS === 'web' && onManage ? { onContextMenu: (event: { preventDefault: () => void }) => { event.preventDefault(); onManage(); } } : {})} style={[styles.bubble, mine && styles.mine]}><Text selectable style={[styles.text, mine && { color: 'white' }]}>{message.text}</Text></Pressable>
+        <Text style={[styles.time, mine && { textAlign: 'right' }]}>{mine ? 'You · ' : ''}{time}{message.edited ? ' · edited' : ''}</Text>
+        {onManage ? <Pressable accessibilityRole="button" accessibilityLabel="Edit or delete message" onPress={onManage}><Text style={styles.time}>•••</Text></Pressable> : null}
       </View>
     </View>}
   </View>;

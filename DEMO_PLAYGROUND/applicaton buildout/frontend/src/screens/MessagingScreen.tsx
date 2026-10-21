@@ -10,13 +10,15 @@ import { GroupCreator, GroupDetails } from '../components/GroupControls';
 import { api, ApiError, jsonBody } from '../services/api';
 import { subscribe } from '../services/stream';
 import { ConversationInbox } from '../components/ConversationInbox';
+import { ChatTools, ChatCard } from '../features/chat/ChatTools';
+import { MessageActions } from '../features/chat/MessageActions';
 import { ChatMessage } from '../components/ChatMessage';
 import { clearSentDraft, conversationName, draftKey, inboxRows, InboxFilter } from '../services/inbox';
 import { Conversation, Message, Recipient } from '../types';
 
 function merge(previous: Message[], incoming: Message[], retainAll = false) {
   const byId = new Map(previous.map(message => [message.id, message]));
-  for (const message of incoming) byId.set(message.id, message);
+  for (const message of incoming) { if ((message.version ?? 1) >= (byId.get(message.id)?.version ?? 1)) byId.set(message.id, message); }
   const sorted = [...byId.values()].sort((a, b) => a.id - b.id);
   return retainAll ? sorted : sorted.slice(-500);
 }
@@ -28,6 +30,7 @@ const serverLayout = () => false;
 export function MessagingScreen() {
   const headerHeight = useHeaderHeight();
   const { token, user, error: authError, expire, clearError } = useAuth();
+  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
   const [error, setError] = useState('');
   const [publicMessages, setPublicMessages] = useState<Message[]>([]);
   const [privateMessages, setPrivateMessages] = useState<Record<number, Message[]>>({});
@@ -248,6 +251,10 @@ export function MessagingScreen() {
 
   const selected = conversations.find(item => item.id === activeId);
   const peer = selected?.members.find(member => member.id !== user?.id);
+  function applyMessage(message: Message) {
+    if (message.conversation_id == null) setPublicMessages(old => merge(old, [message]));
+    else setPrivateMessages(old => ({ ...old, [message.conversation_id!]: merge(old[message.conversation_id!] || [], [message], true) }));
+  }
   const displayed = activeId === null ? publicMessages : privateMessages[activeId] || [];
   const connected = foreground && (activeId === null ? publicLive : privateLive);
   const title = selected ? conversationName(selected, user?.id || 0) : 'Public chat';
@@ -284,15 +291,17 @@ export function MessagingScreen() {
           onScroll={event => { const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent; autoScroll.current = contentSize.height - contentOffset.y - layoutMeasurement.height < 80; }} scrollEventThrottle={100}
           ListHeaderComponent={activeId !== null && hasOlder[activeId] ? <Pressable accessibilityRole="button" disabled={loadingOlder} onPress={() => { void loadEarlier(); }} style={styles.earlier}><Text style={styles.link}>{loadingOlder ? 'Loading earlier messages…' : 'Load earlier messages'}</Text></Pressable> : null}
           ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyTitle}>{loadingHistory ? 'Loading your conversation…' : 'Start the conversation'}</Text><Text style={styles.caption}>Say hello, share an update, or make a plan.</Text></View>}
-          renderItem={({ item, index }) => <ChatMessage message={item} previous={displayed[index - 1]} mine={!!user && item.user_id === user.id}
-            author={user && item.user_id === user.id ? user : selected?.members.find(member => member.id === item.user_id) || item.profile} />}
+          renderItem={({ item, index }) => <View><ChatMessage onManage={token && user && item.user_id === user.id && (!item.kind || item.kind === "user") ? () => setEditingMessage(item) : undefined} message={item} previous={displayed[index - 1]} mine={!!user && item.user_id === user.id}
+            author={user && item.user_id === user.id ? user : selected?.members.find(member => member.id === item.user_id) || item.profile} />{item.attachment && token && user && selected ? <ChatCard message={item} token={token} userId={user.id} conversation={selected} /> : null}</View>}
         />
-        <View style={styles.composer}>
+        <View style={[styles.composer, !wide && { padding: 10, gap: 8 }]}>
+          {token && activeId !== null ? <ChatTools key={activeId} token={token} conversationId={activeId} onSaved={applyMessage} /> : null}
           <TextInput accessibilityLabel="Message" style={styles.input} value={text} onChangeText={setText} maxLength={5000} placeholder={`Message ${activeId === null ? 'public chat' : title}…`} multiline />
           <Pressable accessibilityRole="button" accessibilityLabel="Send message" disabled={sending || !text.trim()} onPress={() => { void send(); }} style={[styles.sendButton, (sending || !text.trim()) && { opacity: 0.5 }]}><Text style={styles.buttonText}>{sending ? 'Sending…' : 'Send'}</Text></Pressable>
         </View>
       </KeyboardAvoidingView> : null}
     </View>
+    {editingMessage && token ? <MessageActions key={editingMessage.id} message={editingMessage} token={token} onSaved={applyMessage} onClose={() => setEditingMessage(null)} /> : null}
     {selected?.type === 'group' && user && token ? <GroupDetails key={selected.id} conversation={selected} userId={user.id} token={token} visible={manageGroup} onClose={() => setManageGroup(false)} onChanged={applyConversation} onLeft={removeConversation} onExpired={expire} /> : null}
     {user && token ? <Modal visible={newDirect} transparent animationType="slide" onRequestClose={() => { if (!creating) setNewDirect(false); }}>
       <SafeAreaView style={styles.overlay}><KeyboardAvoidingView style={styles.dialogWrap} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -307,8 +316,8 @@ export function MessagingScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f8fafc' }, flex: { flex: 1 }, layout: { flex: 1, flexDirection: 'row' },
-  inbox: { flex: 1, backgroundColor: 'white' }, wideInbox: { flexGrow: 0, flexShrink: 0, flexBasis: 350, width: 350, borderRightWidth: 1, borderColor: '#e2e8f0' },
+  safe: { flex: 1, backgroundColor: '#f8fafc' }, flex: { flex: 1 }, layout: { flex: 1, minHeight: 0, flexDirection: 'row' },
+  inbox: { flex: 1, minWidth: 0, minHeight: 0, backgroundColor: 'white' }, wideInbox: { flexGrow: 0, flexShrink: 0, flexBasis: 350, width: 350, borderRightWidth: 1, borderColor: '#e2e8f0' },
   actions: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }, newButton: { paddingVertical: 12, paddingHorizontal: 16, minHeight: 44, borderRadius: 10, backgroundColor: '#4f46e5' },
   inboxFooter: { padding: 16, gap: 8, borderTopWidth: 1, borderColor: '#edf0f5' }, chat: { flex: 1, minWidth: 0, backgroundColor: '#f8fafc' },
   chatHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 14, backgroundColor: 'white', borderBottomWidth: 1, borderColor: '#e2e8f0' },

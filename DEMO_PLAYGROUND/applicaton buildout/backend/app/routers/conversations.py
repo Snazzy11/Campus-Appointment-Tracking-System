@@ -41,6 +41,9 @@ class PrivateMessageResponse(BaseModel):
     id: int
     conversation_id: int
     user_id: int | None
+    attachment: dict | None = None
+    version: int = 1
+    edited: bool = False
     kind: str = "user"
     profile: dict | None = None
     sender: str
@@ -241,7 +244,7 @@ def get_private_messages(
             id=message.id,
             conversation_id=message.conversation_id,
             user_id=message.user_id,
-            kind=message.kind,
+            kind=message.kind, attachment=message.attachment, version=message.version, edited=message.edited,
             profile=public_profile(message.user) if message.user else None,
             sender=message.sender,
             text=message.text,
@@ -316,7 +319,7 @@ async def send_private_message(
                 id=message.id,
                 conversation_id=message.conversation_id,
                 user_id=message.user_id,
-                kind=message.kind,
+                kind=message.kind, attachment=message.attachment, version=message.version, edited=message.edited,
                 profile=public_profile(message.user) if message.user else None,
                 sender=message.sender,
                 text=message.text,

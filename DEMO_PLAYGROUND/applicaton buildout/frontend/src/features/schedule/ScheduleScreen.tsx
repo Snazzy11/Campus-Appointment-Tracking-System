@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { AppState, Modal, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { addDays, campusToday, Course, dateLabel, Schedule, Term, weekStart } from './calendar';
+import { Agenda } from './Agenda';
 import { CalendarGrid } from './CalendarGrid';
 import { CourseSummary, ImportSchedule } from './ImportSchedule';
 import { router } from 'expo-router';
@@ -10,18 +11,20 @@ import { EventEditor } from './EventEditor';
 import { buildingSearch, type CalendarEvent } from './calendar';
 import { Action, s } from './ui';
 
+const subscribeLayout = () => () => {};
 export default function ScheduleScreen() {
   const { token } = useAuth();
   return <StudentSchedule key={token ?? 'guest'} token={token} />;
 }
 function StudentSchedule({ token }: { token: string | null }) {
   const { width } = useWindowDimensions();
-  const compact = width < 760;
+  const layoutReady = useSyncExternalStore(subscribeLayout, () => true, () => false);
+  const compact = layoutReady && width < 760;
   const [data, setData] = useState<Schedule | null>(null);
   const [today, setToday] = useState(campusToday);
   const [selected, setSelected] = useState<number | undefined>();
   const [date, setDate] = useState(campusToday);
-  const [view, setView] = useState<'week' | 'day'>(compact ? 'day' : 'week');
+  const [view, setView] = useState<'week' | 'day'>('week');
   const [editor, setEditor] = useState<'term' | 'event' | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>();
   const [importing, setImporting] = useState(false);
@@ -56,7 +59,8 @@ function StudentSchedule({ token }: { token: string | null }) {
   const terms = (data?.terms ?? []).filter(t => t.end_date >= today);
   const term = terms.find(t => t.id === selected) ?? terms.find(t => t.start_date <= today) ?? terms[0];
   const focus = term ? date < term.start_date ? term.start_date : date > term.end_date ? term.end_date : date : date;
-  const actualView = compact ? 'day' : view;
+  const actualView = view;
+  const Calendar = compact ? Agenda : CalendarGrid;
   const first = actualView === 'week' ? weekStart(focus) : focus;
   const days = Array.from({ length: actualView === 'week' ? 7 : 1 }, (_, i) => addDays(first, i));
   function choose(t: Term) { setSelected(t.id); setDetail(null); setDate(today < t.start_date ? t.start_date : today > t.end_date ? t.end_date : today); }
@@ -68,7 +72,7 @@ function StudentSchedule({ token }: { token: string | null }) {
     finally { setBusy(false); }
   }
   return <ScrollView contentContainerStyle={[s.page, compact && { padding: 14 }]}>
-    <View style={[s.row, { justifyContent: 'space-between' }]}><View style={{ gap: 5 }}><Text style={s.label}>YOUR CAMPUS, ORGANIZED</Text><Text accessibilityRole="header" style={s.title}>Schedule</Text><Text style={s.text}>A little clarity for a busy week.</Text></View>
+    <View style={[s.row, { justifyContent: 'space-between' }]}><View style={{ gap: 5 }}>{!compact ? <Text style={s.label}>YOUR CAMPUS, ORGANIZED</Text> : null}<Text accessibilityRole="header" style={[s.title, compact && { fontSize: 24 }]}>Schedule</Text>{!compact ? <Text style={s.text}>A little clarity for a busy week.</Text> : null}</View>
       {token && <View style={s.row}><Action label="New term" disabled={loading || !!error} onPress={() => setEditor('term')} /><Action label="Add event" disabled={loading || !!error} onPress={() => { setEditingEvent(undefined); setEditor(term ? 'event' : 'term'); }} /><Action label="Import CSV" primary disabled={loading || !!error} onPress={() => { setNewTerm(!term); setImporting(true); }} /></View>}
     </View>
     {!!error && <View style={s.warning}><Text accessibilityRole="alert" style={s.error}>{error}</Text><Action label="Try again" onPress={() => void load()} /></View>}
@@ -80,8 +84,8 @@ function StudentSchedule({ token }: { token: string | null }) {
     <>
       <View style={[s.row, { justifyContent: 'space-between' }]}><View style={{ gap: 5 }}><Text style={s.heading}>{term ? `${term.season} ${term.year}` : "Your calendar"}</Text>{term && <Text style={s.text}>{dateLabel(term.start_date)} – {dateLabel(term.end_date)} · {term.courses.length} courses · {(term.events ?? []).length} events</Text>}</View><Text style={s.text}>Campus time · Eastern</Text></View>
       <View style={[s.row, { justifyContent: 'space-between' }]}><View style={s.row}><Action label="Previous" disabled={!!term && first <= term.start_date} onPress={() => setDate(addDays(focus, actualView === 'week' ? -7 : -1))} /><Action label="Today" disabled={!!term && (today < term.start_date || today > term.end_date)} onPress={() => setDate(today)} /><Action label="Next" disabled={!!term && days[days.length - 1] >= term.end_date} onPress={() => setDate(addDays(focus, actualView === 'week' ? 7 : 1))} /><Text style={s.heading}>{actualView === 'week' ? `${dateLabel(first)} – ${dateLabel(days[6])}` : dateLabel(focus, { weekday: 'long', month: 'short', day: 'numeric' })}</Text></View>
-      {!compact && <View style={s.row}><Action label="Week" selected={view === 'week'} onPress={() => setView('week')} /><Action label="Day" selected={view === 'day'} onPress={() => setView('day')} /></View>}</View>
-      <CalendarGrid term={term ?? { season: 'Fall', year: Number(today.slice(0, 4)), start_date: '1900-01-01', end_date: '2100-12-31', courses: [] }} days={days} today={today} select={c => { if (c.event) { setEditingEvent(c.event); setEditor('event'); } else { setDetail(c); setConfirmRemove(false); } }} />
+      {<View style={s.row}><Action label="Week" selected={view === 'week'} onPress={() => setView('week')} /><Action label="Day" selected={view === 'day'} onPress={() => setView('day')} /></View>}</View>
+      <Calendar term={term ?? { season: 'Fall', year: Number(today.slice(0, 4)), start_date: '1900-01-01', end_date: '2100-12-31', courses: [] }} days={days} today={today} select={c => { if (c.event) { setEditingEvent(c.event); setEditor('event'); } else { setDetail(c); setConfirmRemove(false); } }} />
       {term && !!term.courses.filter(c => c.meetings.some(m => m.start === null)).length && <View style={s.card}><Text style={s.heading}>On your own time</Text><Text style={s.text}>Online asynchronous classes have no fixed calendar time.</Text>{term.courses.filter(c => c.meetings.some(m => m.start === null)).map(c => <Action key={c.section} label={`${c.course} · ${c.title}`} onPress={() => { setDetail(c); setConfirmRemove(false); }} />)}</View>}
       {term && <View style={s.card}><Text style={s.heading}>This term’s classes</Text><View style={s.row}>{term.courses.map(c => <Action key={c.section} label={`${c.course} · ${c.credits} credits`} onPress={() => { setDetail(c); setConfirmRemove(false); }} />)}</View><Text style={s.text}>Meetings follow imported dates and weekdays. University holidays and cancellations aren’t included in the CSV.</Text></View>}
       {term && !!term.events?.length && <View style={s.card}><Text style={s.heading}>Your events</Text>{[...term.events].sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start).map(event => <Action key={event.id} label={`${dateLabel(event.date)} · ${event.title}`} onPress={() => { setEditingEvent(event); setEditor('event'); }} />)}</View>}

@@ -198,7 +198,7 @@ async def callback(
 
     claims = await exchange_code(code, oauth_verifier, REDIRECT_URI)
 
-    session_id = create_session(claims["sub"], claims.get("email"))
+    session_id = create_session(claims["sub"], claims.get("email"), claims.get("email_verified") is True)
 
     response = RedirectResponse(FRONTEND_URL, status_code=303)
 
@@ -268,7 +268,7 @@ async def app_login(payload: AppLogin):
         claims = await exchange_code(payload.code, payload.code_verifier, payload.redirect_uri)
     except httpx.HTTPError:
         raise HTTPException(status_code=502, detail="Cognito could not be reached") from None
-    session_id = create_session(claims["sub"], claims["email"])
+    session_id = create_session(claims["sub"], claims["email"], claims.get("email_verified") is True)
     return {"session_token": session_id, "expires_in": SESSION_LIFETIME}
 
 

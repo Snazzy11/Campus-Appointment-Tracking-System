@@ -24,14 +24,7 @@ export function DestinationPanel({ destinations }: { destinations: Destinations 
   const address = selected ? [selected.properties.tags['addr:housenumber'], selected.properties.tags['addr:street']].filter(Boolean).join(' ') : '';
   return <View style={styles.root}>
     <ScrollView keyboardShouldPersistTaps="handled" style={styles.scroll} contentContainerStyle={styles.content}>
-    <LocationPanel following={destinations.following} />
     {destinations.routing.state.directionsOpen ? <FromSelector routing={destinations.routing} /> : null}
-    {!state.query && (places.saved.length || places.recent.length) ? <View style={styles.section}>
-      {(['saved','recent'] as const).map(kind => places[kind].length ? <View key={kind}><Text style={styles.sectionTitle}>{kind==='saved'?'Saved places':'Recent destinations'}</Text>{places[kind].map(place=><Pressable key={place.id} accessibilityRole="button" style={styles.result} onPress={()=>openPlace(place)}><Text style={styles.name}>{place.name}</Text></Pressable>)}</View> : null)}
-      <Text style={styles.muted}>Stored on this device; shared by accounts using this app here. Building details and routes still need a connection.</Text>
-      <Pressable accessibilityRole="button" style={styles.button} onPress={places.clear}><Text style={styles.buttonText}>Clear saved and recent places</Text></Pressable>
-    </View> : null}
-    {places.error ? <Text accessibilityRole="alert" style={styles.muted}>{places.error}</Text> : null}
     <Text style={styles.sectionTitle}>To</Text>
     <View style={styles.searchRow}><SearchInput label="To — destination building" placeholder="Choose a destination" value={state.query} onChange={change} onKey={value => { const handled = key(value); if (handled && value === 'Enter') Keyboard.dismiss(); return handled; }} expanded={state.results.length > 0} listId={listId} activeId={state.active >= 0 ? `${listId}-${state.active}` : undefined} />
       {state.query ? <Pressable accessibilityRole="button" accessibilityLabel="Clear destination" onPress={() => change('')} style={styles.clear}><Text style={styles.clearText}>×</Text></Pressable> : null}
@@ -57,6 +50,13 @@ export function DestinationPanel({ destinations }: { destinations: Destinations 
         
         <Text style={styles.attribution}>Campus data © OpenStreetMap contributors · coverage may be incomplete.</Text>
       </View> : null}
+    {!state.query && (places.saved.length || places.recent.length) ? <View style={styles.section}>
+      {(['saved','recent'] as const).map(kind => places[kind].length ? <View key={kind}><Text style={styles.sectionTitle}>{kind==='saved'?'Saved places':'Recent destinations'}</Text>{places[kind].map(place=><Pressable key={place.id} accessibilityRole="button" style={styles.result} onPress={()=>openPlace(place)}><Text style={styles.name}>{place.name}</Text></Pressable>)}</View> : null)}
+      <Text style={styles.muted}>Stored on this device; shared by accounts using this app here. Building details and routes still need a connection.</Text>
+      <Pressable accessibilityRole="button" style={styles.button} onPress={places.clear}><Text style={styles.buttonText}>Clear saved and recent places</Text></Pressable>
+    </View> : null}
+    {places.error ? <Text accessibilityRole="alert" style={styles.muted}>{places.error}</Text> : null}
+    <LocationPanel following={destinations.following} />
     <BlipPanel destinations={destinations} />
     </ScrollView>
   </View>;

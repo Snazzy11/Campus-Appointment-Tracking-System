@@ -13,6 +13,8 @@ export function useBlips(enabled = true) {
     if (!enabled) return;
     const current=createBlipLoader(signal=>api<Blips>('/api/geo/reports',null,{signal}),setState);
     controller.current=current;
+    // Transport failures do not prove a path changed. Invalidate only when a
+    // snapshot confirms a new routing version, including after reconnecting.
     const receive=createMapSnapshotReceiver((snapshot,changed)=>{
       setState({data:snapshot.reports,error:'',loading:false});
       setLive('Reports update live');
@@ -23,9 +25,9 @@ export function useBlips(enabled = true) {
       onOpen:()=>setLive('Syncing reports…'),
       onEvent:event=>{
         if(event.event==='map_snapshot'){receive(event.data);setLive('Reports update live');setState(value=>({...value,error:''}));}
-        else if(event.event==='map_unavailable'){setLive('Reconnecting to live reports…');setState({data:emptyBlips,error:'Live reports temporarily unavailable.',loading:false});setRouteRevision(n=>n+1);}
+        else if(event.event==='map_unavailable'){setLive('Reconnecting to live reports…');setState(s=>({...s,error:'Live reports temporarily unavailable. Recalculate directions to check current path availability.',loading:false}));}
       },
-      onError:()=>{setLive('Reconnecting to live reports…');setState(s=>({...s,error:'Updates interrupted. Reports may be out of date.'}));setRouteRevision(n=>n+1);},
+      onError:()=>{setLive('Reconnecting to live reports…');setState(s=>({...s,error:'Live updates unavailable. Directions remain visible; recalculate to check current path availability.'}));},
     });
     const expiryTimer=setInterval(()=>setState(value=>{
       const features=value.data.features.filter(f=>Date.parse(f.properties.expires_at)>Date.now());

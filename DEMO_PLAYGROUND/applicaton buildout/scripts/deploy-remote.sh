@@ -65,6 +65,12 @@ if added:
 if old['services']['db']!=new['services']['db']: raise SystemExit('Refusing an update that changes the database service')
 if old['services']['web'].get('ports')!=new['services']['web'].get('ports'): raise SystemExit('Refusing an update that changes the Nginx upstream port')
 if new['services']['api']['environment']['FRONTEND_URL']!=sys.argv[1]: raise SystemExit('Cloud APP_ORIGIN does not match the frontend build; update server configuration separately')
+env = new['services']['api']['environment']
+for flag, url in [('GEO_DATA_ENABLED', 'GEO_DATABASE_URL'), ('GEO_REPORTS_ENABLED', 'GEO_REPORT_DATABASE_URL')]:
+    if env.get(flag) == 'true' and not env.get(url):
+        raise SystemExit(f'{flag} requires {url} in server deploy/ec2.env')
+if env.get('GEO_ROUTING_ENABLED') == 'true' and env.get('GEO_DATA_ENABLED') != 'true':
+    raise SystemExit('GEO_ROUTING_ENABLED requires GEO_DATA_ENABLED')
 print('Existing database, network, volume, port, and origin settings verified.')
 PY
 # Never restore the Mac database during an update.

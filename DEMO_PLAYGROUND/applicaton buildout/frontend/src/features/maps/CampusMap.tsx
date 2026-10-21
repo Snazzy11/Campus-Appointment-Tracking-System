@@ -39,7 +39,7 @@ function NativeMap({ initialSearch }: { initialSearch: string }) {
       else camera.current?.fitBounds(bounds, { padding: { top: 32, right: 32, bottom: 32, left: 32 }, duration: 0 });
     }
   }, [destinations.focusBounds, destinations.state.focusVersion, status, width, height]);
-  return <MapFrame tools={MAP_CONFIG.enabled ? <DestinationPanel destinations={destinations} /> : undefined} status={available ? status : 'unavailable'} mode={mode} modes={available && libre ? MAP_MODES.filter(value => !!MAP_CONFIG.styles[value]) : []} onMode={select} onRetry={() => { setStatus('loading'); setAttempt(value => value + 1); }}>
+  return <MapFrame defaultToolsOpen={!!initialSearch} tools={MAP_CONFIG.enabled ? <DestinationPanel destinations={destinations} /> : undefined} status={available ? status : 'unavailable'} mode={mode} modes={available && libre ? MAP_MODES.filter(value => !!MAP_CONFIG.styles[value]) : []} onMode={select} onRetry={() => { setStatus('loading'); setAttempt(value => value + 1); }}>
     {libre ? <libre.Map key={attempt} mapStyle={MAP_CONFIG.styles[mode]!} attribution compass scaleBar touchPitch={false}
       onPress={event => { if (destinations.reportPoint) destinations.moveReportPin(event.nativeEvent.lngLat); }}
       onRegionDidChange={event => { view.current = { ...event.nativeEvent, pitch: 0 }; }}

@@ -37,3 +37,7 @@ This inspects the configured database. Review generated upgrade/downgrade operat
 Revisions 80ebcb64f752 and 441d5178d7b4 contain generated `op.drop_constraint(None, ...)` calls and explicit warnings that these downgrade directives will fail as rendered. Resolve actual constraint names or adopt an appropriate naming convention before relying on downgrade. Removing message/conversation tables or columns also discards data. The documentation pass did not execute migrations or rollback operations.
 
 `script.py.mako` is the revision-generation template. The extensionless `migrations/README` is the original generic Alembic note; this file documents the project's actual migration setup. The pre-DM dump in `backend/` was not inspected and is not automatically restored by any script.
+
+## Verified email directory (b63d129fe407)
+
+Adds the non-null email_verified boolean with default false and a partial lower(email) text_pattern_ops index for prefix lookup. Old users remain unverified until their next Cognito sign-in updates the claim; do not mark all old accounts verified as a backfill. Upgrade and downgrade were validated against disposable PostgreSQL 17 with existing messages/conversations. Deploy the migration before using the updated API; the redeployment script requires --migrate when database and image revisions differ.

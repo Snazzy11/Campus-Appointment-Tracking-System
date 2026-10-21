@@ -13,14 +13,14 @@ The private `deploy/deploy-settings.json` on this Mac is already configured for 
 
 The local source and image tags are `applicaton buildout` / `campus-buildout-*`. The target is deliberately still `/home/ubuntu/apps/ec2demo` with `compose_project: campus-ec2demo`: this is the identity of the existing cloud database, networks, and containers. Renaming that target would create a different stack. Local Compose remains `campus-buildout` with its separate development database.
 
-The first group-chat deployment needs the new schema:
+Deploying the current schedules and individual events for the first time needs the new schema:
 
 ```sh
 ./scripts/deploy-ec2.sh --dry-run --migrate
 ./scripts/deploy-ec2.sh --migrate
 ```
 
-The migration preserves existing users/messages and adds group names, ownership, and system-message support. A backup is taken first; messaging pauses while migrations run. Later updates without new migrations can omit `--migrate`.
+Migrations preserve existing users/messages and apply all pending application schema changes, including schedule terms, courses, and individual events. A backup is taken first; messaging pauses while migrations run. Later updates without new migrations can omit `--migrate`.
 
 Requirements: Python 3.11+, Docker running locally, SSH/SCP, the existing SSH key, and an already deployed server with passwordless sudo for Docker, Python 3, curl, sha256sum, and Compose supporting --wait. SSH must already trust the server's host key; the script uses StrictHostKeyChecking=yes and does not change known_hosts. Do not bypass a host-key mismatch. No uv/npm installation on the server is needed.
 
@@ -82,6 +82,62 @@ bash -n scripts/deploy-ec2.sh scripts/deploy-remote.sh
 ./scripts/deploy-ec2.sh --dry-run
 ```
 
-Tests also verify groupdemo image rendering and preservation of the explicit cloud Compose project. Tests use fake Docker commands and disposable directories. They verify success, unchanged database configuration, schema mismatch before cutover, API failure rollback, migration failure behavior, configuration validation, and a dry run with no network commands. They do not redeploy EC2.
+Tests also verify buildout image rendering and preservation of the explicit cloud Compose project. Tests use fake Docker commands and disposable directories. They verify success, unchanged database configuration, schema mismatch before cutover, API failure rollback, migration failure behavior, configuration validation, and a dry run with no network commands. They do not redeploy EC2.
 
 Reference: [Docker Compose service startup, --no-deps, and health waiting](https://docs.docker.com/reference/cli/docker/compose/up/).
+
+## Current maps and spatial services
+
+Cloud web builds now enable the Maps tab by default, using the app's OpenFreeMap
+street style (`https://tiles.openfreemap.org/styles/liberty`); no MapTiler key is required.
+The deployment supplies this fallback when neither a street style nor a MapTiler key
+is set; it does not depend on the local frontend `.env` file. Local development defaults are unchanged.
+Optional public build settings belong in the local `deploy/deploy-settings.json`:
+
+```json
+"web_build": {
+  "EXPO_PUBLIC_MAPS_ENABLED": "true",
+  "EXPO_PUBLIC_MAP_STREET_STYLE": ""
+}
+```
+
+Add this property alongside the five existing connection fields. Supported keys are
+`EXPO_PUBLIC_MAPS_ENABLED`, `EXPO_PUBLIC_MAPTILER_KEY`, `EXPO_PUBLIC_MAP_STREET_STYLE`,
+`EXPO_PUBLIC_MAP_SATELLITE_STYLE`, and `EXPO_PUBLIC_MAP_HYBRID_STYLE`.
+Shell environment values override these settings. All values must be strings;
+these are public values embedded in the browser bundle, never secrets. Server-side
+env changes cannot alter an already built frontend; rebuild to change them.
+
+The basemap can display without PostGIS. Building search, directions, building-linked
+events, and map reports additionally require the separate spatial database and data.
+The redeploy command does **not** create or copy that database. `--migrate` applies
+messaging/schedule migrations only, not spatial migrations or map imports.
+Do not layer the local `compose.spatial.yaml` onto the production compose file:
+it defines a service named `db` and uses local-only credentials.
+
+After provisioning a separate production spatial database and applying the spatial
+migrations/imports described in `docs/geospatial`, set these in the **existing server**
+`deploy/ec2.env`, preserving its other values:
+
+```dotenv
+GEO_DATA_ENABLED=true
+GEO_DATABASE_URL=postgresql+psycopg://READ_ONLY_USER:PASSWORD@SPATIAL_HOST:5432/campus_spatial
+GEO_ROUTING_ENABLED=true
+GEO_REPORTS_ENABLED=true
+GEO_REPORT_DATABASE_URL=postgresql+psycopg://REPORT_WRITER:PASSWORD@SPATIAL_HOST:5432/campus_spatial
+```
+
+Use properly URL-encoded credentials and a hostname reachable from the API container.
+`localhost` refers to the API container itself. Keep report writing on its separate
+least-privilege credential. Routing requires the imported, built graph; reports require
+the report schema and role setup. Leave flags false until those prerequisites are ready.
+The deployment validates missing URLs and inconsistent routing flags before cutover;
+it does not certify spatial data completeness. Existing cloud spatial settings are now
+passed into the API. Test building search, a known route, and report access after setup.
+
+## Spatial setup status
+
+Production search and walking routing were enabled on October 14, 2026. See
+[SPATIAL.md](SPATIAL.md) for the isolated service, bootstrap, and backup instructions.
+The new chat scheduling tools require `--migrate`; see
+[chat schedules](../docs/messaging/chat-schedules.md).

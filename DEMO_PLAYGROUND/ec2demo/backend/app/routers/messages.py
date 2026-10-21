@@ -70,11 +70,13 @@ async def post_message(
             user = User(
                 cognito_sub=session["sub"],
                 email=session["email"],
+                email_verified=session.get("email_verified") is True,
             )
             db.add(user)
             db.flush()
         else:
             user.email = session["email"]
+            user.email_verified = session.get("email_verified") is True
 
         user_id = user.id
 
