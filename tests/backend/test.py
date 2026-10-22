@@ -9,6 +9,7 @@ import time
 from dataclasses import dataclass
 from selenium.common.exceptions import NoSuchElementException
 import unittest
+# from cats.database.models import rso
 
 BASE_URL = ""
 ORGANIZATIONS_URL = f"{BASE_URL}/organizations"
@@ -36,6 +37,20 @@ class RSOTests(unittest.TestCase):
         email_element = driver.find_element(By.XPATH, "/html/body/div[2]/div/div/div/div/div[1]/div/div[2]/div/div[3]/div/div[2]/div[2]")
         email_contact = email_element.text
         self.assertTrue(email_contact.__contains__("P:"))
+    
+    # def test_phone_number_validation(self):
+    #     rso_example_one = {
+    #         'id': 1,
+    #         'name': "Action Replay CMICH",
+    #         'description': "random description that is so cool and awesome ",
+    #         'link' : "https://engage.apps.cmich.edu/organization/actionreplay",
+    #         'email' : "actionreplayCMICH@gmail.com",
+    #         'phone' : " 989-774-4000",
+    #         'location': "None"
+    #     }
+        
+    #     rso_object = rso.RSOBase(**rso_example_one)
+    #     self.assertFalse(rso_object.phone)
         
 if __name__ == "__main__":
     unittest.main()
