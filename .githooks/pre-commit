@@ -1,2 +1,2 @@
 #!/bin/sh
-make validate
+make format

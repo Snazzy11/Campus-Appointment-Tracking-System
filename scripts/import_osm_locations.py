@@ -1,0 +1,87 @@
+"""Import named campus buildings from an OpenStreetMap export into the locations table.
+
+Usage (from the repo root, with the db container running via `make db-up`):
+    uv run python scripts/import_osm_locations.py [path/to/export.osm]
+"""
+
+import sys
+from pathlib import Path
+
+# Importing add_locations also sets up sys.path and DATABASE_URL for the backend imports below.
+import add_locations  # noqa: F401
+import osmnx as ox
+from database.database import SessionLocal, engine
+from database.models.location import Location
+from geoalchemy2 import Geography, WKTElement
+from sqlalchemy import cast, func, select
+from sqlalchemy.orm import Session, aliased
+
+DEFAULT_OSM_FILE = Path(__file__).resolve().parents[1] / "data" / "greater_cmu_area.osm"
+
+
+def load_campus_buildings(osm_file: Path) -> list[tuple[str, float, float]]:
+    """Return (name, longitude, latitude) for each named building inside the campus boundary."""
+    buildings = ox.features_from_xml(osm_file, tags={"building": True})
+    buildings = buildings[buildings["name"].notna()]
+
+    campus = ox.features_from_xml(osm_file, tags={"amenity": "university"})
+    campus_area = campus.geometry.union_all()
+
+    # Centroids are only accurate in a projected (meters) CRS, so project, take the centroid,
+    # then convert back to lat/lon (EPSG:4326) to match the Location.position SRID.
+    projected = ox.projection.project_gdf(buildings)
+    centroids = projected.geometry.centroid.to_crs(epsg=4326)
+
+    on_campus = centroids[centroids.within(campus_area)]
+    names = buildings.loc[on_campus.index, "name"]
+    return [(name, point.x, point.y) for name, point in zip(names, on_campus)]
+
+
+def main() -> None:
+    osm_file = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OSM_FILE
+    buildings = load_campus_buildings(osm_file)
+    print(f"Found {len(buildings)} named buildings on campus in {osm_file.name}")
+
+    Location.__table__.create(bind=engine, checkfirst=True)
+
+    with SessionLocal() as session:
+        existing = set(session.scalars(select(Location.name)))
+        added = 0
+        for name, lon, lat in buildings:
+            # Some buildings share a name (e.g. the Northwest Apartments); keep the first one.
+            if name in existing:
+                continue
+            session.add(
+                Location(
+                    name=name, position=WKTElement(f"POINT({lon} {lat})", srid=4326)
+                )
+            )
+            existing.add(name)
+            added += 1
+        session.commit()
+        print(f"Added {added} new locations ({len(existing)} total)")
+
+        print_nearest(session, "CMU Park Library")
+
+
+def print_nearest(session: Session, origin_name: str, limit: int = 5) -> None:
+    """Sanity check: print the buildings closest to origin_name."""
+    origin = aliased(Location)
+    distance = func.ST_Distance(
+        cast(Location.position, Geography), cast(origin.position, Geography)
+    )
+    rows = session.execute(
+        select(Location.name, distance)
+        .join(origin, origin.name == origin_name)
+        .where(Location.id != origin.id)
+        .order_by(distance)
+        .limit(limit)
+    )
+
+    print(f"\nClosest to {origin_name}:")
+    for name, meters in rows:
+        print(f"  {name}: {meters:.0f} m")
+
+
+if __name__ == "__main__":
+    main()
