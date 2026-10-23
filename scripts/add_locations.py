@@ -1,4 +1,4 @@
-"""Seed the database with a few campus locations.
+"""Seed the database with a few campus locations, then print the distance between each pair.
 
 Usage (from the repo root, with the db container running via `make db-up`):
     uv run python scripts/add_locations.py
@@ -19,11 +19,11 @@ os.environ.setdefault(
     "DATABASE_URL", "postgresql+psycopg2://cats:cats-devonly@localhost:5432/cats"
 )
 
-from geoalchemy2 import WKTElement  # noqa: E402
-from sqlalchemy import select  # noqa: E402
-
-from database.database import SessionLocal, engine  # noqa: E402
-from database.models.location import Location  # noqa: E402
+from database.database import SessionLocal, engine
+from database.models.location import Location
+from geoalchemy2 import Geography, WKTElement
+from sqlalchemy import cast, func, select
+from sqlalchemy.orm import Session, aliased
 
 # (name, longitude, latitude) -- note WKT/PostGIS uses longitude first.
 LOCATIONS = [
@@ -52,6 +52,25 @@ def main() -> None:
             print(f"Adding {name!r}")
 
         session.commit()
+
+        print_distances(session)
+
+
+def print_distances(session: Session) -> None:
+    """Print the distance between every pair of locations, computed by PostGIS."""
+    a = aliased(Location)
+    b = aliased(Location)
+    # Casting to geography makes ST_Distance return meters on the earth's surface instead of degrees.
+    distance = func.ST_Distance(
+        cast(a.position, Geography), cast(b.position, Geography)
+    )
+    rows = session.execute(
+        select(a.name, b.name, distance).where(a.id < b.id).order_by(a.id, b.id)
+    )
+
+    print("\nDistances:")
+    for name_a, name_b, meters in rows:
+        print(f"  {name_a} <-> {name_b}: {meters:.1f} m")
 
 
 if __name__ == "__main__":

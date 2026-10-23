@@ -16,6 +16,7 @@ RUN uv export --frozen --no-dev --no-emit-project > requirements.txt \
     && uv pip install --system -r requirements.txt
 
 COPY ./back_end/app/ /backend/
+COPY ./scripts /scripts/
 
 EXPOSE 8000
 
