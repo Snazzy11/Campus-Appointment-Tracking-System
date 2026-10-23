@@ -1,6 +1,8 @@
 # CATS — Campus Appointment Tracking System
 For specifics on the code for the frontend or backend, look at the other README files in `front_end/` and `back_end/`
 
+Run `make help` (or just `make`) to list every project command.
+
 ## Frontend
 
 The current Expo frontend lives in `front_end/`. Use Node.js 22.13 or newer and pnpm 11.25.0:
