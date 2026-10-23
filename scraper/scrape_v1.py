@@ -7,8 +7,8 @@ import time
 from dataclasses import dataclass
 from selenium.common.exceptions import NoSuchElementException
 
-BASE_URL = "https://engage.apps.cmich.edu"
-ORGANIZATIONS_URL = f"{BASE_URL}/organizations"
+ORGANIZATIONS_URL = "https://engage.apps.cmich.edu/organizations"
+
 options = webdriver.ChromeOptions()
 options.add_argument("--window-size=1920,1080")
 
@@ -18,22 +18,41 @@ options.add_argument("--window-size=1920,1080")
 driver = webdriver.Chrome(options=options)
 
 organizations = {}
-RSOs = [] 
+# RSOs = []
+RSOs = {} 
 id_count = 0
 
+def addRSOsToDatabase():
+    pass
+
+# TODO: translate RSO object to a model... make it in models/RSO.py?
 @dataclass
 class RSO:
     id: int
     name: str
     description: str
     link: str
-    
+    email: str
+    phone: str
+    location:  str
     def __init__(self, id: int, name: str, description: str , link: str):
         self.id = id
         self.name = name
         self.description = description
         self.link = link
+        self.email = ""
+        self.phone = ""
+        self.location = ""
 
+    def setEmailContact(self, email):
+        self.email = email
+    
+    def setPhoneContact(self, phone):
+        self.phone = phone
+        
+    def setLocation(self, location):
+        self.location = location
+    
 try:
     print("Opening organizations page...")
 
@@ -52,13 +71,13 @@ try:
 
     loading_sites = True
     
+    print("Loading all sites in Organizations page...")
     while(loading_sites):
         try:
             load_button = driver.find_element(By.XPATH, "//span[contains(text(), 'Load More')]")
             if load_button:
                 load_button.click()
                 time.sleep(1)
-                print("Load More button clicked")
         except NoSuchElementException:
             print("Load button was not loaded, continue on with scraping the URLs");
             loading_sites = False;
@@ -71,6 +90,7 @@ try:
         'a[href*="/organization/"]'
     )
 
+    print("Reading organizations and making RSO objects...")
     for link in links:
         href = link.get_attribute("href");
 
@@ -97,85 +117,70 @@ try:
         id_count = id_count + 1
         
         #TODO: implement sqlachemy to make sqlalchemy objects
-        RSOs.append(RSO(id_count, name, desc, href))
+        # RSOs.append(RSO(id_count, name, desc, href))
+        RSOs[id_count] = RSO(id_count, name, desc, href)
 
     print(
-        f"Found {len(organizations)} organization URLs\n"
+        f"Found {len(organizations)} organization URLs and created {len(RSOs)} RSO objects\n"
     )
     
-    for rso in RSOs:
-        print(rso.name + "\n" + rso.link + "\n\n")
+    successful_attempt_count = 0
+    failed_attempt_count = 0
+
+    # after revealing all url links, it goes through each one and get info from them. if they're found then add them to the rso object. if not, then they will be empty strings
+    for rso in RSOs.values():
+        print("Loading " + rso.name + " link. . .\n")
+        driver.get(rso.link)
+        
+        # email check
+        try:
+            email_element = driver.find_element(By.XPATH, "/html/body/div[2]/div/div/div/div/div[1]/div/div[2]/div/div[3]/div/div[2]/div[2]")
+            
+            # for a specific case if that element has a phone number instead of an email
+            if not email_element.text.__contains__("P: "):
+                email_contact = email_element.text.split("E: ")[1]
+                rso.setEmailContact(email_contact)
+            
+            rso.setEmailContact("None")
+        except NoSuchElementException:
+            print(f"{rso.id} STATUS: Email wasn't found")
+            rso.setEmailContact("None")
+
+        # phone number check
+        try:
+            phone_number_element = driver.find_element(By.XPATH, "/html/body/div[2]/div/div/div/div/div[1]/div/div[2]/div/div[3]/div/div[2]/div[3]")
+            phone_contact = phone_number_element.text.split("P:")[1]
+            rso.setPhoneContact(phone_contact)
+        except NoSuchElementException:
+            print(f"{rso.id} STATUS: Phone Number wasn't found")
+            rso.setPhoneContact("None")
+            
+        # location check
+        try:
+            location_element = driver.find_element(By.XPATH, "/html/body/div[2]/div/div/div/div/div[1]/div/div[2]/div/div[3]/div/div[2]/div[1]")
+            location = location_element.text.split("Address")[1]
+            if location == "" or location == " ":
+                print(f"{rso.id} : Location var was empty")
+                rso.setLocation("None")
+            else: 
+                rso.setLocation(location)
+            
+        except NoSuchElementException:
+            print(f"{rso.id} STATUS: Location wasn't found")
+            rso.setLocation("None")
+        
+        # summary for attempt
+        print(f"\nID: {rso.id}\nEMAIL: {rso.email}\nPHONE: {rso.phone}\nLOCATION: {rso.location}\n")    
+        
+        
+    # success_rate = round(float(successful_attempt_count/len(RSOs))) * 100
+    # print("\n\n\n_______Summary_______\nSuccessful contact count: " + str(successful_attempt_count) + "\nFailure contact count: " + str(failed_attempt_count) + "\nSuccess rate: " + str(round(float(successful_attempt_count/len(RSOs)), 2)))
     
-    #after revealing all url links, it goes through each one and get info from them.
-
-    # if organizations:
-
-    #     url = next(iter(organizations))
-
-    #     print("\n--------------------------------")
-    #     print("Opening organization:")
-    #     print(url)
-    #     print("--------------------------------\n")
-
-    #     driver.get(url)
-
-    #     WebDriverWait(driver, 5).until(
-    #         EC.presence_of_element_located(
-    #             (By.TAG_NAME, "body")
-    #         )
-    #     )
-
-    #     print("=" * 80)
-
-
-    #     # --------------------------------------------------
-    #     # Print links found on organization page
-    #     # --------------------------------------------------
-
-    #     print("\nLINKS ON ORGANIZATION PAGE:\n")
-
-    #     page_links = driver.find_elements(
-    #         By.TAG_NAME,
-    #         "a"
-    #     )
-
-    #     for i, link in enumerate(page_links):
-
-    #         text = link.text.strip()
-    #         href = link.get_attribute("href")
-
-    #         if text or href:
-    #             print(
-    #                 f"[{i}] "
-    #                 f"text={text!r} "
-    #                 f"href={href!r}"
-    #             )
-
-
-        # # --------------------------------------------------
-        # # Print buttons
-        # # --------------------------------------------------
-
-        # print("\nBUTTONS ON ORGANIZATION PAGE:\n")
-
-        # buttons = driver.find_elements(
-        #     By.TAG_NAME,
-        #     "button"
-        # )
-
-        # for i, button in enumerate(buttons):
-
-        #     print(
-        #         f"[{i}] "
-        #         f"text={button.text!r} "
-        #         f"id={button.get_attribute('id')!r} "
-        #         f"aria-label="
-        #         f"{button.get_attribute('aria-label')!r}"
-        #     )
-
-
-    input("\nPress Enter to quit...")
-
-
+    for rso in RSOs.values():
+        print(str(rso))
+        
 finally:
     driver.quit()
+    
+addRSOsToDatabase()
+
