@@ -18,9 +18,29 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --locked
-      # TODO: Change to backend-specific validation step later
+
       - name: Lint, format, and type check
-        run: make validate
+        run: make validate-backend
+  frontend_validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads the pnpm version from "packageManager" in the root package.json
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: front_end/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: make setup-frontend
+
+      - name: Lint, format, and type check
+        run: make validate-frontend
   build:
     needs: backend_validation
     runs-on: ubuntu-latest

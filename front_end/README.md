@@ -3,6 +3,8 @@
 An [Expo](https://docs.expo.dev) app written in React Native + TypeScript.
 We are using expo so the app is portable between browsers, iOS, Android.
 
+TODO: Add frontend validation to git pre commit and push, but cant do it until everyone has frontend stuff installed
+
 ## Run it
 
 Needs Node.js 22.13+ and pnpm 11.25.0. Run these from the repository root:
@@ -16,7 +18,18 @@ pnpm web                                         # start the app, then open http
 
 Saving a file reloads the app automatically. If something looks wrong, open the browser devtools and use the Console and Network tabs for debugging.
 
-Before committing, run `pnpm lint` and `pnpm typecheck`.
+## Checks (same idea as the backend's ruff + pyright)
+
+| Command (from repo root)  | What it does                                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| `make frontend-format`    | **Fixes** formatting with Prettier (quotes, spacing, line breaks).                                 |
+| `make frontend-lint`      | ESLint: finds likely bugs and bad patterns.                                                        |
+| `make frontend-typecheck` | TypeScript: finds type errors, e.g. a misspelled field or passing a string where a number belongs. |
+| `make validate-frontend`  | Runs all three checks without changing files. **CI runs this on every PR.**                        |
+
+Before committing, run `make frontend-format` and then `make validate-frontend`. (`make validate` checks backend and frontend together.)
+The same commands work as `pnpm format`, `pnpm lint`, `pnpm typecheck` and `pnpm validate` from inside `front_end/`.
+Settings live in `.prettierrc.json` (formatting) and `eslint.config.js` (lint rules).
 
 ## Where things go
 

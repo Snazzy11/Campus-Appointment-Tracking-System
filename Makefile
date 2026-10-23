@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-api lint format format-check typecheck validate
+.PHONY: setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-api lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
 
 setup: setup-hooks setup-backend setup-frontend
 
@@ -78,9 +78,32 @@ typecheck: ## Run static type checker
 	@echo "Running type checks"
 	uv run pyright
 
-validate: ## Run all validations
-	## TODO: It will eventually be important to mark this as 'validate_backend' or similar as we add more tests
-	@echo "Running all validations"
+validate: validate-backend validate-frontend ## Run all validations
+
+validate-backend: ## Run all backend validations
+	@echo "Running backend validations"
 	make format-check
 	make lint
 	make typecheck
+
+frontend-lint: ## Run frontend linter (ESLint)
+	@echo "Running frontend linter checks"
+	pnpm --dir front_end lint
+
+frontend-format: ## Run frontend formatter (Prettier)
+	@echo "Running frontend automatic formatting"
+	pnpm --dir front_end format
+
+frontend-format-check: ## Run frontend formatter with only checks
+	@echo "Running frontend formatter without auto-fixing"
+	pnpm --dir front_end format:check
+
+frontend-typecheck: ## Run frontend type checker (TypeScript)
+	@echo "Running frontend type checks"
+	pnpm --dir front_end typecheck
+
+validate-frontend: ## Run all frontend validations
+	@echo "Running frontend validations"
+	make frontend-format-check
+	make frontend-lint
+	make frontend-typecheck

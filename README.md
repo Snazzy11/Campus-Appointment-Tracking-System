@@ -29,7 +29,7 @@ The backend uses Python, FastAPI, PostgreSQL, and uv. `make setup` installs Pyth
 
 ## Contributing
 
-Work on a branch and open a pull request against main. For frontend changes, run `pnpm lint`, `pnpm typecheck`, and `pnpm build` from `front_end/`. Use uv for Python dependencies and pnpm for frontend dependencies.
+Work on a branch and open a pull request against main. Before pushing, run `make validate` (backend and frontend checks; CI runs the same ones). `make format` / `make frontend-format` auto-fix formatting. Use uv for Python dependencies and pnpm for frontend dependencies.
 
 ## Ai Policy
 AI-assisted development is acceptable and sometimes encouraged for this project.
