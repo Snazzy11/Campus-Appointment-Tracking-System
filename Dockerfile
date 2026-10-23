@@ -4,7 +4,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /backend
+WORKDIR /cats-backend
 
 RUN apt-get update && apt-get install -y --no-install-recommends file \
     && rm -rf /var/lib/apt/lists/*
@@ -15,8 +15,11 @@ COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev --no-emit-project > requirements.txt \
     && uv pip install --system -r requirements.txt
 
-COPY ./back_end/app/ /backend/
+
+COPY ./back_end/app/ ./back_end/app/
+COPY ./scripts/ ./scripts/
+COPY ./data/ ./data/
 
 EXPOSE 8000
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api.main:app", "--app-dir", "back_end/app", "--host", "0.0.0.0", "--port", "8000"]
