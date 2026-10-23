@@ -1,6 +1,9 @@
 # Frontend setup changes
+
 Paths below are relative to the repository root. These changes make the existing starter a standalone Expo SDK 57 app; they do not import the demo applications.
+
 ## Source moves (contents preserved except subsequent fixes listed below)
+
 - `front_end/app/_layout.tsx` → `front_end/src/app/_layout.tsx`
 - `front_end/app/explore.tsx` → `front_end/src/app/explore.tsx`
 - `front_end/app/index.tsx` → `front_end/src/app/index.tsx`
@@ -22,6 +25,7 @@ Paths below are relative to the repository root. These changes make the existing
 - `front_end/hooks/use-theme.ts` → `front_end/src/hooks/use-theme.ts`
 
 ## Assets and configuration moves
+
 - `assets/expo.icon/Assets/expo-symbol 2.svg` → `front_end/assets/expo.icon/Assets/expo-symbol 2.svg`
 - `assets/expo.icon/Assets/grid.png` → `front_end/assets/expo.icon/Assets/grid.png`
 - `assets/expo.icon/icon.json` → `front_end/assets/expo.icon/icon.json`
@@ -50,6 +54,7 @@ Paths below are relative to the repository root. These changes make the existing
 - `scripts/reset-project.js` → `front_end/scripts/reset-project.js`: existing reset command remains scoped to the frontend. It was not executed.
 
 ## Added or updated files
+
 - Root `package.json`: replaced incompatible app dependencies with forwarding scripts for start, web, ios, android, lint, typecheck, build.
 - `front_end/package.json`: Expo SDK 57 dependencies selected by Expo installer; pnpm version and Node requirement; added build and typecheck scripts.
 - `front_end/pnpm-lock.yaml`: generated authoritative frontend lockfile. Root `package-lock.json` removed; root `pnpm-lock.yaml` replaced with a minimal dependency-free launcher lockfile. Neither contains application dependencies.
@@ -61,6 +66,7 @@ Paths below are relative to the repository root. These changes make the existing
 - `front_end/SETUP_CHANGES.md`: this change record.
 
 ## Generated local files
+
 Installation creates ignored `front_end/node_modules/` and a local pnpm cache. Validation may create ignored `.expo/`, `expo-env.d.ts`, and `dist/` inside `front_end/`.
 
 ## Tooling compatibility
