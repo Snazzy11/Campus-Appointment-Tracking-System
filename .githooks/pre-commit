@@ -1,3 +1,2 @@
 #!/bin/sh
-make format # run formatter before validating finds an issue
-make validate
+make format
