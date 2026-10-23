@@ -9,11 +9,11 @@ import {
 import { SymbolView } from 'expo-symbols';
 import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
 
-import { ExternalLink } from './external-link';
-import { ThemedText } from './themed-text';
-import { ThemedView } from './themed-view';
+import { ExternalLink } from './ExternalLink';
+import { ThemedText } from './ThemedText';
+import { ThemedView } from './ThemedView';
 
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Colors, MaxContentWidth, Spacing } from '@/shared/constants/theme';
 
 export default function AppTabs() {
   return (
@@ -62,7 +62,17 @@ export function CustomTabList(props: TabListProps) {
 
         <ExternalLink href="https://docs.expo.dev" asChild>
           <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs</ThemedText>
+            <ThemedText type="link">Expo Docs</ThemedText>
+            <SymbolView
+              tintColor={colors.text}
+              name={{ ios: 'arrow.up.right.square', web: 'link' }}
+              size={12}
+            />
+          </Pressable>
+        </ExternalLink>
+        <ExternalLink href="http://127.0.0.1:8000/docs" asChild>
+          <Pressable style={styles.externalPressable}>
+            <ThemedText type="link">API Docs</ThemedText>
             <SymbolView
               tintColor={colors.text}
               name={{ ios: 'arrow.up.right.square', web: 'link' }}
@@ -73,8 +83,9 @@ export function CustomTabList(props: TabListProps) {
       </ThemedView>
     </View>
   );
-}
+} {/* TODO: Code api docs link to use the current location/docs not 127.00... */}
 
+// TODO: These styles should be here
 const styles = StyleSheet.create({
   tabListContainer: {
     position: 'absolute',

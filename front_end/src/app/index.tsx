@@ -1,9 +1,4 @@
-import { Text, View } from 'react-native';
+// Route: "/" (the Home tab). Route files stay tiny; the real screen lives in features/.
+import { HomeScreen } from '@/features/home/HomeScreen';
 
-export default function HomeScreen() {
-  return (
-    <View style={{ padding: 48 }}>
-      <Text>CATS</Text>
-    </View>
-  );
-}
+export default HomeScreen;

@@ -1,4 +1,5 @@
 # CATS — Campus Appointment Tracking System
+For specifics on the code for the frontend or backend, look at the other README files in `front_end/` and `back_end/`
 
 ## Frontend
 
@@ -13,7 +14,7 @@ pnpm install --frozen-lockfile
 pnpm web
 ```
 
-After installation, `pnpm web` also works from the repository root. See [frontend setup](front_end/README.md) and the [setup change record](front_end/SETUP_CHANGES.md). The current Home/Explore starter does not require a running backend.
+After installation, `pnpm web` also works from the repository root. See [frontend setup](front_end/README.md) and the [setup change record](front_end/SETUP_CHANGES.md). The Locations page needs the backend running (`make backend-up`).
 
 ## Project structure
 
