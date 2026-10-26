@@ -6,6 +6,7 @@ from database.database import Base
 
 GEO_SRID = 4326
 
+
 class Location(Base):
     __tablename__ = "locations"
 
