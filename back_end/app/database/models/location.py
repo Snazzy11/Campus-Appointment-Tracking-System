@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from database.database import Base
 
+GEO_SRID = 4326
 
 class Location(Base):
     __tablename__ = "locations"
@@ -14,7 +15,7 @@ class Location(Base):
     position = mapped_column(
         Geometry(
             geometry_type="POINT",
-            srid=4326,
+            srid=GEO_SRID,
             spatial_index=True,
         ),
         nullable=True,
