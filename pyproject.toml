@@ -36,9 +36,17 @@ dev = [
 ]
 
 [tool.pyright]
+pythonVersion = "3.14"
+
+typeCheckingMode = "standard"
+
 include = ["back_end/app"]
 extraPaths = ["back_end/app"]
-pythonVersion = "3.14"
-typeCheckingMode = "standard"
 venvPath = "."
 venv = ".venv"
+
+reportMissingImports = "error"
+
+strict = ["back_end/app/database"] # Mark database as always using strict analysis
+strictListInference = true # Stricter typing for lists and dictionaries
+strictDictionaryInference = true
