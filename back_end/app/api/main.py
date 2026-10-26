@@ -3,8 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers.health.health import router as health_router
 from api.routers.locations.locations import router as locations_router
-from api.routers.message.messages import router as messaging_router
-
 
 app = FastAPI(
     title="Campus Appointment and Tracking System",
