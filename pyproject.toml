@@ -42,3 +42,6 @@ pythonVersion = "3.14"
 typeCheckingMode = "standard"
 venvPath = "."
 venv = ".venv"
+
+[tool.fastapi]
+entrypoint = "dev:app"
