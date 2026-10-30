@@ -87,9 +87,12 @@ event_meetings:                 -- events can be recurring or one off
 _RSO_
 rsos:
     rso_id (p-key), 
-    name, 
+    name,
+    description, 
     rso_url, 
-    rso_chat_id(f-key)
+    email,
+    phone,
+    location
 rso_members:
     rso_id(f-key/p-key), 
     user_id(f-key, p-key), 
