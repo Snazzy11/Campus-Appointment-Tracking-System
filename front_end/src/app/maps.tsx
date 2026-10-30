@@ -1,16 +1,20 @@
 import osmtogeojson from 'osmtogeojson';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+// Keep Leaflet out of server rendering; it accesses browser globals on import.
+const MapCanvas = lazy(() => import('../shared/components/MapCanvas'));
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export default function OsmMapScreen() {
-  const [isClient, setIsClient] = useState(false);
+  const isClient = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
   const [geoJson, setGeoJson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsClient(true);
-
     fetch('/data/greater_cmu_area.osm')
       .then((response) => {
         if (!response.ok) {
@@ -59,33 +63,6 @@ export default function OsmMapScreen() {
     );
   }
 
-  const { MapContainer, TileLayer, GeoJSON, useMap } = require('react-leaflet');
-
-  function RecenterMap({ geoJsonData }: { geoJsonData: any }) {
-    const map = useMap();
-    useEffect(() => {
-      if (geoJsonData && geoJsonData.features && geoJsonData.features.length > 0) {
-        const L = require('leaflet');
-        const layer = L.geoJSON(geoJsonData);
-        const bounds = layer.getBounds();
-        if (bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [30, 30] });
-        }
-      }
-    }, [geoJsonData, map]);
-    return null;
-  }
-
-  const onEachFeature = (feature: any, layer: any) => {
-    if (feature.properties && feature.properties.tags) {
-      const tags = feature.properties.tags;
-      const popupContent = Object.entries(tags)
-        .map(([key, value]) => `<b>${key}:</b> ${value}`)
-        .join('<br/>');
-      layer.bindPopup(popupContent || 'No tags available');
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -94,30 +71,9 @@ export default function OsmMapScreen() {
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
 
-      <div style={{ flex: 1, width: '100%', height: '100%' }}>
-        <MapContainer
-          center={[43.5853, -84.7732]}
-          zoom={13}
-          style={{ height: '100%', width: '100%' }}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          {geoJson && (
-            <>
-              <GeoJSON
-                key={JSON.stringify(geoJson)}
-                data={geoJson}
-                onEachFeature={onEachFeature}
-                style={{ color: '#2980b9', weight: 3, opacity: 0.8 }}
-              />
-              <RecenterMap geoJsonData={geoJson} />
-            </>
-          )}
-        </MapContainer>
-      </div>
+      <Suspense fallback={<Text style={styles.statusText}>Loading map...</Text>}>
+        <MapCanvas geoJson={geoJson} />
+      </Suspense>
     </View>
   );
 }
