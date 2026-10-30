@@ -92,7 +92,8 @@ rsos:
     rso_url, 
     email,
     phone,
-    location
+    location,
+    rso_chat_id(f-key)
 rso_members:
     rso_id(f-key/p-key), 
     user_id(f-key, p-key), 
