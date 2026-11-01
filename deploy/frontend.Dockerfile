@@ -2,9 +2,12 @@
 FROM node:24-bookworm-slim AS build
 RUN npm install --global pnpm@11.25.0
 WORKDIR /app
-COPY front_end/package.json front_end/pnpm-lock.yaml ./
+COPY front_end/package.json front_end/pnpm-lock.yaml front_end/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY front_end/ ./
+# Materialize the repository symlink so exported maps survive image packaging.
+RUN rm public/data
+COPY data/ ./public/data/
 ENV EXPO_PUBLIC_API_URL=/api CI=1 EXPO_NO_TELEMETRY=1
 RUN pnpm build
 FROM nginxinc/nginx-unprivileged:stable-alpine
