@@ -11,7 +11,7 @@ are needed. These files deploy the current main application, not the older demo.
 
 | Command | Result | Stop |
 | --- | --- | --- |
-| `make dev` | Local PostgreSQL/PostGIS at localhost:5434; FastAPI reload at localhost:8000; Expo at localhost:8081 | Ctrl-C, then `make dev-down` |
+| `make dev` | Local PostgreSQL/PostGIS at localhost:15434; FastAPI reload at localhost:8000; Expo at localhost:8081 | Ctrl-C, then `make dev-down` |
 | `make stack-test` | All three images, served at http://localhost:18082 | `make stack-down` |
 | `make deploy SSH_KEY=/absolute/path/key.pem CATS_TAG=release-id` | Upload already-built ARM64 images over administrator SSH; start rootless server stack on localhost:18082 | Administrator operates server Compose |
 

@@ -59,9 +59,9 @@ build-web: ## Export web using same-origin /api requests
 	EXPO_PUBLIC_API_URL=/api pnpm --dir front_end build
 
 api-up: ## Run FastAPI with reload against the local development DB
-	DB_PASSWORD=$${DB_PASSWORD:-cats-devonly} DB_PORT=$${CATS_DB_PORT:-5434} uv run uvicorn api.main:app --app-dir back_end/app --reload --host 127.0.0.1 --port 8000
+	DB_PASSWORD=$${DB_PASSWORD:-cats-devonly} DB_PORT=$${CATS_DB_PORT:-15434} uv run uvicorn api.main:app --app-dir back_end/app --reload --host 127.0.0.1 --port 8000
 
-db-up: ## Build and start only the local development database on localhost:5434
+db-up: ## Build and start only the local development database on localhost:15434
 	$(DEV_COMPOSE) up --build -d --wait db
 
 stack-test: ## Build and start the complete stack at http://localhost:18082

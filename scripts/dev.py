@@ -15,7 +15,7 @@ signal.signal(signal.SIGTERM, stop)
 try:
     environment = dict(os.environ)
     environment.setdefault("DB_PASSWORD", "cats-devonly")
-    environment.setdefault("DB_PORT", environment.get("CATS_DB_PORT", "5434"))
+    environment.setdefault("DB_PORT", environment.get("CATS_DB_PORT", "15434"))
     commands = [
         ["uv", "run", "uvicorn", "api.main:app", "--app-dir", "back_end/app", "--reload", "--host", "127.0.0.1", "--port", "8000"],
         ["pnpm", "--dir", "front_end", "web"],

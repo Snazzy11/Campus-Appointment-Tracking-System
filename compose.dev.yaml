@@ -2,7 +2,7 @@
 # Used only for the DB supporting host-side hot reload.
 services:
   db:
-    ports: ["127.0.0.1:${CATS_DB_PORT:-5434}:5432"]
+    ports: ["127.0.0.1:${CATS_DB_PORT:-15434}:5432"]
 networks:
   database:
     internal: false
