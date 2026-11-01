@@ -1,0 +1,13 @@
+**/.env
+**/*.env
+**/.env.*
+**/*.pem
+**/*.key
+.git
+.venv
+**/node_modules
+**/.expo
+**/dist
+**/__pycache__
+DEMO_PLAYGROUND
+work
