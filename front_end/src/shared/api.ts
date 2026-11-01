@@ -5,7 +5,7 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 // Sends a GET request to the backend and returns the JSON it sends back.
 // Example: await getFromApi('/locations')
 export async function getFromApi(path: string) {
-  const response = await fetch(API_URL + path);
+  const response = await fetch(API_URL + path, { credentials: 'include' });
 
   if (!response.ok) {
     throw new Error('Request to ' + path + ' failed with status ' + response.status);

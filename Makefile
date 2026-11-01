@@ -109,7 +109,7 @@ logs: ## Follow complete local container stack logs
 
 test-api: ## Run backend API tests
 	@echo "runnning api tests..."
-	PYTHONPATH=back_end/app uv run pytest back_end/app/api/test_api.py -v
+	PYTHONPATH=back_end/app uv run pytest back_end/app/api/test_api.py back_end/app/api/test_auth.py tests -v
 
 lint: ## Run backend linter (ruff)
 	@echo "Running linter checks"
