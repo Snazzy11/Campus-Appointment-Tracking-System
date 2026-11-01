@@ -160,3 +160,10 @@ validate-frontend: ## Run all frontend validations
 ##@ All checks
 
 validate: validate-backend validate-frontend ## Run all backend and frontend checks (what CI runs)
+
+.PHONY: deploy
+SSH_HOST ?= ubuntu@hacker.tufts.me
+SSH_KEY ?=
+deploy: ## ADMIN ONLY: upload existing ARM64 images and start server stack
+	@test -n "$(SSH_KEY)" || { echo 'Set SSH_KEY to your administrator SSH key path'; exit 1; }
+	python3 scripts/deploy.py --key "$(SSH_KEY)" --host "$(SSH_HOST)" --tag "$(CATS_TAG)"
