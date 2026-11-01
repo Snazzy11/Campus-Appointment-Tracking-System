@@ -83,7 +83,7 @@ Rule of thumb: if only one feature uses it, it goes in that feature's folder. If
 ## Things that trip people up
 
 - **`File.web.tsx`**: on the web, Expo automatically uses `File.web.tsx` instead of `File.tsx`. That's why there are two `AppTabs` files, and a change to one isn't seen on the other platform.
-- **Phones and `localhost`**: on a phone, `localhost` means the phone itself. To test on a phone, create `front_end/.env` with `EXPO_PUBLIC_API_URL=http://<your computer's LAN IP>:8000` and restart `pnpm web`/`pnpm start`. `.env` changes only apply after a restart.
+- **Phones and `localhost`**: on a phone, `localhost` means the phone itself. To test on a phone, create `front_end/.env` with `EXPO_PUBLIC_API_URL=http://<your computer's LAN IP>:8000/api` and restart `pnpm web`/`pnpm start`. `.env` changes only apply after a restart.
 - **Adding packages**: use `pnpm exec expo install <package>` (not `pnpm add`) so Expo picks versions that work with our Expo SDK. Don't use npm in this project.
 - **Data looks wrong?** Check the backend first with `curl localhost:8000/api/locations` or http://localhost:8000/api/docs. If the API is right, the bug is in the frontend.
 - **CORS errors in the console**: the backend only allows requests from `localhost:8081`; see `allow_origins` in `back_end/app/api/main.py`.

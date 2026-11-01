@@ -3,6 +3,16 @@ For specifics on the code for the frontend or backend, look at the other README 
 
 Run `make help` (or just `make`) to list every project command.
 
+## Local development and hosting
+
+- `make dev`: Expo and FastAPI with reload, plus a local PostGIS database.
+- `make stack-test`: test all three containers at http://localhost:18082.
+- `make release-build CATS_TAG=<id>` then `make deploy SSH_KEY=<path> CATS_TAG=<id>`:
+  administrator-only ARM64 release to the server's private localhost port.
+
+See [deployment and Compose guide](deploy/README.md) for isolation, credentials,
+backups, migrations, and public-launch requirements.
+
 ## Frontend
 
 The current Expo frontend lives in `front_end/`. Use Node.js 22.13 or newer and pnpm 11.25.0:
