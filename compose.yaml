@@ -5,7 +5,7 @@ x-logging: &logging
   options: {max-size: "10m", max-file: "3"}
 services:
   db:
-    image: cats-db:${CATS_TAG:-local}
+    image: ${DB_IMAGE:-cats-db:${CATS_TAG:-local}}
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: cats
@@ -20,7 +20,7 @@ services:
       timeout: 5s
       retries: 20
   api:
-    image: cats-api:${CATS_TAG:-local}
+    image: ${API_IMAGE:-cats-api:${CATS_TAG:-local}}
     environment:
       DB_HOST: db
       DB_PASSWORD: ${DB_PASSWORD:-cats-devonly}
@@ -37,7 +37,7 @@ services:
       timeout: 5s
       retries: 20
   web:
-    image: cats-web:${CATS_TAG:-local}
+    image: ${WEB_IMAGE:-cats-web:${CATS_TAG:-local}}
     depends_on:
       api: {condition: service_healthy}
     ports: ["127.0.0.1:${CATS_PORT:-18082}:8080"]
