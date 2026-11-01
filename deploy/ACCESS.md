@@ -39,7 +39,8 @@ The server accepts only `status`, `upload`, and `deploy RELEASE`. It rejects she
 commands, SFTP, terminals, agent forwarding, and port forwarding. Do not use or
 share the ubuntu administrator key. The deploy scripts use strict host-key checking;
 on a new laptop, obtain the server host-key fingerprint from Carter before accepting
-its first connection.
+its first connection. The server ED25519 host-key fingerprint is
+`SHA256:ENuUDK/kxYpecIR/t5l/dQVBbM4nMmUQv9Ueet98af8`.
 
 Build and deploy frontend/API from the repository:
 
