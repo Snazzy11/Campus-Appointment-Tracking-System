@@ -14,7 +14,10 @@ logs.put_retention_policy(logGroupName=group,retentionInDays=14)
 iam.put_role_policy(RoleName=role,PolicyName='OwnFunctionLogs',PolicyDocument=json.dumps({'Version':'2012-10-17','Statement':[{'Effect':'Allow','Action':['logs:CreateLogStream','logs:PutLogEvents'],'Resource':f'arn:aws:logs:{region}:{account}:log-group:{group}:*'}]}))
 buffer=io.BytesIO()
 with zipfile.ZipFile(buffer,'w',zipfile.ZIP_DEFLATED) as z: z.write('deploy/cognito/pre_signup.py','pre_signup.py')
-try: arn=lam.get_function(FunctionName=function)['Configuration']['FunctionArn']
+try:
+ arn=lam.get_function(FunctionName=function)['Configuration']['FunctionArn']
+ lam.update_function_code(FunctionName=function,ZipFile=buffer.getvalue())
+ lam.get_waiter('function_updated_v2').wait(FunctionName=function)
 except lam.exceptions.ResourceNotFoundException:
  for attempt in range(8):
   try:

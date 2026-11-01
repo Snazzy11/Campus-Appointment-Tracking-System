@@ -68,6 +68,7 @@ def allowed_identity(identity):
     return (
         identity.get("email_verified") is True
         and isinstance(email, str)
+        and email.isascii()
         and re.fullmatch(r"[^\s@]+@cmich\.edu", email, re.IGNORECASE) is not None
     )
 

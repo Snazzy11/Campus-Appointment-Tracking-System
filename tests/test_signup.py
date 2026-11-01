@@ -3,7 +3,7 @@ import runpy
 from pathlib import Path
 import pytest
 handler=runpy.run_path(str(Path(__file__).parents[1]/'deploy/cognito/pre_signup.py'))['handler']
-@pytest.mark.parametrize('email',['person@gmail.com','person@cmich.edu.evil.test','a@b@cmich.edu','person@sub.cmich.edu',''])
+@pytest.mark.parametrize('email',['person@cmıch.edu','person@gmail.com','person@cmich.edu.evil.test','a@b@cmich.edu','person@sub.cmich.edu',''])
 def test_rejects_other_domains(email):
     with pytest.raises(ValueError): handler({'request':{'userAttributes':{'email':email}}},None)
 def test_accepts_domain_without_verifying_it():

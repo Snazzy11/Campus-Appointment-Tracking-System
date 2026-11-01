@@ -4,7 +4,7 @@ import re
 
 def handler(event, context):
     email = event.get('request', {}).get('userAttributes', {}).get('email', '')
-    if not isinstance(email, str) or not re.fullmatch(r'[^\s@]+@cmich\.edu', email, re.IGNORECASE):
+    if not isinstance(email, str) or not email.isascii() or not re.fullmatch(r'[^\s@]+@cmich\.edu', email, re.IGNORECASE):
         raise ValueError('CATS registration requires a cmich.edu email address.')
     # Do not auto-confirm users or mark email verified. Cognito sends verification.
     return event

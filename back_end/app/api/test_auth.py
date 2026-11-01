@@ -21,6 +21,7 @@ from api.main import app
     [
         ("tufts1cr@cmich.edu", True, True),
         ("person@CMICH.EDU", True, True),
+        ("person@cmıch.edu", True, False),
         ("person@cmich.edu.evil.test", True, False),
         ("person@sub.cmich.edu", True, False),
         ("person@cmich.edu", False, False),
