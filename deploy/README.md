@@ -79,10 +79,9 @@ It permits established response traffic so host Nginx can reach the app. The hos
 public address is resolved at provisioning; refresh the rules if it changes.
 Existing Docker services and firewall tables are not replaced.
 
-This remains a shared kernel and filesystem. There is no disk quota yet. Do not
-give classmates unrestricted SSH access or rootless Docker access until disk quotas,
-file-access auditing, and the restricted upload/deployment interface are complete.
-The admin deployment command is NOT that classmate-facing interface. UID filtering
+This remains a shared kernel and filesystem. The entire CATS home is now bounded by an 8 GiB filesystem. Classmates use the
+separate forced-command SSH accounts described in ACCESS.md; they never receive
+unrestricted shell or Docker access. The admin deployment command remains admin-only. UID filtering
 also does not make arbitrary uploaded code safe or protect against kernel exploits.
 Use a separate VM for a strong boundary against hostile code.
 
@@ -91,18 +90,8 @@ PostgreSQL has no published host port. Only the frontend binds to localhost:1808
 Production secrets never enter image builds or Git. CATS backend code necessarily
 can read its own database credentials and data.
 
-## Before public launch
+## Team rollout
 
-- Enable real user authentication/authorization and decide whether anonymous
-  messaging is intentional. Current messages are in memory, not persisted to DB;
-  API restarts erase them. The older demo's Cognito implementation is not installed
-  by these deployment files.
-- Add an off-server backup schedule and verify restoration. `server-backup` creates
-  a private local dump only; it is not off-server protection or an automated policy.
-- Configure DNS and a TLS certificate, then adapt host-nginx.conf.example and run
-  `nginx -t` before reload. No new public app/DB ports are needed.
-- Load-test under the configured resource budget and verify remaining host capacity.
-- Review upload limits, rate limiting, and log retention for actual application use.
-
-Do not enable UFW blindly on this host: existing mail/directory services and AWS
-security groups need a coordinated firewall review.
+See [team access and authentication](ACCESS.md) for the deployed Cognito policy,
+restricted SSH commands, backup schedule, storage limits, and remaining application
+limitations. Public launch is gated on verifying authenticated API responses.

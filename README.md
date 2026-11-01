@@ -10,6 +10,8 @@ Run `make help` (or just `make`) to list every project command.
 - `make release-build CATS_TAG=<id>` then `make deploy SSH_KEY=<path> CATS_TAG=<id>`:
   administrator-only ARM64 release to the server's private localhost port.
 
+For teammate login and restricted deployments, see [team access](deploy/ACCESS.md).
+
 See [deployment and Compose guide](deploy/README.md) for isolation, credentials,
 backups, migrations, and public-launch requirements.
 
