@@ -167,3 +167,9 @@ SSH_KEY ?=
 deploy: ## ADMIN ONLY: upload existing ARM64 images and start server stack
 	@test -n "$(SSH_KEY)" || { echo 'Set SSH_KEY to your administrator SSH key path'; exit 1; }
 	python3 scripts/deploy.py --key "$(SSH_KEY)" --host "$(SSH_HOST)" --tag "$(CATS_TAG)"
+
+.PHONY: team-deploy
+CATS_USER ?=
+TEAM_SSH_KEY ?= $(HOME)/.ssh/id_ed25519
+team-deploy: ## Classmates: upload/deploy API and frontend through the restricted SSH interface
+	python3 scripts/classmate_deploy.py --user "$(CATS_USER)" --key "$(TEAM_SSH_KEY)" --tag "$(CATS_TAG)"

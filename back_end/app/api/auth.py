@@ -114,11 +114,11 @@ def session_status(request: Request):
             raise
         return JSONResponse(
             {"enabled": True, "authenticated": False},
-            headers={"Cache-Control": "no-store"},
+            headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
         )
     return JSONResponse(
         {"enabled": True, "authenticated": True, "email": user["email"]},
-        headers={"Cache-Control": "no-store"},
+        headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
     )
 
 
@@ -168,7 +168,7 @@ def login():
     response = RedirectResponse(
         cfg["domain"] + "/oauth2/authorize?" + query,
         status_code=302,
-        headers={"Cache-Control": "no-store"},
+        headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
     )
     response.set_cookie(
         "__Host-cats_login",
@@ -244,7 +244,9 @@ def callback(request: Request, state: str = "", code: str = ""):
             },
         )
     response = RedirectResponse(
-        cfg["origin"] + "/", status_code=303, headers={"Cache-Control": "no-store"}
+        cfg["origin"] + "/",
+        status_code=303,
+        headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
     )
     response.set_cookie(
         COOKIE,
@@ -279,7 +281,7 @@ def logout(request: Request):
             + "/logout?"
             + urlencode({"client_id": cfg["client"], "logout_uri": cfg["origin"] + "/"})
         },
-        headers={"Cache-Control": "no-store"},
+        headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
     )
     response.delete_cookie(COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
