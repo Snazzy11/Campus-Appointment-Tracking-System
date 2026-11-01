@@ -67,7 +67,7 @@ db-up: ## Start only the database container
 ##@ Status and debugging
 
 health: ## Check that the API is responding
-	curl --fail --show-error --max-time 5 http://localhost:8000/health
+	curl --fail --show-error --max-time 5 http://localhost:8000/api/health
 	@echo
 
 status: ## Show running containers
