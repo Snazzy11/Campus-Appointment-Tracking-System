@@ -48,11 +48,13 @@ make release-build CATS_TAG=my-release-id
 make team-deploy CATS_USER=carter CATS_TAG=my-release-id
 ```
 
+First unlock an encrypted key with `ssh-add ~/.ssh/id_ed25519` in your own terminal.
 Override TEAM_SSH_KEY if needed. Use a new tag per release. Uploads are gzip-compressed,
 limited to 1 GiB compressed, and loaded only by the CATS rootless daemon. Deployments
 are serialized, require ARM64 images, back up the DB first, use immutable image IDs,
 and roll back application images if health checks fail. Root-owned Compose files
-control mounts, networks, ports, credentials, and limits. Database images/migrations
+control mounts, networks, ports, credentials, and limits. Production tables are owned by postgres; the API role has data privileges but no
+schema CREATE privilege or table ownership. Database images/migrations
 remain administrator operations; classmates cannot replace the DB through deploy.
 
 Deployment authority allows changing CATS application behavior and accessing CATS
