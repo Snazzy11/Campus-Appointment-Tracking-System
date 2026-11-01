@@ -1,0 +1,38 @@
+import boto3,json,io,zipfile,time
+from pathlib import Path
+region='us-east-2'; account=boto3.client('sts').get_caller_identity()['Account']
+iam=boto3.client('iam'); lam=boto3.client('lambda',region_name=region); cog=boto3.client('cognito-idp',region_name=region)
+role='cats-cognito-presignup'; function='cats-cmich-presignup'
+try: role_arn=iam.get_role(RoleName=role)['Role']['Arn']
+except iam.exceptions.NoSuchEntityException:
+ role_arn=iam.create_role(RoleName=role,AssumeRolePolicyDocument=json.dumps({'Version':'2012-10-17','Statement':[{'Effect':'Allow','Principal':{'Service':'lambda.amazonaws.com'},'Action':'sts:AssumeRole'}]}))['Role']['Arn']
+logs=boto3.client('logs',region_name=region); group='/aws/lambda/'+function
+try: logs.create_log_group(logGroupName=group)
+except logs.exceptions.ResourceAlreadyExistsException: pass
+logs.put_retention_policy(logGroupName=group,retentionInDays=14)
+iam.put_role_policy(RoleName=role,PolicyName='OwnFunctionLogs',PolicyDocument=json.dumps({'Version':'2012-10-17','Statement':[{'Effect':'Allow','Action':['logs:CreateLogStream','logs:PutLogEvents'],'Resource':f'arn:aws:logs:{region}:{account}:log-group:{group}:*'}]}))
+buffer=io.BytesIO()
+with zipfile.ZipFile(buffer,'w',zipfile.ZIP_DEFLATED) as z: z.write('deploy/cognito/pre_signup.py','pre_signup.py')
+try: arn=lam.get_function(FunctionName=function)['Configuration']['FunctionArn']
+except lam.exceptions.ResourceNotFoundException:
+ for attempt in range(8):
+  try:
+   arn=lam.create_function(FunctionName=function,Runtime='python3.13',Role=role_arn,Handler='pre_signup.handler',Code={'ZipFile':buffer.getvalue()},Timeout=5,MemorySize=128,Description='CATS: require cmich.edu signup addresses; Cognito verifies mailbox ownership')['FunctionArn']; break
+  except lam.exceptions.InvalidParameterValueException:
+   if attempt==7: raise
+   time.sleep(5)
+lam.get_waiter('function_active_v2').wait(FunctionName=function)
+pools=cog.list_user_pools(MaxResults=60)['UserPools']; pool=next((x['Id'] for x in pools if x['Name']=='cats-production'),None)
+if not pool:
+ pool=cog.create_user_pool(PoolName='cats-production',Policies={'PasswordPolicy':{'MinimumLength':12,'RequireUppercase':True,'RequireLowercase':True,'RequireNumbers':True,'RequireSymbols':False}},LambdaConfig={'PreSignUp':arn},AutoVerifiedAttributes=['email'],UsernameAttributes=['email'],UsernameConfiguration={'CaseSensitive':False},AdminCreateUserConfig={'AllowAdminCreateUserOnly':False},AccountRecoverySetting={'RecoveryMechanisms':[{'Priority':1,'Name':'verified_email'}]},DeletionProtection='ACTIVE',UserPoolTier='LITE')['UserPool']['Id']
+try: lam.add_permission(FunctionName=function,StatementId='CognitoCatsOnly',Action='lambda:InvokeFunction',Principal='cognito-idp.amazonaws.com',SourceArn=f'arn:aws:cognito-idp:{region}:{account}:userpool/{pool}',SourceAccount=account)
+except lam.exceptions.ResourceConflictException: pass
+domain='cats-'+account
+try: cog.create_user_pool_domain(Domain=domain,UserPoolId=pool,ManagedLoginVersion=1)
+except cog.exceptions.InvalidParameterException:
+ assert cog.describe_user_pool_domain(Domain=domain)['DomainDescription']['UserPoolId']==pool
+clients=cog.list_user_pool_clients(UserPoolId=pool,MaxResults=60)['UserPoolClients']; client=next((x['ClientId'] for x in clients if x['ClientName']=='cats-web-production'),None)
+if not client:
+ client=cog.create_user_pool_client(UserPoolId=pool,ClientName='cats-web-production',GenerateSecret=False,SupportedIdentityProviders=['COGNITO'],CallbackURLs=['https://cats.tufts.pro/api/auth/callback'],LogoutURLs=['https://cats.tufts.pro/'],AllowedOAuthFlows=['code'],AllowedOAuthScopes=['openid','email'],AllowedOAuthFlowsUserPoolClient=True,PreventUserExistenceErrors='ENABLED',EnableTokenRevocation=True,AccessTokenValidity=60,IdTokenValidity=60,RefreshTokenValidity=1,TokenValidityUnits={'AccessToken':'minutes','IdToken':'minutes','RefreshToken':'days'})['UserPoolClient']['ClientId']
+config={'COGNITO_REGION':region,'COGNITO_USER_POOL_ID':pool,'COGNITO_CLIENT_ID':client,'COGNITO_DOMAIN':f'https://{domain}.auth.{region}.amazoncognito.com','APP_ORIGIN':'https://cats.tufts.pro','AUTH_REQUIRED':'1'}
+Path('work/cognito.json').write_text(json.dumps(config)); print(json.dumps(config))
