@@ -18,6 +18,7 @@ services:
         condition: service_healthy
 
   db:
+    platform: linux/amd64
     image: postgis/postgis:18-3.6
     ports:
       - "5432:5432"
@@ -26,7 +27,7 @@ services:
       POSTGRES_PASSWORD: cats-devonly
       POSTGRES_DB: cats
     volumes:
-      - cats_data:/var/lib/postgresql
+      - cats_data_pg18:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cats -d cats"]
       interval: 5s
@@ -35,4 +36,5 @@ services:
       start_period: 10s
 
 volumes:
-  cats_data:
+  # PostgreSQL 16 data remains in cats_cats_data; migrate via dump/restore.
+  cats_data_pg18:
