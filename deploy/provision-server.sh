@@ -10,7 +10,7 @@ fi
 chmod 700 /home/catsdeploy
 export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l
 apt-get update -qq
-apt-get install -y --no-install-recommends uidmap dbus-user-session nftables
+apt-get install -y --no-install-recommends uidmap dbus-user-session nftables make
 cats_uid=$(id -u catsdeploy)
 install -d -m 750 -o root -g catsdeploy /etc/cats
 install -d -m 755 "/etc/systemd/system/user-${cats_uid}.slice.d"
