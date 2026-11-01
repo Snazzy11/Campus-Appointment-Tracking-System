@@ -32,7 +32,10 @@ def main():
     action, tag = parse_command(sys.argv[1:])
     if os.getuid() != 0:
         sys.exit('Use the forced SSH command')
-    with open('/run/lock/cats-deploy.lock', 'w') as lock:
+    if action == 'status':
+        run_as_app(['/usr/bin/docker', '--context', 'rootless', 'ps', '--filter', 'label=com.docker.compose.project=cats-production', '--format', '{{.Names}} {{.Status}} {{.Ports}}'], timeout=30)
+        return
+    with open('/var/lib/cats-control/deploy.lock', 'w') as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:

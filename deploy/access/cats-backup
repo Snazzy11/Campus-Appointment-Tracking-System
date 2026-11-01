@@ -12,7 +12,7 @@ import tempfile
 
 signal.alarm(240)
 os.umask(0o077)
-lock = open("/run/lock/cats-backup.lock", "w")
+lock = open("/var/lib/cats-control/backup.lock", "w")
 fcntl.flock(lock, fcntl.LOCK_EX)
 root = Path('/var/lib/cats-backups')
 root.mkdir(mode=0o700, exist_ok=True)
