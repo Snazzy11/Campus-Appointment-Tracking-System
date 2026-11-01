@@ -36,10 +36,17 @@ for image in images:
 
 # Stream images directly; no shared upload directory or host-side archive extraction.
 with subprocess.Popen(['docker', 'image', 'save', *images], stdout=subprocess.PIPE) as export:
-    remote('sudo -n runuser -u catsdeploy -- docker --context rootless image load', stdin=export.stdout)
-    export.stdout.close()
-    if export.wait() != 0:
-        raise SystemExit('Image export failed')
+    with subprocess.Popen(['gzip', '-1'], stdin=export.stdout, stdout=subprocess.PIPE) as compressed:
+        export.stdout.close()
+        try:
+            remote('sudo -n runuser -u catsdeploy -- docker --context rootless image load', stdin=compressed.stdout)
+            compressed.stdout.close()
+            if compressed.wait() != 0 or export.wait() != 0:
+                raise SystemExit('Image export/compression failed')
+        finally:
+            for process in (compressed, export):
+                if process.poll() is None:
+                    process.terminate()
 
 remote('sudo -n runuser -u catsdeploy -- make -f /etc/cats/Makefile server-up CATS_TAG=' + shlex.quote(args.tag))
 remote('curl --fail --show-error --max-time 15 http://127.0.0.1:18082/api/health')
