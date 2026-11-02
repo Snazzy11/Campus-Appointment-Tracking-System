@@ -14,6 +14,7 @@ dependencies = [
     "phonenumbers>=9.0.41",
     "psycopg2-binary>=2.9.13",
     "pydantic-extra-types>=2.11.1",
+    "pydantic-settings>=2.16.1",
     "pydantic[email]>=2.14.1",
     "sqlalchemy>=2.1.4",
     "uvicorn>=0.54.0",
@@ -58,6 +59,3 @@ reportMissingImports = "error"
 strict = ["back_end/cats/database"] # Mark database as always using strict analysis
 strictListInference = true # Stricter typing for lists and dictionaries
 strictDictionaryInference = true
-
-[tool.fastapi]
-entrypoint = "dev:app"

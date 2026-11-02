@@ -22,7 +22,7 @@ After installation, `pnpm web` also works from the repository root. See [fronten
 
 
 ## Backend tooling
-The backend uses Python, FastAPI, PostgreSQL, and uv. `make setup` installs Python dependencies and configures Git hooks; it does not install frontend packages. See [backend documentation](back_end/README.md).
+The backend uses Python, FastAPI, PostgreSQL, and uv. `make setup` creates `.env` from `.env.example`, installs backend and frontend dependencies, and configures Git hooks. See [backend documentation](back_end/README.md).
 
 ## Project structure
 - `front_end/`: standalone Expo application, assets, configuration, and pnpm lockfile

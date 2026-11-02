@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -19,7 +19,9 @@ help: ## Show this help message
 
 ##@ Setup
 
-setup: setup-hooks setup-backend setup-frontend ## Install everything and set up git hooks
+setup: setup-hooks setup-env setup-backend setup-frontend ## Install everything and set up git hooks
+setup-env: ## Create .env from .env.example (keeps an existing .env)
+	@test -f .env || (cp .env.example .env && echo "created .env from .env.example")
 setup-frontend: ## Install frontend packages from the lockfile
 	@echo "downloading dependencies for the frontend from lockfiles"
 	pnpm --dir front_end install --frozen-lockfile
@@ -56,7 +58,7 @@ backend-down: ## Stop the API + database containers
 	@echo "shutting down the backend"
 	docker compose down
 
-api-up: ## Run the API locally with auto-reload (no Docker)
+api-up: setup-env ## Run the API locally with auto-reload (no Docker)
 	@echo "starting just the api"
 	uv run uvicorn cats.api.main:app --reload --port 8000
 

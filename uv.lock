@@ -69,6 +69,7 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-extra-types" },
+    { name = "pydantic-settings" },
     { name = "sqlalchemy" },
     { name = "uvicorn" },
 ]
@@ -93,6 +94,7 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.13" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.14.1" },
     { name = "pydantic-extra-types", specifier = ">=2.11.1" },
+    { name = "pydantic-settings", specifier = ">=2.16.1" },
     { name = "sqlalchemy", specifier = ">=2.1.4" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]

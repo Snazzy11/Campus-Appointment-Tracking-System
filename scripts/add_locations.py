@@ -4,14 +4,6 @@ Usage (from the repo root, with the db container running via `make db-up`):
     uv run python scripts/add_locations.py
 """
 
-import os
-
-# database.py reads DATABASE_URL at import time. When running from the host, the db container
-# is reachable on localhost rather than the `db` hostname used inside docker compose.
-os.environ.setdefault(
-    "DATABASE_URL", "postgresql+psycopg2://cats:cats-devonly@localhost:5432/cats"
-)
-
 from cats.database.database import SessionLocal, engine
 from cats.database.models.location import Location
 from geoalchemy2 import Geography, WKTElement
