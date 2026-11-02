@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-api lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
+.PHONY: help setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -36,7 +36,7 @@ setup-hooks: ## Use the repo's git hooks (.githooks/)
 
 app-up: backend-up ## Start backend, run checks, then start the web app
 	$(MAKE) health
-	$(MAKE) test-api
+	$(MAKE) test-backend
 	$(MAKE) status
 	$(MAKE) web-up
 
@@ -78,9 +78,9 @@ logs: ## Follow the API container's logs
 
 ##@ Backend checks
 
-test-api: ## Run backend API tests
-	@echo "runnning api tests..."
-	PYTHONPATH=back_end/app uv run pytest back_end/app/api/test_api.py -v
+test-backend: ## Run backend tests
+	@echo "runnning backend tests..."
+	PYTHONPATH=back_end/app uv run pytest tests/backend
 
 lint: ## Run backend linter (ruff)
 	@echo "Running linter checks"
