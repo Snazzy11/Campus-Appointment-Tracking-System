@@ -3,7 +3,7 @@ import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from 'react
 import { StyleSheet, Text, View } from 'react-native';
 
 // Keep Leaflet out of server rendering; it accesses browser globals on import.
-const MapCanvas = lazy(() => import('../shared/components/MapCanvas'));
+const MapCanvas = lazy(() => import('../features/map/MapCanvas'));
 const subscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
