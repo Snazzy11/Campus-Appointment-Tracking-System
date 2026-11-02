@@ -1,13 +1,13 @@
 import {
-  Tabs,
   TabList,
-  TabTrigger,
-  TabSlot,
-  TabTriggerSlotProps,
   TabListProps,
+  Tabs,
+  TabSlot,
+  TabTrigger,
+  TabTriggerSlotProps,
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 
 import { ExternalLink } from './ExternalLink';
 import { ThemedText } from './ThemedText';
@@ -26,6 +26,10 @@ export default function AppTabs() {
           </TabTrigger>
           <TabTrigger name="locations" href="/locations" asChild>
             <TabButton>Locations</TabButton>
+          </TabTrigger>
+          {/* Fixed name, href, and display text for your OSM Map view */}
+          <TabTrigger name="maps" href="/maps" asChild>
+            <TabButton>OSM Map</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
