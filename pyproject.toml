@@ -1,7 +1,7 @@
 [project]
 name = "cats"
 version = "0.2.0"
-description = "Add your description here"
+description = "Campus Appointment and Tracking System backend"
 readme = "README.md"
 authors = [
     { name = "Parker Scott", email = "98108108+Snazzy11@users.noreply.github.com" }
@@ -15,7 +15,6 @@ dependencies = [
     "psycopg2-binary>=2.9.13",
     "pydantic-extra-types>=2.11.1",
     "pydantic[email]>=2.14.1",
-    "selenium>=4.51.0",
     "sqlalchemy>=2.1.4",
     "uvicorn>=0.54.0",
 ]
@@ -26,6 +25,7 @@ build-backend = "uv_build"
 
 [tool.uv]
 package = false
+default-groups = ["dev", "scraper"]
 
 [dependency-groups]
 dev = [
@@ -33,6 +33,10 @@ dev = [
     "pyright>=1.1.414",
     "pytest>=9.1.1",
     "ruff>=0.17.0",
+]
+# Only needed by scraper/, kept out of the Docker image
+scraper = [
+    "selenium>=4.51.0",
 ]
 
 [tool.pyright]

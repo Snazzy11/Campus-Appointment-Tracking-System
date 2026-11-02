@@ -60,6 +60,7 @@ wheels = [
 name = "cats"
 version = "0.2.0"
 source = { virtual = "." }
+default-groups = ["dev", "scraper"]
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "geoalchemy2" },
@@ -68,7 +69,6 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-extra-types" },
-    { name = "selenium" },
     { name = "sqlalchemy" },
     { name = "uvicorn" },
 ]
@@ -80,6 +80,9 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
+scraper = [
+    { name = "selenium" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -90,7 +93,6 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.13" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.14.1" },
     { name = "pydantic-extra-types", specifier = ">=2.11.1" },
-    { name = "selenium", specifier = ">=4.51.0" },
     { name = "sqlalchemy", specifier = ">=2.1.4" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]
@@ -102,6 +104,7 @@ dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = ">=0.17.0" },
 ]
+scraper = [{ name = "selenium", specifier = ">=4.51.0" }]
 
 [[package]]
 name = "certifi"

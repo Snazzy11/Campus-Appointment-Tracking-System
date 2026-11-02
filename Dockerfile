@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends file \
 COPY pyproject.toml uv.lock ./
 
 # --no-emit-project excludes the local root package from requirements.txt
-RUN uv export --frozen --no-dev --no-emit-project > requirements.txt \
+RUN uv export --frozen --no-default-groups --no-emit-project > requirements.txt \
     && uv pip install --system -r requirements.txt
 
 
