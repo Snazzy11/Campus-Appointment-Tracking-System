@@ -135,6 +135,6 @@ validate-frontend: ## Run all frontend validations
 validate: validate-backend validate-frontend ## Run all backend and frontend checks (what CI runs)
 
 ##@ Scripts
-import-osm:
-	@echo "Filling database with data from 'cmu_greater_area.osm'"
+import-osm: ## Import data from data/cmu_greater_area.osm into database
+	@echo "Filling database with data from 'data/cmu_greater_area.osm'"
 	python3 ./scripts/import_osm_locations.py
