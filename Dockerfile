@@ -1,6 +1,6 @@
 FROM python:3.14.7-slim-trixie
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.13.0 /uv /uvx /bin/
 
 ENV PYTHONUNBUFFERED=1
 
@@ -20,6 +20,9 @@ COPY ./back_end/app/ ./back_end/app/
 COPY ./scripts/ ./scripts/
 COPY ./data/ ./data/
 
+RUN useradd --uid 10001 --create-home cats
+USER cats
+
 EXPOSE 8000
 
-CMD ["uvicorn", "api.main:app", "--app-dir", "back_end/app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api.main:app", "--app-dir", "back_end/app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]

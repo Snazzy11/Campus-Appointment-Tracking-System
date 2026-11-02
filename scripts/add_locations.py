@@ -16,7 +16,7 @@ sys.path.insert(0, str(APP_DIR))
 # database.py reads DATABASE_URL at import time. When running from the host, the db container
 # is reachable on localhost rather than the `db` hostname used inside docker compose.
 os.environ.setdefault(
-    "DATABASE_URL", "postgresql+psycopg2://cats:cats-devonly@localhost:5432/cats"
+    "DATABASE_URL", "postgresql+psycopg2://cats:cats-devonly@localhost:15434/cats"
 )
 
 from database.database import SessionLocal, engine

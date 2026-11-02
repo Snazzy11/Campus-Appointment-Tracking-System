@@ -53,3 +53,6 @@ example
 *node_modules
 # Local pnpm package cache
 .pnpm-store/
+
+/work/
+/backups/

@@ -1,0 +1,13 @@
+[Unit]
+Description=CATS PostgreSQL backup to private S3
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cats-backup
+TimeoutStartSec=300
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/cats-backups /var/lib/cats-control
+PrivateTmp=true

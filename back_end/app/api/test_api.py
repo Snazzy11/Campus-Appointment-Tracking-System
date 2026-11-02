@@ -43,32 +43,32 @@ def client():
 
 
 def test_health(client):
-    response = client.get("/health")
+    response = client.get("/api/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
 
 def test_test(client):
-    response = client.get("/test")
+    response = client.get("/api/test")
     assert response.status_code == 200
     assert response.json() == {"message": "hello wolrd"}
 
 
 def test_stream_routes_registered(client):
-    paths = client.get("/openapi.json").json()["paths"]
-    assert "get" in paths["/counter"]
-    assert "get" in paths["/messaging"]
+    paths = client.get("/api/openapi.json").json()["paths"]
+    assert "get" in paths["/api/counter"]
+    assert "get" in paths["/api/messaging"]
 
 
 def test_post_message(client):
-    response = client.post("/messaging", json={"message": "Hello"})
+    response = client.post("/api/messaging", json={"message": "Hello"})
     assert response.status_code == 200
     assert response.json() == {"status": "sent"}
 
 
 @pytest.mark.parametrize("payload", [None, {}, {"message": 123}])
 def test_invalid_message(client, payload):
-    response = client.post("/messaging", json=payload)
+    response = client.post("/api/messaging", json=payload)
     assert response.status_code == 422
 
 

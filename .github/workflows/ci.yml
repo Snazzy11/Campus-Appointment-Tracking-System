@@ -20,7 +20,7 @@ jobs:
         run: uv sync --locked
 
       - name: Lint, format, and type check
-        run: make validate-backend
+        run: make validate-backend test-api
   frontend_validation:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -58,3 +58,17 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=min
           tags: app:${{ github.sha }}
+
+  container_integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test the complete stack
+        run: make stack-test
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose -p cats-test -f compose.yaml -f compose.build.yaml logs --tail=100
+      - name: Stop test containers
+        if: always()
+        run: make stack-down
