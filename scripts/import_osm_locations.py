@@ -11,7 +11,7 @@ from pathlib import Path
 import add_locations  # noqa: F401
 import osmnx as ox
 from database.database import SessionLocal, engine
-from database.models.location import Location
+from database.models.location import GEO_SRID, Location
 from geoalchemy2 import Geography, WKTElement
 from sqlalchemy import cast, func, select
 from sqlalchemy.orm import Session, aliased
@@ -53,7 +53,7 @@ def main() -> None:
                 continue
             session.add(
                 Location(
-                    name=name, position=WKTElement(f"POINT({lon} {lat})", srid=4326)
+                    name=name, position=WKTElement(f"POINT({lon} {lat})", srid=GEO_SRID)
                 )
             )
             existing.add(name)

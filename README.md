@@ -3,8 +3,10 @@ For specifics on the code for the frontend or backend, look at the other README 
 
 Run `make help` (or just `make`) to list every project command.
 
-## Frontend
+## Starting the system
+Assuming all dependencies are installed, run `make app-up`
 
+## Frontend
 The current Expo frontend lives in `front_end/`. Use Node.js 22.13 or newer and pnpm 11.25.0:
 
 make sure you have npm and pnpm installed first
@@ -18,20 +20,20 @@ pnpm web
 
 After installation, `pnpm web` also works from the repository root. See [frontend setup](front_end/README.md) and the [setup change record](front_end/SETUP_CHANGES.md). The Locations page needs the backend running (`make backend-up`).
 
-## Project structure
 
+## Backend tooling
+The backend uses Python, FastAPI, PostgreSQL, and uv. `make setup` installs Python dependencies and configures Git hooks; it does not install frontend packages. See [backend documentation](back_end/README.md).
+
+## Project structure
 - `front_end/`: standalone Expo application, assets, configuration, and pnpm lockfile
 - `back_end/`: Python backend code
 - `DEMO_PLAYGROUND/`: separate experimental applications
 - `scraper/`: scraping work
 
-## Backend tooling
-
-The backend uses Python, FastAPI, PostgreSQL, and uv. `make setup` installs Python dependencies and configures Git hooks; it does not install frontend packages. See [backend documentation](back_end/README.md).
 
 ## Contributing
-
 Work on a branch and open a pull request against main. Before pushing, run `make validate` (backend and frontend checks; CI runs the same ones). `make format` / `make frontend-format` auto-fix formatting. Use uv for Python dependencies and pnpm for frontend dependencies.
+
 
 ## Ai Policy
 AI-assisted development is acceptable and sometimes encouraged for this project.

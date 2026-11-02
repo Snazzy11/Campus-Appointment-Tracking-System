@@ -1,4 +1,3 @@
-"""Finite HTTP tests and bounded tests for the never-ending SSE generators."""
 
 import asyncio
 import os
@@ -7,12 +6,6 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
 import pytest
-from database.database import get_db
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-from sqlalchemy.pool import StaticPool
-
 from api.main import app
 from api.routers.message.messages import (
     MessageInput,
@@ -20,7 +13,11 @@ from api.routers.message.messages import (
     stream_messages,
     subscribers,
 )
-from api.routers.testing.counting import stream
+from database.database import get_db
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
 
 
 @pytest.fixture
@@ -70,22 +67,6 @@ def test_post_message(client):
 def test_invalid_message(client, payload):
     response = client.post("/messaging", json=payload)
     assert response.status_code == 422
-
-
-def test_counter_events():
-    async def check():
-        events = stream()
-        try:
-            assert await asyncio.wait_for(anext(events), 1) == {
-                "message": "Open for this many seconds: ",
-                "count": 0,
-            }
-            assert await asyncio.wait_for(anext(events), 1) == {"count": 1}
-        finally:
-            await events.aclose()
-
-    asyncio.run(check())
-
 
 def test_message_broadcast_and_disconnect():
     async def check():

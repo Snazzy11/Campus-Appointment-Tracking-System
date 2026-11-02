@@ -1,11 +1,11 @@
 
-# Env variable to make outputs prettier
+# make outputs pretty
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
 .PHONY: help setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-api lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
 
-# Running `make` with no target prints the help below.
+# Running `make` with no args also prints help
 .DEFAULT_GOAL := help
 
 ##@ Help
@@ -34,7 +34,7 @@ setup-hooks: ## Use the repo's git hooks (.githooks/)
 
 ##@ Run
 
-application-up: backend-up ## Start backend, run checks, then start the web app
+app-up: backend-up ## Start backend, run checks, then start the web app
 	$(MAKE) health
 	$(MAKE) test-api
 	$(MAKE) status
