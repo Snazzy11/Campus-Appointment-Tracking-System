@@ -58,7 +58,7 @@ backend-down: ## Stop the API + database containers
 
 api-up: ## Run the API locally with auto-reload (no Docker)
 	@echo "starting just the api"
-	uv run uvicorn api.main:app --app-dir back_end/app --reload --port 8000
+	uv run uvicorn cats.api.main:app --reload --port 8000
 
 db-up: ## Start only the database container
 	@echo "launching db docker instance"
@@ -80,7 +80,7 @@ logs: ## Follow the API container's logs
 
 test-backend: ## Run backend tests
 	@echo "runnning backend tests..."
-	PYTHONPATH=back_end/app uv run pytest tests/backend
+	uv run pytest tests/backend
 
 lint: ## Run backend linter (ruff)
 	@echo "Running linter checks"

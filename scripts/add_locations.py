@@ -5,13 +5,6 @@ Usage (from the repo root, with the db container running via `make db-up`):
 """
 
 import os
-import sys
-from pathlib import Path
-
-# The backend imports modules relative to back_end/app (e.g. `from database.database import Base`),
-# so put that directory on the path before importing anything from it.
-APP_DIR = Path(__file__).resolve().parents[1] / "back_end" / "app"
-sys.path.insert(0, str(APP_DIR))
 
 # database.py reads DATABASE_URL at import time. When running from the host, the db container
 # is reachable on localhost rather than the `db` hostname used inside docker compose.
@@ -19,8 +12,8 @@ os.environ.setdefault(
     "DATABASE_URL", "postgresql+psycopg2://cats:cats-devonly@localhost:5432/cats"
 )
 
-from database.database import SessionLocal, engine
-from database.models.location import Location
+from cats.database.database import SessionLocal, engine
+from cats.database.models.location import Location
 from geoalchemy2 import Geography, WKTElement
 from sqlalchemy import cast, func, select
 from sqlalchemy.orm import Session, aliased

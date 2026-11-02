@@ -5,7 +5,7 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from database.database import Base
+from cats.database.database import Base
 
 
 class USPhone(PhoneNumber):

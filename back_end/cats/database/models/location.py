@@ -2,7 +2,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from database.database import Base
+from cats.database.database import Base
 
 GEO_SRID = 4326
 

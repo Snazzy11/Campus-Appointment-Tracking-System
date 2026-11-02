@@ -61,7 +61,7 @@ Rule of thumb: if only one feature uses it, it goes in that feature's folder. If
 1. You open `/locations`, so Expo Router renders `src/app/locations.tsx`, which just shows `LocationsScreen`.
 2. `LocationsScreen` runs `useEffect`, which calls `getLocations()` when the page first appears.
 3. `getLocations()` (`locationService.ts`) calls `getFromApi('/locations')` (`shared/api.ts`).
-4. That sends `GET http://localhost:8000/locations` to FastAPI (`back_end/app/api/routers/locations/locations.py`).
+4. That sends `GET http://localhost:8000/locations` to FastAPI (`back_end/cats/api/routers/locations/locations.py`).
 5. The JSON response is saved with `setLocations(...)`, the page re-draws, and each location is shown by `LocationItem`.
 
 ## Adding a new feature (example: "events")
@@ -86,7 +86,7 @@ Rule of thumb: if only one feature uses it, it goes in that feature's folder. If
 - **Phones and `localhost`**: on a phone, `localhost` means the phone itself. To test on a phone, create `front_end/.env` with `EXPO_PUBLIC_API_URL=http://<your computer's LAN IP>:8000` and restart `pnpm web`/`pnpm start`. `.env` changes only apply after a restart.
 - **Adding packages**: use `pnpm exec expo install <package>` (not `pnpm add`) so Expo picks versions that work with our Expo SDK. Don't use npm in this project.
 - **Data looks wrong?** Check the backend first with `curl localhost:8000/locations` or http://localhost:8000/docs. If the API is right, the bug is in the frontend.
-- **CORS errors in the console**: the backend only allows requests from `localhost:8081`; see `allow_origins` in `back_end/app/api/main.py`.
+- **CORS errors in the console**: the backend only allows requests from `localhost:8081`; see `allow_origins` in `back_end/cats/api/main.py`.
 
 ## Other files
 

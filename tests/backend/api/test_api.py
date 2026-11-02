@@ -6,14 +6,14 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
 import pytest
-from api.main import app
-from api.routers.message.messages import (
+from cats.api.main import app
+from cats.api.routers.message.messages import (
     MessageInput,
     post_message,
     stream_messages,
     subscribers,
 )
-from database.database import get_db
+from cats.database.database import get_db
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
