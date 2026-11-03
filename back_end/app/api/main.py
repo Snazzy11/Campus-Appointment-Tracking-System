@@ -5,9 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers.auth.auth import enabled, require_user
 from api.routers.auth.auth import router as auth_router
+from api.routers.campus_map.map import router as campus_map_router
 from api.routers.health.health import router as health_router
 from api.routers.locations.locations import router as locations_router
-from api.routers.map_editor.editor import router as map_editor_router
 from api.routers.message.messages import router as messaging_router
 from api.routers.testing.test import router as test_router
 from api.routers.user.user import router as user_router
@@ -27,12 +27,12 @@ app.add_middleware(
     ).split(","),
     allow_credentials=True,
     allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "X-Map-Editor-Token"],
+    allow_headers=["Content-Type"],
 )
 
 
 app.include_router(auth_router)
-app.include_router(map_editor_router)
+app.include_router(campus_map_router)
 
 # this one says all is well in the world becuase it is
 app.include_router(health_router, prefix="/api")
