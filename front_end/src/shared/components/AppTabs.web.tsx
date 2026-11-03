@@ -7,13 +7,14 @@ import {
   TabTriggerSlotProps,
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, StyleSheet, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ExternalLink } from './ExternalLink';
 import { ThemedText } from './ThemedText';
 import { ThemedView } from './ThemedView';
 
 import { Colors, MaxContentWidth, Spacing } from '@/shared/constants/theme';
+import { useColorScheme } from '@/shared/hooks/useColorScheme';
 
 export default function AppTabs() {
   return (

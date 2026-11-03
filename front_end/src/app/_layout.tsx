@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import { useColorScheme } from 'react-native';
+import { useColorScheme } from '@/shared/hooks/useColorScheme';
 
 import AppTabs from '@/shared/components/AppTabs';
 

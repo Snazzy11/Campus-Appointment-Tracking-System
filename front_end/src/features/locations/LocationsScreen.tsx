@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, Text } from 'react-native';
+import { FlatList } from 'react-native';
+
+import { Screen } from '@/shared/components/Screen';
+import { ThemedText } from '@/shared/components/ThemedText';
 
 import { LocationItem } from './LocationItem';
 import { getLocations } from './locationService';
@@ -27,12 +30,15 @@ export function LocationsScreen() {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 48 }}>
-      {errorMessage !== '' && <Text>{errorMessage}</Text>}
+    <Screen>
+      {errorMessage !== '' && <ThemedText>{errorMessage}</ThemedText>}
 
-      {locations.map((location) => (
-        <LocationItem key={location.id} location={location} />
-      ))}
-    </ScrollView>
+      {/* FlatList only draws the rows that are on screen, so long lists stay fast on phones. */}
+      <FlatList
+        data={locations}
+        keyExtractor={(location) => String(location.id)}
+        renderItem={({ item }) => <LocationItem location={item} />}
+      />
+    </Screen>
   );
 }

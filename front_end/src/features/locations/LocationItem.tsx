@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { ThemedText } from '@/shared/components/ThemedText';
 
 import { Location } from './types';
 
@@ -9,8 +9,8 @@ type LocationItemProps = {
 // Shows a single location. Used once per row by LocationsScreen.
 export function LocationItem({ location }: LocationItemProps) {
   return (
-    <Text>
+    <ThemedText>
       {location.name} ({location.latitude}, {location.longitude})
-    </Text>
+    </ThemedText>
   );
 }
