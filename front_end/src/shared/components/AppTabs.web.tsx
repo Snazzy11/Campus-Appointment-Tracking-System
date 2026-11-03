@@ -31,6 +31,11 @@ export default function AppTabs() {
           <TabTrigger name="maps" href="/maps" asChild>
             <TabButton>OSM Map</TabButton>
           </TabTrigger>
+          {process.env.EXPO_PUBLIC_CATS_MAP_EDITOR === '1' && (
+            <TabTrigger name="map-editor" href="/map-editor" asChild>
+              <TabButton>Map editor</TabButton>
+            </TabTrigger>
+          )}
         </CustomTabList>
       </TabList>
     </Tabs>

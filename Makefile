@@ -183,3 +183,11 @@ CATS_USER ?=
 TEAM_SSH_KEY ?= $(HOME)/.ssh/id_ed25519
 team-deploy: ## Classmates: upload/deploy API and frontend through the restricted SSH interface
 	python3 scripts/classmate_deploy.py --user "$(CATS_USER)" --key "$(TEAM_SSH_KEY)" --tag "$(CATS_TAG)"
+
+.PHONY: map-editor
+map-editor: ## Start the local OSM editor at http://localhost:8081/map-editor
+	CATS_MAP_EDITOR=1 EXPO_PUBLIC_CATS_MAP_EDITOR=1 AUTH_REQUIRED=0 $(MAKE) dev
+
+.PHONY: test-map-editor
+test-map-editor: ## Check OSM geometry and XML editing without changing campus data
+	node tests/frontend/osm-editor.cjs

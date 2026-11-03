@@ -40,7 +40,7 @@ jobs:
         run: make setup-frontend
 
       - name: Lint, format, and type check
-        run: make validate-frontend
+        run: make validate-frontend test-map-editor
   build:
     needs: backend_validation
     runs-on: ubuntu-latest
