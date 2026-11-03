@@ -7,6 +7,7 @@ import {
   TabTriggerSlotProps,
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 
 import { ExternalLink } from './ExternalLink';
@@ -16,6 +17,22 @@ import { ThemedView } from './ThemedView';
 import { Colors, MaxContentWidth, Spacing } from '@/shared/constants/theme';
 
 export default function AppTabs() {
+  const [canEdit, setCanEdit] = useState(false);
+  useEffect(() => {
+    let active = true;
+    const api = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
+    void fetch(`${api}/map/permissions`, { credentials: 'include' })
+      .then(async (response) => {
+        if (response.ok) {
+          const data = await response.json();
+          if (active) setCanEdit(data.can_edit === true);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
@@ -31,10 +48,12 @@ export default function AppTabs() {
           <TabTrigger name="maps" href="/maps" asChild>
             <TabButton>OSM Map</TabButton>
           </TabTrigger>
-          {process.env.EXPO_PUBLIC_CATS_MAP_EDITOR === '1' && (
+          {canEdit ? (
             <TabTrigger name="map-editor" href="/map-editor" asChild>
               <TabButton>Map editor</TabButton>
             </TabTrigger>
+          ) : (
+            <TabTrigger name="map-editor" href="/map-editor" style={{ display: 'none' }} />
           )}
         </CustomTabList>
       </TabList>

@@ -25,7 +25,7 @@ function onEachFeature(feature: any, layer: any) {
   heading.textContent = name;
   popupContent.appendChild(heading);
   const identifier = document.createElement('div');
-  identifier.textContent = `OSM: ${feature.id ?? properties.id ?? 'unknown'}`;
+  identifier.textContent = `Feature: ${feature.id ?? properties.id ?? 'unknown'}`;
   popupContent.appendChild(identifier);
   for (const [key, value] of Object.entries(tags)) {
     const row = document.createElement('div');
@@ -33,6 +33,39 @@ function onEachFeature(feature: any, layer: any) {
     popupContent.appendChild(row);
   }
   layer.bindPopup(popupContent);
+  let loaded = false;
+  layer.on('popupopen', async () => {
+    if (loaded) return;
+    const api = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
+    try {
+      const response = await fetch(`${api}/map/features/${feature.id}`, { credentials: 'include' });
+      if (!response.ok) throw new Error('Could not load feature details');
+      const detail = await response.json();
+      const content = document.createElement('div');
+      const title = document.createElement('strong');
+      title.textContent = detail.tags.name || name;
+      content.appendChild(title);
+      for (const [key, value] of Object.entries(detail.tags)) {
+        const row = document.createElement('div');
+        row.textContent = `${key}: ${String(value)}`;
+        content.appendChild(row);
+      }
+      if (detail.building_id) {
+        const row = document.createElement('div');
+        row.textContent = `Building ID: ${detail.building_id}`;
+        content.appendChild(row);
+      }
+      const id = document.createElement('div');
+      id.textContent = `Feature: ${detail.id}`;
+      content.appendChild(id);
+      layer.setPopupContent(content);
+      loaded = true;
+    } catch {
+      const error = document.createElement('div');
+      error.textContent = 'Details unavailable. Close and reopen to retry.';
+      layer.setPopupContent(error);
+    }
+  });
 }
 
 // A stable component preserves the map layer across parent renders.
