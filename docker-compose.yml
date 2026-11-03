@@ -4,7 +4,9 @@ services:
   app:
     build: .
     ports:
-      - "127.0.0.1:8000:8000"
+      # Listens on every network interface (not just 127.0.0.1) so phones and emulators on
+      # the same Wi-Fi can reach the API. Anyone on your network can reach it while it runs.
+      - "8000:8000"
     environment:
       DATABASE_URL: "postgresql+psycopg2://cats:cats-devonly@db:5432/cats"
     healthcheck:
