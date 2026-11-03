@@ -3,6 +3,7 @@ import L from 'leaflet';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, Marker, Polyline, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { MapDocument, type Position, type Tags } from '../mapDocument';
+import BuildingAutocomplete from './BuildingAutocomplete';
 
 const api = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 type Mode = 'select' | 'point' | 'building' | 'parking' | 'area';
@@ -457,29 +458,16 @@ export default function OsmEditor() {
                         Link status: {model.object(selected).link_status || 'pending save'}. Choose
                         a stable building ID; names may change.
                       </p>
-                      <select
-                        aria-label="Entrance building"
-                        value={model.object(selected).building_id || ''}
+                      <BuildingAutocomplete
+                        key={`${selected}:${model.object(selected).building_id || ''}`}
+                        buildings={Array.from(model.objects.values()).filter(
+                          (obj) =>
+                            obj.type !== 'node' && obj.tags.building && obj.tags.building !== 'no',
+                        )}
+                        value={model.object(selected).building_id}
                         disabled={pendingTags}
-                        style={{ width: '100%' }}
-                        onChange={(event) =>
-                          edit((next) => next.linkBuilding(selected, event.target.value || null))
-                        }
-                      >
-                        <option value="">Unassigned — review required</option>
-                        {Array.from(model.objects.values())
-                          .filter(
-                            (obj) =>
-                              obj.type !== 'node' &&
-                              obj.tags.building &&
-                              obj.tags.building !== 'no',
-                          )
-                          .map((obj) => (
-                            <option key={obj.id} value={obj.id}>
-                              {obj.tags.name || 'Unnamed building'} · {obj.osm_id ?? obj.id}
-                            </option>
-                          ))}
-                      </select>
+                        onSelect={(id) => edit((next) => next.linkBuilding(selected, id))}
+                      />
                     </div>
                   )}
                 <h4>Tags</h4>
