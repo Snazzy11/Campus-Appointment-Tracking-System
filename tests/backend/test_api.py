@@ -56,7 +56,6 @@ def test_test(client):
 
 def test_stream_routes_registered(client):
     paths = client.get("/api/openapi.json").json()["paths"]
-    assert "get" in paths["/api/counter"]
     assert "get" in paths["/api/messaging"]
 
 

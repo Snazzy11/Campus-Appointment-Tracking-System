@@ -2,6 +2,15 @@
 API Docs are at http://127.0.0.1:8000/api/docs
 ## Local development
 
+`make dev` starts the development database and applies the additive users-table
+migration before starting Expo and FastAPI. For an already-running development
+database, run `make db-migrate` to apply it without restarting or deleting data.
+`make stack-test` applies the same migration to its separate test database.
+Changing a SQLAlchemy model does not update an existing database schema: future
+schema changes need migrations too. Production migrations are administrator-run;
+apply `deploy/migrations/003_users.sql` as `postgres` before deploying the user
+endpoint. The application receives row and sequence access, not table ownership.
+
 From the repository root, start the database once with `make db-up`, then run:
 
 ```sh

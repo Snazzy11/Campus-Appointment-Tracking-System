@@ -7,13 +7,12 @@ from types import SimpleNamespace
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 import jwt
 import pytest
+from api.main import app
+from api.routers.auth import auth
 from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
-
-from api import auth
-from api.main import app
 
 
 @pytest.mark.parametrize(

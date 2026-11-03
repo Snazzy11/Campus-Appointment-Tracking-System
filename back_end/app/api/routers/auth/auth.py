@@ -79,7 +79,7 @@ def digest(value):
 
 def require_user(request: Request):
     if not enabled():
-        return {"sub": "local-development", "email": "local-development"}
+        return {"sub": "local-development", "email": "developer@example.test"}
     if (
         request.method not in ("GET", "HEAD", "OPTIONS")
         and request.headers.get("origin") != settings()["origin"]

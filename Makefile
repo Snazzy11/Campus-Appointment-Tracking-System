@@ -63,9 +63,15 @@ api-up: ## Run FastAPI with reload against the local development DB
 
 db-up: ## Build and start only the local development database on localhost:15434
 	$(DEV_COMPOSE) up --build -d --wait db
+	$(MAKE) db-migrate
+
+.PHONY: db-migrate
+db-migrate: ## Apply the users schema to the running local development DB without resetting data
+	$(DEV_COMPOSE) exec -T db psql -U postgres -d cats -v ON_ERROR_STOP=1 < deploy/migrations/003_users.sql
 
 stack-test: ## Build and start the complete stack at http://localhost:18082
 	$(TEST_COMPOSE) up --build -d --wait
+	$(TEST_COMPOSE) exec -T db psql -U postgres -d cats -v ON_ERROR_STOP=1 < deploy/migrations/003_users.sql
 	$(MAKE) stack-check
 
 stack-check: ## Verify frontend, API routing, and PostGIS-backed locations
@@ -109,7 +115,7 @@ logs: ## Follow complete local container stack logs
 
 test-api: ## Run backend API tests
 	@echo "runnning api tests..."
-	PYTHONPATH=back_end/app uv run pytest back_end/app/api/test_api.py back_end/app/api/test_auth.py tests -v
+	PYTHONPATH=back_end/app uv run pytest tests -v
 
 lint: ## Run backend linter (ruff)
 	@echo "Running linter checks"
@@ -160,6 +166,10 @@ validate-frontend: ## Run all frontend validations
 ##@ All checks
 
 validate: validate-backend validate-frontend ## Run all backend and frontend checks (what CI runs)
+
+.PHONY: db-cli
+db-cli: ## Open psql in the local development database
+	$(DEV_COMPOSE) exec db psql -U cats -d cats
 
 .PHONY: deploy
 SSH_HOST ?= ubuntu@hacker.tufts.me
