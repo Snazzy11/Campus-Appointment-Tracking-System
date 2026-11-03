@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -135,6 +135,7 @@ validate-frontend: ## Run all frontend validations
 validate: validate-backend validate-frontend ## Run all backend and frontend checks (CI runs these plus test-backend)
 
 ##@ Scripts
-import-osm: ## Import data from data/cmu_greater_area.osm into database
-	@echo "Filling database with data from 'data/cmu_greater_area.osm'"
-	python3 ./scripts/import_osm_locations.py
+
+import-osm: setup-env db-up ## Start the db if needed, then import data/greater_cmu_area.osm (creates the locations table)
+	@echo "Filling database with data from 'data/greater_cmu_area.osm'"
+	uv run python3 ./scripts/import_osm_locations.py
