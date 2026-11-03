@@ -9,17 +9,41 @@ export default function AuthGate({ children }: { children: ReactNode }) {
   const [error, setError] = useState(false);
   useEffect(() => {
     let active = true;
+    let initialized = false;
+    let checking = false;
     async function check() {
+      if (checking) return;
+      checking = true;
       try {
         const response = await fetch(`${api}/auth/session`, { credentials: 'include' });
         if (!response.ok) throw new Error('Session check failed');
         const data: Session = await response.json();
+
+        if (!data.authenticated) initialized = false;
+        if (data.authenticated && !initialized) {
+          const userResponse = await fetch(`${api}/user/store-user`, {
+            method: 'POST',
+            credentials: 'include',
+          });
+
+          if (!userResponse.ok) {
+            throw new Error('Could not initialize your account');
+          }
+
+          initialized = true;
+        }
+
         if (active) {
           setSession(data);
           setError(false);
         }
       } catch {
-        if (active) setError(true);
+        if (active) {
+          setSession(null);
+          setError(true);
+        }
+      } finally {
+        checking = false;
       }
     }
     void check();
@@ -35,11 +59,12 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         <h1>CATS</h1>
         <p>
           {error
-            ? 'Unable to check your session. Please reload and try again.'
+            ? 'Unable to initialize your account or check your session. Please try again.'
             : session
               ? 'Sign in or create an account with your verified cmich.edu email.'
               : 'Checking your session…'}
         </p>
+        {error && <button onClick={() => window.location.reload()}>Try again</button>}
         {session && (
           <button onClick={() => window.location.assign(`${api}/auth/login`)}>
             Sign in with Cognito
