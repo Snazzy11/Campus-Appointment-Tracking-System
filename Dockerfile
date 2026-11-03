@@ -1,13 +1,11 @@
 FROM python:3.14.7-slim-trixie
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+# Pinned so builds are reproducible; bump alongside the uv version the team uses locally
+COPY --from=ghcr.io/astral-sh/uv:0.13.4 /uv /uvx /bin/
 
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /cats-backend
-
-RUN apt-get update && apt-get install -y --no-install-recommends file \
-    && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml uv.lock README.md ./
 

@@ -132,7 +132,7 @@ validate-frontend: ## Run all frontend validations
 
 ##@ All checks
 
-validate: validate-backend validate-frontend ## Run all backend and frontend checks (what CI runs)
+validate: validate-backend validate-frontend ## Run all backend and frontend checks (CI runs these plus test-backend)
 
 ##@ Scripts
 import-osm: ## Import data from data/cmu_greater_area.osm into database
