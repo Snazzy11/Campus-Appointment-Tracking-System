@@ -2,10 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urllib.parse import urljoin
 import time
 from dataclasses import dataclass
 from selenium.common.exceptions import NoSuchElementException
+import json
+from dataclasses import asdict
 
 ORGANIZATIONS_URL = "https://engage.apps.cmich.edu/organizations"
 
@@ -18,8 +19,7 @@ options.add_argument("--window-size=1920,1080")
 driver = webdriver.Chrome(options=options)
 
 organizations = {}
-# RSOs = []
-RSOs = {}
+RSOs = []
 
 
 def addRSOsToDatabase():
@@ -68,8 +68,6 @@ def addEmail(rso):
         if not email_element.text.__contains__("P: "):
             email_contact = email_element.text.split("E: ")[1]
             rso.setEmailContact(email_contact)
-
-            rso.setEmailContact("None")
     except NoSuchElementException:
         print(f"{rso.id} STATUS: Email wasn't found")
         rso.setEmailContact("None")
@@ -179,8 +177,8 @@ def main():
             id_count = id_count + 1
 
             # TODO: implement sqlachemy to make sqlalchemy objects
-            # RSOs.append(RSO(id_count, name, desc, href))
-            RSOs[id_count] = RSO(id_count, name, desc, href)
+            RSOs.append(RSO(id_count, name, desc, href))
+            # RSOs[id_count] = RSO(id_count, name, desc, href)
 
         print(
             f"Found {len(organizations)} organization URLs and created {len(RSOs)} RSO objects\n"
@@ -190,18 +188,21 @@ def main():
         failed_attempt_count = 0
 
         # after revealing all url links, it goes through each one and get info from them. if they're found then add them to the rso object. if not, then they will be empty strings
-        for rso in RSOs.values():
+        for rso in RSOs:
             scrapeRSO(rso)
 
         # success_rate = round(float(successful_attempt_count/len(RSOs))) * 100
         # print("\n\n\n_______Summary_______\nSuccessful contact count: " + str(successful_attempt_count) + "\nFailure contact count: " + str(failed_attempt_count) + "\nSuccess rate: " + str(round(float(successful_attempt_count/len(RSOs)), 2)))
 
-        for rso in RSOs.values():
+        for rso in RSOs:
             print(str(rso))
 
     finally:
         driver.quit()
-
+        
+        # writes info from scraper to json file in data folder
+        with open('rso_info.json', 'w') as fp:
+            json.dump([asdict(rso) for rso in RSOs], fp)
 
 if __name__ == "__main__":
     main()
