@@ -108,6 +108,8 @@ def test_anonymous_requests_are_rejected(monkeypatch):
     monkeypatch.setenv("AUTH_REQUIRED", "1")
     with TestClient(app) as client:
         assert client.get("/api/map/features").status_code == 401
+        assert client.get("/api/map/search?q=East").status_code == 401
+        assert client.get("/api/map/route?start=a&destination=b").status_code == 401
         assert client.get("/api/map/editor").status_code == 401
 
 

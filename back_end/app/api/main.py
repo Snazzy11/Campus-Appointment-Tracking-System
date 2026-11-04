@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routers.auth.auth import enabled, require_user
 from api.routers.auth.auth import router as auth_router
 from api.routers.campus_map.map import router as campus_map_router
+from api.routers.campus_map.navigation import router as navigation_router
 from api.routers.health.health import router as health_router
 from api.routers.locations.locations import router as locations_router
 from api.routers.message.messages import router as messaging_router
@@ -33,6 +34,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(campus_map_router)
+app.include_router(navigation_router)
 
 # this one says all is well in the world becuase it is
 app.include_router(health_router, prefix="/api")

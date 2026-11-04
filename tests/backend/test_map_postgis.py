@@ -2,6 +2,7 @@
 Run with MAP_TEST_DATABASE_URL pointing to a local administrator connection.
 """
 
+import json
 import os
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")
@@ -9,12 +10,9 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import Session
-
 from api.main import app
 from database.database import get_db
+from fastapi.testclient import TestClient
 from services.campus_map import (
     geometries,
     normalize_links,
@@ -22,6 +20,8 @@ from services.campus_map import (
     persist,
     stable_id,
 )
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import Session
 from test_campus_map import SOURCE
 
 pytestmark = pytest.mark.skipif(
@@ -169,3 +169,77 @@ def test_create_and_delete_point(postgres_client):
         == 200
     )
     assert client.get("/api/map/features/" + key).status_code == 404
+
+
+def test_navigation_search_exact_alias_and_six_results(postgres_client):
+    client, engine = postgres_client
+    with engine.begin() as db:
+        for index, name in enumerate(
+            [
+                "East Administrative Building",
+                "East",
+                "East Hall",
+                "East A",
+                "East B",
+                "East C",
+                "East D",
+                "East E",
+            ]
+        ):
+            key = f"node/{uuid4()}"
+            db.execute(
+                text(
+                    "INSERT INTO map_features(id,object_type,tags,source_tags,geom) VALUES (:id,'node',CAST(:tags AS jsonb),'{}',ST_SetSRID(ST_Point(-84,43),4326))"
+                ),
+                {"id": key, "tags": json.dumps({"name": name})},
+            )
+            db.execute(
+                text(
+                    "INSERT INTO map_names(feature_id,kind,name) VALUES (:id,'name',:name)"
+                ),
+                {"id": key, "name": name},
+            )
+            if index == 1:
+                db.execute(
+                    text(
+                        "INSERT INTO map_names(feature_id,kind,name) VALUES (:id,'alt_name','East Alias')"
+                    ),
+                    {"id": key},
+                )
+    response = client.get("/api/map/search", params={"q": "East"})
+    assert response.status_code == 200, response.text
+    results = response.json()["results"]
+    assert len(results) == 6
+    assert results[0]["name"] == "East"
+    assert len({item["id"] for item in results}) == 6
+    assert (
+        client.get("/api/map/search", params={"q": "East Alias"}).json()["results"][0][
+            "name"
+        ]
+        == "East"
+    )
+
+
+def test_navigation_route_api(postgres_client):
+    client, _ = postgres_client
+    response = client.get(
+        "/api/map/route",
+        params={"start": stable_id("node", 2), "destination": stable_id("way", 4)},
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["properties"]["destination_node"] == stable_id("node", 1)
+    assert response.json()["properties"]["revision"] == 1
+    assert (
+        client.get(
+            "/api/map/route",
+            params={"start": "missing", "destination": stable_id("way", 4)},
+        ).status_code
+        == 404
+    )
+    assert (
+        client.get(
+            "/api/map/route",
+            params={"start": stable_id("node", 5), "destination": stable_id("way", 4)},
+        ).status_code
+        == 422
+    )
