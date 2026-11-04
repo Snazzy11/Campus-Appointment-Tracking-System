@@ -12,7 +12,7 @@ class USPhone(PhoneNumber):
 
 class RSOBase(BaseModel):
     __tablename__ = "rsos"
-    
+
     id: int
     name: str = Field(min_length=1, max_length=255)
     description: str = Field(min_length=1, max_length=255)
@@ -20,10 +20,10 @@ class RSOBase(BaseModel):
     email: EmailStr | Literal["None"] = "None"
     phone: USPhone | Literal["None"] = "None"
     location: str = Field(max_length=255)
-    
+
     def set_email(self, new_email: str) -> None:
         self.email = new_email
-    
+
     @field_validator("link")
     @classmethod
     def validate_link(cls, link: str) -> str:
