@@ -5,9 +5,8 @@ WORKDIR /app
 COPY front_end/package.json front_end/pnpm-lock.yaml front_end/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY front_end/ ./
-# Materialize the repository symlink so exported maps survive image packaging.
-RUN rm public/data
-COPY data/ ./public/data/
+# Campus geometry is read from authenticated APIs, not bundled into the web image.
+RUN rm -rf public/data
 ENV EXPO_PUBLIC_API_URL=/api CI=1 EXPO_NO_TELEMETRY=1
 RUN pnpm build
 FROM nginxinc/nginx-unprivileged:stable-alpine

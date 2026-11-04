@@ -6,3 +6,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 COPY deploy/postgres/init.sh /docker-entrypoint-initdb.d/10-cats.sh
 COPY deploy/migrations/003_users.sql /docker-entrypoint-initdb.d/20-users.sql
+COPY deploy/migrations/004_map.sql /docker-entrypoint-initdb.d/30-map.sql

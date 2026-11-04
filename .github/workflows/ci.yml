@@ -40,7 +40,7 @@ jobs:
         run: make setup-frontend
 
       - name: Lint, format, and type check
-        run: make validate-frontend
+        run: make validate-frontend test-map-editor
   build:
     needs: backend_validation
     runs-on: ubuntu-latest
@@ -72,3 +72,21 @@ jobs:
       - name: Stop test containers
         if: always()
         run: make stack-down
+
+  map_database_integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Start PostGIS and import the local map
+        run: make db-up
+      - name: Verify map queries, permissions, transactions, and audit history
+        env:
+          MAP_TEST_DATABASE_URL: postgresql+psycopg2://postgres:local-admin-only@127.0.0.1:15434/cats
+          PYTHONPATH: back_end/app
+        run: uv run pytest tests/backend/test_map_postgis.py -v
+      - name: Stop local database
+        if: always()
+        run: make dev-down

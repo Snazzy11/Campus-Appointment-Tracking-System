@@ -14,6 +14,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:?Production app password is required}
       CORS_ORIGINS: https://cats.tufts.pro
       AUTH_REQUIRED: "1"
+      CATS_MAP_EDITOR_EMAILS: ${CATS_MAP_EDITOR_EMAILS:-tufts1cr@cmich.edu}
       APP_ORIGIN: https://cats.tufts.pro
       COGNITO_REGION: ${COGNITO_REGION:?Required}
       COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID:?Required}

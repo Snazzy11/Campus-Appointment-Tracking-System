@@ -1,4 +1,3 @@
-import osmtogeojson from 'osmtogeojson';
 import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -15,49 +14,56 @@ export default function OsmMapScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/data/greater_cmu_area.osm')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`);
-        }
-        return response.text();
-      })
-      .then((xmlString) => {
-        if (
-          !xmlString ||
-          xmlString.trim().startsWith('<!DOCTYPE') ||
-          xmlString.trim().startsWith('<html')
-        ) {
-          throw new Error('Received HTML page instead of OSM XML. Check file path/symlink.');
-        }
-
-        // Use browser's native DOMParser to parse OSM XML into a Document
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
-
-        // Check for parsing errors
-        const parserError = xmlDoc.getElementsByTagName('parsererror');
-        if (parserError.length > 0) {
-          throw new Error('Failed to parse XML structure from OSM file.');
-        }
-
-        // Convert the XML Document to GeoJSON
-        const convertedGeoJson = osmtogeojson(xmlDoc);
-        setGeoJson(convertedGeoJson);
+    const controller = new AbortController();
+    const api = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
+    let generation = 0;
+    async function load() {
+      const current = ++generation;
+      const features: any[] = [];
+      let after = '';
+      do {
+        const response = await fetch(
+          `${api}/map/features?limit=2000&after=${encodeURIComponent(after)}`,
+          { credentials: 'include', signal: controller.signal },
+        );
+        if (!response.ok)
+          throw new Error('Could not load campus map. Check your connection and login.');
+        const page = await response.json();
+        features.push(...page.features);
+        after = page.next || '';
+      } while (after);
+      if (!controller.signal.aborted && current === generation) {
+        setGeoJson({ type: 'FeatureCollection', features });
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error loading OSM file:', err);
-        setError(err.message);
+      }
+    }
+    void load().catch((error) => {
+      if (!controller.signal.aborted) {
+        setError(String(error));
         setLoading(false);
+      }
+    });
+    const refresh = () => {
+      setLoading(true);
+      void load().catch((error) => {
+        if (!controller.signal.aborted) {
+          setError(String(error));
+          setLoading(false);
+        }
       });
+    };
+    window.addEventListener('cats-map-updated', refresh);
+    return () => {
+      controller.abort();
+      window.removeEventListener('cats-map-updated', refresh);
+    };
   }, []);
 
   if (!isClient) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>CMU Area OSM Viewer</Text>
+          <Text style={styles.headerTitle}>Campus Map</Text>
         </View>
       </View>
     );
@@ -66,8 +72,8 @@ export default function OsmMapScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>CMU Area OSM Viewer</Text>
-        {loading && <Text style={styles.statusText}>Loading .osm file...</Text>}
+        <Text style={styles.headerTitle}>Campus Map</Text>
+        {loading && <Text style={styles.statusText}>Loading campus map…</Text>}
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
 
@@ -81,6 +87,7 @@ export default function OsmMapScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   header: {
+    minHeight: 78,
     padding: 14,
     backgroundColor: '#2c3e50',
     flexDirection: 'row',

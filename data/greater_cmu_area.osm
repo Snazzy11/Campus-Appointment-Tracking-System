@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<osm version="0.6" generator="openstreetmap-cgimap 2.1.0 (1292 spike-06.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
+<?xml version="1.0" encoding="UTF-8"?><osm version="0.6" generator="openstreetmap-cgimap 2.1.0 (1292 spike-06.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
  <bounds minlat="43.5642900" minlon="-84.7828700" maxlat="43.6050100" maxlon="-84.7465700"/>
  <node id="154074077" visible="true" version="15" changeset="168976918" timestamp="2025-07-15T17:32:02Z" user="fmvaldezg84" uid="17723306" lat="43.5976460" lon="-84.7668495">
   <tag k="capital" v="6"/>
@@ -2556,8 +2555,8 @@
  <node id="2506041146" visible="true" version="1" changeset="18504402" timestamp="2013-10-23T14:54:10Z" user="Sam L" uid="991012" lat="43.5877001" lon="-84.7726322"/>
  <node id="2506041147" visible="true" version="2" changeset="51552051" timestamp="2017-08-29T17:51:23Z" user="JaysonOlivera" uid="6255902" lat="43.5883759" lon="-84.7731572"/>
  <node id="2506041148" visible="true" version="2" changeset="51552051" timestamp="2017-08-29T17:51:22Z" user="JaysonOlivera" uid="6255902" lat="43.5878739" lon="-84.7728241">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Music Building"/></node>
  <node id="2506041149" visible="true" version="2" changeset="51552051" timestamp="2017-08-29T17:51:23Z" user="JaysonOlivera" uid="6255902" lat="43.5880607" lon="-84.7733167"/>
  <node id="2506041150" visible="true" version="2" changeset="51552051" timestamp="2017-08-29T17:51:22Z" user="JaysonOlivera" uid="6255902" lat="43.5879553" lon="-84.7723578"/>
  <node id="2506041151" visible="true" version="2" changeset="51552051" timestamp="2017-08-29T17:51:23Z" user="JaysonOlivera" uid="6255902" lat="43.5878158" lon="-84.7729155"/>
@@ -2584,8 +2583,8 @@
  <node id="2662160263" visible="true" version="2" changeset="51552051" timestamp="2017-08-29T17:51:22Z" user="JaysonOlivera" uid="6255902" lat="43.5880731" lon="-84.7720660"/>
  <node id="2662160264" visible="true" version="1" changeset="20457879" timestamp="2014-02-09T01:34:20Z" user="runbananas" uid="199905" lat="43.5880551" lon="-84.7720393"/>
  <node id="2662160265" visible="true" version="3" changeset="51552051" timestamp="2017-08-29T17:51:22Z" user="JaysonOlivera" uid="6255902" lat="43.5881045" lon="-84.7720639">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Music Building"/></node>
  <node id="2695162158" visible="true" version="2" changeset="60518903" timestamp="2018-07-08T21:22:00Z" user="friedel_hn" uid="5079" lat="43.5972546" lon="-84.7539980"/>
  <node id="2695162159" visible="true" version="2" changeset="60518903" timestamp="2018-07-08T21:22:00Z" user="friedel_hn" uid="5079" lat="43.5988905" lon="-84.7540157"/>
  <node id="2695162160" visible="true" version="1" changeset="20835266" timestamp="2014-02-28T21:01:59Z" user="bbmiller" uid="451048" lat="43.5962344" lon="-84.7519761"/>
@@ -5199,8 +5198,8 @@
   <tag k="highway" v="crossing"/>
  </node>
  <node id="2975895983" visible="true" version="3" changeset="50314040" timestamp="2017-07-15T21:04:21Z" user="JaysonOlivera" uid="6255902" lat="43.5875786" lon="-84.7766147">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Anspach Hall"/></node>
  <node id="2975895984" visible="true" version="1" changeset="24314357" timestamp="2014-07-23T15:46:57Z" user="erjiang" uid="701297" lat="43.5871939" lon="-84.7762900"/>
  <node id="2975895985" visible="true" version="1" changeset="24314357" timestamp="2014-07-23T15:46:57Z" user="erjiang" uid="701297" lat="43.5867682" lon="-84.7756459"/>
  <node id="2975895986" visible="true" version="3" changeset="157361341" timestamp="2024-10-02T01:41:17Z" user="ChrisBessert" uid="1346422" lat="43.5867555" lon="-84.7754946"/>
@@ -5794,8 +5793,8 @@
  <node id="3284140884" visible="true" version="2" changeset="157361341" timestamp="2024-10-02T01:41:17Z" user="ChrisBessert" uid="1346422" lat="43.5871283" lon="-84.7744417"/>
  <node id="3284140885" visible="true" version="2" changeset="72060445" timestamp="2019-07-09T15:26:38Z" user="FysX" uid="10071489" lat="43.5873608" lon="-84.7754588"/>
  <node id="3284140886" visible="true" version="3" changeset="50314040" timestamp="2017-07-15T21:04:21Z" user="JaysonOlivera" uid="6255902" lat="43.5876082" lon="-84.7758431">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Anspach Hall"/></node>
  <node id="3284140887" visible="true" version="1" changeset="28090708" timestamp="2015-01-12T16:46:52Z" user="jonesydesign" uid="1802220" lat="43.5874174" lon="-84.7758585"/>
  <node id="3284140888" visible="true" version="1" changeset="28090708" timestamp="2015-01-12T16:46:53Z" user="jonesydesign" uid="1802220" lat="43.5874453" lon="-84.7739438"/>
  <node id="3284140889" visible="true" version="1" changeset="28090708" timestamp="2015-01-12T16:46:53Z" user="jonesydesign" uid="1802220" lat="43.5874407" lon="-84.7738455"/>
@@ -5963,13 +5962,13 @@
  <node id="3284141854" visible="true" version="2" changeset="157361341" timestamp="2024-10-02T01:41:17Z" user="ChrisBessert" uid="1346422" lat="43.5865717" lon="-84.7773542"/>
  <node id="3284141855" visible="true" version="1" changeset="28090766" timestamp="2015-01-12T16:49:33Z" user="jonesydesign" uid="1802220" lat="43.5863347" lon="-84.7768624"/>
  <node id="3284141856" visible="true" version="2" changeset="50314040" timestamp="2017-07-15T21:04:20Z" user="JaysonOlivera" uid="6255902" lat="43.5864011" lon="-84.7767790">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Pearce Hall"/></node>
  <node id="3284141857" visible="true" version="1" changeset="28090766" timestamp="2015-01-12T16:49:33Z" user="jonesydesign" uid="1802220" lat="43.5863010" lon="-84.7769308"/>
  <node id="3284161011" visible="true" version="2" changeset="157361341" timestamp="2024-10-02T01:41:17Z" user="ChrisBessert" uid="1346422" lat="43.5863335" lon="-84.7756940"/>
  <node id="3284161012" visible="true" version="3" changeset="157361341" timestamp="2024-10-02T01:41:17Z" user="ChrisBessert" uid="1346422" lat="43.5864144" lon="-84.7756907">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Pearce Hall"/></node>
  <node id="3284161013" visible="true" version="2" changeset="157361341" timestamp="2024-10-02T01:41:17Z" user="ChrisBessert" uid="1346422" lat="43.5861862" lon="-84.7756959"/>
  <node id="3284161014" visible="true" version="4" changeset="178062380" timestamp="2026-02-03T18:04:32Z" user="Sthatcher" uid="22357929" lat="43.5861243" lon="-84.7756991">
   <tag k="crossing" v="uncontrolled"/>
@@ -7740,8 +7739,8 @@
  <node id="4947831099" visible="true" version="1" changeset="49996234" timestamp="2017-07-03T00:12:51Z" user="JaysonOlivera" uid="6255902" lat="43.5879108" lon="-84.7758537"/>
  <node id="4947831100" visible="true" version="1" changeset="49996234" timestamp="2017-07-03T00:12:51Z" user="JaysonOlivera" uid="6255902" lat="43.5878172" lon="-84.7758594"/>
  <node id="4947831101" visible="true" version="2" changeset="50314040" timestamp="2017-07-15T21:04:21Z" user="JaysonOlivera" uid="6255902" lat="43.5878163" lon="-84.7767380">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Anspach Hall"/></node>
  <node id="4947831102" visible="true" version="1" changeset="49996234" timestamp="2017-07-03T00:12:51Z" user="JaysonOlivera" uid="6255902" lat="43.5877214" lon="-84.7767392"/>
  <node id="4947831103" visible="true" version="1" changeset="49996234" timestamp="2017-07-03T00:12:51Z" user="JaysonOlivera" uid="6255902" lat="43.5877208" lon="-84.7768465"/>
  <node id="4947831104" visible="true" version="1" changeset="49996234" timestamp="2017-07-03T00:12:51Z" user="JaysonOlivera" uid="6255902" lat="43.5878197" lon="-84.7768538"/>
@@ -7806,8 +7805,8 @@
  <node id="4947837693" visible="true" version="1" changeset="49996325" timestamp="2017-07-03T00:30:24Z" user="JaysonOlivera" uid="6255902" lat="43.5884666" lon="-84.7735985"/>
  <node id="4947837694" visible="true" version="1" changeset="49996325" timestamp="2017-07-03T00:30:24Z" user="JaysonOlivera" uid="6255902" lat="43.5883973" lon="-84.7735708"/>
  <node id="4947837695" visible="true" version="3" changeset="51552051" timestamp="2017-08-29T17:51:23Z" user="JaysonOlivera" uid="6255902" lat="43.5883022" lon="-84.7734227">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Music Building"/></node>
  <node id="4947892600" visible="true" version="1" changeset="49996663" timestamp="2017-07-03T01:17:16Z" user="JaysonOlivera" uid="6255902" lat="43.6052608" lon="-84.7811442"/>
  <node id="4947892601" visible="true" version="1" changeset="49996663" timestamp="2017-07-03T01:17:16Z" user="JaysonOlivera" uid="6255902" lat="43.6051749" lon="-84.7811332"/>
  <node id="4947892602" visible="true" version="1" changeset="49996663" timestamp="2017-07-03T01:17:16Z" user="JaysonOlivera" uid="6255902" lat="43.6050621" lon="-84.7810753"/>
@@ -9248,8 +9247,8 @@
  <node id="4949527395" visible="true" version="1" changeset="50017458" timestamp="2017-07-03T19:27:14Z" user="JaysonOlivera" uid="6255902" lat="43.5879911" lon="-84.7768378"/>
  <node id="4949527396" visible="true" version="1" changeset="50017458" timestamp="2017-07-03T19:27:14Z" user="JaysonOlivera" uid="6255902" lat="43.5880238" lon="-84.7762665"/>
  <node id="4949527397" visible="true" version="2" changeset="50314040" timestamp="2017-07-15T21:04:21Z" user="JaysonOlivera" uid="6255902" lat="43.5878168" lon="-84.7762474">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Anspach Hall"/></node>
  <node id="4949527398" visible="true" version="1" changeset="50017458" timestamp="2017-07-03T19:27:14Z" user="JaysonOlivera" uid="6255902" lat="43.5879360" lon="-84.7763825"/>
  <node id="4949527399" visible="true" version="1" changeset="50017458" timestamp="2017-07-03T19:27:14Z" user="JaysonOlivera" uid="6255902" lat="43.5879060" lon="-84.7760792"/>
  <node id="4949527400" visible="true" version="1" changeset="50017458" timestamp="2017-07-03T19:27:14Z" user="JaysonOlivera" uid="6255902" lat="43.5879441" lon="-84.7757913"/>
@@ -11693,8 +11692,8 @@
  <node id="4963522101" visible="true" version="1" changeset="50197087" timestamp="2017-07-11T09:47:41Z" user="JaysonOlivera" uid="6255902" lat="43.5870416" lon="-84.7743577"/>
  <node id="4963522102" visible="true" version="1" changeset="50197087" timestamp="2017-07-11T09:47:41Z" user="JaysonOlivera" uid="6255902" lat="43.5888273" lon="-84.7739835"/>
  <node id="4963522103" visible="true" version="2" changeset="50314040" timestamp="2017-07-15T21:04:21Z" user="JaysonOlivera" uid="6255902" lat="43.5876002" lon="-84.7771416">
-  <tag k="entrance" v="yes"/>
- </node>
+  
+ <tag k="entrance" v="yes"/><tag k="entrance:building" v="Anspach Hall"/></node>
  <node id="4963522104" visible="true" version="1" changeset="50197087" timestamp="2017-07-11T09:47:41Z" user="JaysonOlivera" uid="6255902" lat="43.5876084" lon="-84.7773538"/>
  <node id="4963522106" visible="true" version="1" changeset="50197087" timestamp="2017-07-11T09:47:41Z" user="JaysonOlivera" uid="6255902" lat="43.5866948" lon="-84.7771251"/>
  <node id="4963522111" visible="true" version="3" changeset="50242599" timestamp="2017-07-12T22:42:20Z" user="SomeoneElse_Revert" uid="1778799" lat="43.5869108" lon="-84.7768366"/>
@@ -11996,8 +11995,8 @@
  <node id="4974164851" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5866900" lon="-84.7705741"/>
  <node id="4974164852" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5867289" lon="-84.7702033"/>
  <node id="4974164853" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5866885" lon="-84.7698583"/>
- <node id="4974164854" visible="true" version="3" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5866649" lon="-84.7693576"/>
- <node id="4974164855" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5867032" lon="-84.7693685"/>
+ 
+ 
  <node id="4974164856" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5860855" lon="-84.7695146"/>
  <node id="4974164857" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5865187" lon="-84.7692558"/>
  <node id="4974164858" visible="true" version="1" changeset="50335182" timestamp="2017-07-16T20:58:37Z" user="JaysonOlivera" uid="6255902" lat="43.5858375" lon="-84.7693409"/>
@@ -18260,7 +18259,7 @@
  <node id="6599009506" visible="true" version="2" changeset="103016318" timestamp="2021-04-15T20:26:23Z" user="pkoby" uid="999995" lat="43.5909138" lon="-84.7703826"/>
  <node id="6599009509" visible="true" version="1" changeset="72055425" timestamp="2019-07-09T13:26:06Z" user="FysX" uid="10071489" lat="43.5912692" lon="-84.7701175"/>
  <node id="6599009511" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5896119" lon="-84.7691348"/>
- <node id="6599009512" visible="true" version="3" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888585" lon="-84.7712004"/>
+ 
  <node id="6599009513" visible="true" version="1" changeset="72055425" timestamp="2019-07-09T13:26:06Z" user="FysX" uid="10071489" lat="43.5888767" lon="-84.7704959">
   <tag k="bus" v="yes"/>
   <tag k="highway" v="bus_stop"/>
@@ -18428,11 +18427,11 @@
  <node id="6775484084" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5899436" lon="-84.7711780"/>
  <node id="6775498485" visible="true" version="1" changeset="74148028" timestamp="2019-09-05T19:02:42Z" user="FysX" uid="10071489" lat="43.5905319" lon="-84.7722938"/>
  <node id="6775498486" visible="true" version="2" changeset="157404646" timestamp="2024-10-03T06:51:11Z" user="ChrisBessert" uid="1346422" lat="43.5905273" lon="-84.7724194"/>
- <node id="6775498487" visible="true" version="1" changeset="74148028" timestamp="2019-09-05T19:02:42Z" user="FysX" uid="10071489" lat="43.5888474" lon="-84.7691555"/>
+ 
  <node id="6775498488" visible="true" version="1" changeset="74148028" timestamp="2019-09-05T19:02:42Z" user="FysX" uid="10071489" lat="43.5884673" lon="-84.7735152"/>
  <node id="6775498489" visible="true" version="1" changeset="74148028" timestamp="2019-09-05T19:02:42Z" user="FysX" uid="10071489" lat="43.5884677" lon="-84.7734733"/>
  <node id="6775498490" visible="true" version="1" changeset="74148028" timestamp="2019-09-05T19:02:42Z" user="FysX" uid="10071489" lat="43.5884677" lon="-84.7734733"/>
- <node id="6775498491" visible="true" version="1" changeset="74148028" timestamp="2019-09-05T19:02:42Z" user="FysX" uid="10071489" lat="43.5884677" lon="-84.7734733"/>
+ 
  <node id="6775498492" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5881689" lon="-84.7690763"/>
  <node id="6775498494" visible="true" version="2" changeset="173540976" timestamp="2025-10-20T14:46:20Z" user="Sthatcher" uid="22357929" lat="43.5880179" lon="-84.7672807"/>
  <node id="6775498495" visible="true" version="2" changeset="125209323" timestamp="2022-08-22T06:18:19Z" user="ChrisBessert" uid="1346422" lat="43.5880200" lon="-84.7666999"/>
@@ -26342,22 +26341,22 @@
  <node id="12217453246" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5849997" lon="-84.7691045"/>
  <node id="12217453247" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5850207" lon="-84.7690971"/>
  <node id="12217453248" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5852708" lon="-84.7690206"/>
- <node id="12217453249" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5851802" lon="-84.7692981"/>
- <node id="12217453250" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5850863" lon="-84.7694249"/>
- <node id="12217453251" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5850857" lon="-84.7702946"/>
- <node id="12217453252" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5850841" lon="-84.7696018"/>
- <node id="12217453253" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5850936" lon="-84.7693803"/>
- <node id="12217453254" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5851055" lon="-84.7693459"/>
- <node id="12217453255" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5851224" lon="-84.7693220"/>
- <node id="12217453256" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5851504" lon="-84.7693064"/>
- <node id="12217453257" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5852907" lon="-84.7692716"/>
- <node id="12217453258" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5853477" lon="-84.7692654"/>
- <node id="12217453259" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5854372" lon="-84.7692584"/>
- <node id="12217453260" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5855255" lon="-84.7692587"/>
- <node id="12217453261" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5856310" lon="-84.7692707"/>
- <node id="12217453262" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5861538" lon="-84.7693374"/>
- <node id="12217453263" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5863983" lon="-84.7693428"/>
- <node id="12217453264" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5865020" lon="-84.7693500"/>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  <node id="12217453265" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5866154" lon="-84.7691929"/>
  <node id="12217453266" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5868688" lon="-84.7691360"/>
  <node id="12217453267" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5869401" lon="-84.7691275"/>
@@ -26431,7 +26430,7 @@
  <node id="12217501333" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5892405" lon="-84.7685684"/>
  <node id="12217501334" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5892481" lon="-84.7685869"/>
  <node id="12217501335" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5892613" lon="-84.7686148"/>
- <node id="12217501336" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5897946" lon="-84.7691690"/>
+ 
  <node id="12217501337" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5897986" lon="-84.7691530"/>
  <node id="12217501338" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5897653" lon="-84.7691368"/>
  <node id="12217501339" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5897892" lon="-84.7689671"/>
@@ -26440,10 +26439,10 @@
   <tag k="crossing" v="uncontrolled"/>
   <tag k="highway" v="crossing"/>
  </node>
- <node id="12217501342" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5898029" lon="-84.7713440"/>
+ 
  <node id="12217501343" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5898158" lon="-84.7714708"/>
- <node id="12217501344" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5891300" lon="-84.7712065"/>
- <node id="12217501345" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5897977" lon="-84.7716990"/>
+ 
+ 
  <node id="12217501346" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5898157" lon="-84.7715953"/>
  <node id="12217501347" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5898156" lon="-84.7715197">
   <tag k="highway" v="crossing"/>
@@ -26510,9 +26509,9 @@
  <node id="12217501400" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5899477" lon="-84.7741219"/>
  <node id="12217501401" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5902096" lon="-84.7721762"/>
  <node id="12217501402" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5898200" lon="-84.7711442"/>
- <node id="12217501403" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888535" lon="-84.7715396"/>
- <node id="12217501404" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887634" lon="-84.7717301"/>
- <node id="12217501405" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888259" lon="-84.7716443"/>
+ 
+ 
+ 
  <node id="12217501406" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888461" lon="-84.7711671"/>
  <node id="12217501407" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888397" lon="-84.7715224"/>
  <node id="12217501408" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888023" lon="-84.7711651"/>
@@ -26525,16 +26524,16 @@
  <node id="12217501415" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887879" lon="-84.7715886"/>
  <node id="12217501416" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887989" lon="-84.7715180"/>
  <node id="12217501417" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5885045" lon="-84.7717287"/>
- <node id="12217501418" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5885107" lon="-84.7717465"/>
- <node id="12217501419" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887039" lon="-84.7717510"/>
- <node id="12217501420" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887389" lon="-84.7717412"/>
- <node id="12217501421" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887946" lon="-84.7717086"/>
- <node id="12217501422" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888145" lon="-84.7716792"/>
+ 
+ 
+ 
+ 
+ 
  <node id="12217501423" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887484" lon="-84.7717231"/>
  <node id="12217501424" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888000" lon="-84.7716727"/>
  <node id="12217501425" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888175" lon="-84.7716394"/>
  <node id="12217501426" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5888394" lon="-84.7715518"/>
- <node id="12217501427" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5885048" lon="-84.7724134"/>
+ 
  <node id="12217501428" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5885020" lon="-84.7717986"/>
  <node id="12217501429" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5887666" lon="-84.7717157"/>
  <node id="12217501430" visible="true" version="1" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422" lat="43.5879354" lon="-84.7717694"/>
@@ -49033,10 +49032,10 @@
   <nd ref="2963737638"/>
   <nd ref="2963737146"/>
   <nd ref="2963736902"/>
-  <tag k="amenity" v="parking"/>
-  <tag k="parking" v="surface"/>
-  <tag k="source" v="Bing"/>
- </way>
+  
+  
+  
+ <tag k="amenity" v="parking"/><tag k="parking" v="surface"/><tag k="source" v="Bing"/><tag k="name" v="His House Parking Lot"/></way>
  <way id="292817595" visible="true" version="1" changeset="24152312" timestamp="2014-07-15T02:27:31Z" user="freebeer" uid="429761">
   <nd ref="2963736057"/>
   <nd ref="2963736073"/>
@@ -52990,10 +52989,10 @@
   <nd ref="12214459853"/>
   <nd ref="12214716704"/>
   <nd ref="3011811925"/>
-  <tag k="amenity" v="parking"/>
-  <tag k="parking" v="surface"/>
-  <tag k="surface" v="asphalt"/>
- </way>
+  
+  
+  
+ <tag k="amenity" v="parking"/><tag k="parking" v="surface"/><tag k="surface" v="asphalt"/><tag k="name" v="Lot 42"/></way>
  <way id="297307520" visible="true" version="3" changeset="167194783" timestamp="2025-06-04T20:23:37Z" user="drtony117" uid="22408185">
   <nd ref="3011811928"/>
   <nd ref="3011811929"/>
@@ -58994,8 +58993,8 @@
   <nd ref="4947989975"/>
   <nd ref="4947989976"/>
   <nd ref="4947989969"/>
-  <tag k="amenity" v="parking"/>
- </way>
+  
+ <tag k="amenity" v="parking"/><tag k="name" v="Lot 10"/></way>
  <way id="504646294" visible="true" version="4" changeset="72096059" timestamp="2019-07-10T13:40:47Z" user="FysX" uid="10071489">
   <nd ref="4947989977"/>
   <nd ref="4976761335"/>
@@ -59326,8 +59325,8 @@
   <nd ref="4947992620"/>
   <nd ref="4947992621"/>
   <nd ref="4947992615"/>
-  <tag k="amenity" v="parking"/>
- </way>
+  
+ <tag k="amenity" v="parking"/><tag k="name" v="Lot 9"/></way>
  <way id="504646333" visible="true" version="2" changeset="50074010" timestamp="2017-07-06T04:40:57Z" user="JaysonOlivera" uid="6255902">
   <nd ref="4947992622"/>
   <nd ref="4947992623"/>
@@ -60411,8 +60410,8 @@
   <nd ref="4974175397"/>
   <nd ref="12217453225"/>
   <nd ref="4948083108"/>
-  <tag k="landuse" v="recreation_ground"/>
- </way>
+  
+ <tag k="landuse" v="recreation_ground"/><tag k="name " v="Rose Ponds Park"/></way>
  <way id="504662431" visible="true" version="5" changeset="81381787" timestamp="2020-02-24T02:44:15Z" user="DannyMcD" uid="5789626">
   <nd ref="4948100629"/>
   <nd ref="4948100630"/>
@@ -60642,60 +60641,7 @@
   <nd ref="2975896034"/>
   <tag k="leisure" v="garden"/>
  </way>
- <way id="504664119" visible="true" version="7" changeset="157404646" timestamp="2024-10-03T06:51:11Z" user="ChrisBessert" uid="1346422">
-  <nd ref="4947997714"/>
-  <nd ref="4974164863"/>
-  <nd ref="4974164862"/>
-  <nd ref="4947997710"/>
-  <nd ref="12217453251"/>
-  <nd ref="12217453252"/>
-  <nd ref="12217453250"/>
-  <nd ref="12217453253"/>
-  <nd ref="12217453254"/>
-  <nd ref="12217453255"/>
-  <nd ref="12217453256"/>
-  <nd ref="12217453249"/>
-  <nd ref="12217453257"/>
-  <nd ref="12217453258"/>
-  <nd ref="12217453259"/>
-  <nd ref="12217453260"/>
-  <nd ref="12217453261"/>
-  <nd ref="12217453262"/>
-  <nd ref="12217453263"/>
-  <nd ref="12217453264"/>
-  <nd ref="12217453275"/>
-  <nd ref="4974164854"/>
-  <nd ref="4974164855"/>
-  <nd ref="4974164853"/>
-  <nd ref="4974164852"/>
-  <nd ref="12217453278"/>
-  <nd ref="4974164851"/>
-  <nd ref="4974164850"/>
-  <nd ref="12217453279"/>
-  <nd ref="12217453280"/>
-  <nd ref="4974164849"/>
-  <nd ref="4974164848"/>
-  <nd ref="12217453281"/>
-  <nd ref="4948110853"/>
-  <nd ref="4974164847"/>
-  <nd ref="12218038445"/>
-  <nd ref="12218038446"/>
-  <nd ref="4974164846"/>
-  <nd ref="4947997701"/>
-  <nd ref="4991772569"/>
-  <nd ref="4991772567"/>
-  <nd ref="4991772568"/>
-  <nd ref="4991772566"/>
-  <nd ref="4974164844"/>
-  <nd ref="4974164843"/>
-  <nd ref="4974164842"/>
-  <nd ref="4974164841"/>
-  <nd ref="4974164840"/>
-  <nd ref="4974164839"/>
-  <nd ref="4974164838"/>
-  <nd ref="4947997714"/>
-  <tag k="landuse" v="industrial"/>
- </way>
+ 
  <way id="504664120" visible="true" version="4" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422">
   <nd ref="4948110854"/>
   <nd ref="4974164859"/>
@@ -63065,8 +63011,8 @@
   <nd ref="3284120842"/>
   <nd ref="4955860410"/>
   <nd ref="3284120841"/>
-  <tag k="landuse" v="grass"/>
- </way>
+  
+ <tag k="landuse" v="grass"/><tag k="name" v="Rose Ponds Mound"/></way>
  <way id="505705380" visible="true" version="1" changeset="50097280" timestamp="2017-07-07T01:34:03Z" user="JaysonOlivera" uid="6255902">
   <nd ref="4948100632"/>
   <nd ref="4955865954"/>
@@ -67446,10 +67392,10 @@
   <nd ref="4977828852"/>
   <nd ref="4977828853"/>
   <nd ref="4977828843"/>
-  <tag k="amenity" v="parking"/>
-  <tag k="parking" v="surface"/>
-  <tag k="surface" v="asphalt"/>
- </way>
+  
+  
+  
+ <tag k="amenity" v="parking"/><tag k="parking" v="surface"/><tag k="surface" v="asphalt"/><tag k="name" v="Lot 3"/></way>
  <way id="508480087" visible="true" version="1" changeset="50385434" timestamp="2017-07-18T17:42:04Z" user="JaysonOlivera" uid="6255902">
   <nd ref="4977828854"/>
   <nd ref="4977828855"/>
@@ -67866,8 +67812,8 @@
   <nd ref="4988559793"/>
   <nd ref="4988559794"/>
   <nd ref="4988559783"/>
-  <tag k="amenity" v="parking"/>
- </way>
+  
+ <tag k="amenity" v="parking"/><tag k="name" v="Lot 2"/></way>
  <way id="509664503" visible="true" version="4" changeset="176999582" timestamp="2026-01-08T20:13:02Z" user="Sthatcher" uid="22357929">
   <nd ref="4988559796"/>
   <nd ref="4948100680"/>
@@ -70110,9 +70056,9 @@
   <nd ref="5173370265"/>
   <nd ref="5173370266"/>
   <nd ref="4948012018"/>
-  <tag k="amenity" v="parking"/>
-  <tag k="parking" v="surface"/>
- </way>
+  
+  
+ <tag k="amenity" v="parking"/><tag k="parking" v="surface"/><tag k="name" v="Lot 15"/></way>
  <way id="533211595" visible="true" version="5" changeset="157404646" timestamp="2024-10-03T06:51:11Z" user="ChrisBessert" uid="1346422">
   <nd ref="4948012232"/>
   <nd ref="4948012244"/>
@@ -77019,43 +76965,8 @@
   <tag k="leisure" v="park"/>
   <tag k="name" v="Finch/CMED Quad"/>
  </way>
- <way id="722322831" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422">
-  <nd ref="4948020144"/>
-  <nd ref="4963527033"/>
-  <nd ref="6775498491"/>
-  <nd ref="12217501427"/>
-  <nd ref="12217501418"/>
-  <nd ref="12217501419"/>
-  <nd ref="12217501420"/>
-  <nd ref="12217501404"/>
-  <nd ref="12217501421"/>
-  <nd ref="12217501422"/>
-  <nd ref="12217501405"/>
-  <nd ref="12217501403"/>
-  <nd ref="6599009512"/>
-  <nd ref="12217501344"/>
-  <nd ref="5271566701"/>
-  <nd ref="5271566700"/>
-  <nd ref="5271566699"/>
-  <nd ref="3284141000"/>
-  <nd ref="4738283235"/>
-  <nd ref="12217501345"/>
-  <nd ref="4948020144"/>
-  <tag k="leisure" v="park"/>
-  <tag k="name" v="Library/Music Quad"/>
- </way>
- <way id="722322832" visible="true" version="2" changeset="157402472" timestamp="2024-10-03T05:12:30Z" user="ChrisBessert" uid="1346422">
-  <nd ref="12217501342"/>
-  <nd ref="12217501336"/>
-  <nd ref="6775498487"/>
-  <nd ref="6599009512"/>
-  <nd ref="12217501344"/>
-  <nd ref="5271566701"/>
-  <nd ref="4947982862"/>
-  <nd ref="4953954712"/>
-  <nd ref="12217501342"/>
-  <tag k="leisure" v="park"/>
- </way>
+ 
+ 
  <way id="755563706" visible="true" version="6" changeset="173645381" timestamp="2025-10-22T19:59:44Z" user="Sthatcher" uid="22357929">
   <nd ref="13153027467"/>
   <nd ref="4962916139"/>
@@ -88688,16 +88599,16 @@
   <nd ref="12215258124"/>
   <nd ref="12215258125"/>
   <nd ref="12215258117"/>
-  <tag k="access" v="permit"/>
-  <tag k="amenity" v="parking"/>
-  <tag k="capacity" v="8"/>
-  <tag k="capacity:disabled" v="1"/>
-  <tag k="fee" v="no"/>
-  <tag k="operator" v="Central Michigan University"/>
-  <tag k="operator:type" v="university"/>
-  <tag k="parking" v="surface"/>
-  <tag k="surface" v="paved"/>
- </way>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ <tag k="access" v="permit"/><tag k="amenity" v="parking"/><tag k="capacity" v="8"/><tag k="capacity:disabled" v="1"/><tag k="fee" v="no"/><tag k="operator" v="Central Michigan University"/><tag k="operator:type" v="university"/><tag k="parking" v="surface"/><tag k="surface" v="paved"/><tag k="use" v="faculty parking"/></way>
  <way id="1319995288" visible="true" version="1" changeset="157361341" timestamp="2024-10-02T01:41:17Z" user="ChrisBessert" uid="1346422">
   <nd ref="12215258130"/>
   <nd ref="7740352825"/>
@@ -112686,4 +112597,4 @@
   <tag k="route" v="road"/>
   <tag k="type" v="route"/>
  </relation>
-</osm>
+<node id="-5" visible="true" lat="43.583060496598726" lon="-84.77387130260469"/><node id="-6" visible="true" lat="43.58308381171909" lon="-84.77259993553163"/><node id="-7" visible="true" lat="43.5828195731593" lon="-84.77259993553163"/><node id="-8" visible="true" lat="43.58279237206524" lon="-84.77387130260469"/><way id="-2" visible="true"><nd ref="-5"/><nd ref="-6"/><nd ref="-7"/><nd ref="-8"/><nd ref="-5"/><tag k="amenity" v="parking"/><tag k="name" v="Lot 47"/></way><node id="-9" visible="true" lat="43.586689774973216" lon="-84.77712213993073"/><node id="-10" visible="true" lat="43.58679857223168" lon="-84.77684319019319"/><node id="-11" visible="true" lat="43.586821885904335" lon="-84.77674663066864"/><node id="-12" visible="true" lat="43.58664314751656" lon="-84.77669298648836"/><node id="-13" visible="true" lat="43.58664703313933" lon="-84.77663934230806"/><node id="-14" visible="true" lat="43.586728631159524" lon="-84.77663397789001"/><node id="-15" visible="true" lat="43.586728631159524" lon="-84.77555572986604"/><node id="-16" visible="true" lat="43.58642555224118" lon="-84.77555572986604"/><node id="-17" visible="true" lat="43.58640612405333" lon="-84.77575957775116"/><node id="-18" visible="true" lat="43.58630898302008" lon="-84.7757488489151"/><node id="-19" visible="true" lat="43.5863012" lon="-84.7763967"/><node id="-20" visible="true" lat="43.58640612405333" lon="-84.77640867233278"/><node id="-21" visible="true" lat="43.58643332351455" lon="-84.77660179138184"/><node id="-22" visible="true" lat="43.586549892494844" lon="-84.7766125202179"/><node id="-23" visible="true" lat="43.58655377812364" lon="-84.77670907974245"/><node id="-24" visible="true" lat="43.58646829423234" lon="-84.77669835090639"/><node id="-25" visible="true" lat="43.58639446713764" lon="-84.77673590183258"/><node id="-26" visible="true" lat="43.58650715056162" lon="-84.77711677551271"/><way id="-3" visible="true"><nd ref="-9"/><nd ref="-10"/><nd ref="-11"/><nd ref="-12"/><nd ref="-13"/><nd ref="-14"/><nd ref="-15"/><nd ref="-16"/><nd ref="-17"/><nd ref="-18"/><nd ref="-19"/><nd ref="-20"/><nd ref="-21"/><nd ref="-22"/><nd ref="-23"/><nd ref="-24"/><nd ref="-25"/><nd ref="-26"/><nd ref="-9"/><tag k="building" v="university"/><tag k="name" v="Pearce Hall"/><tag k="building:levels" v="4"/></way><node id="-27" visible="true" lat="43.590536415743806" lon="-84.77556109428406"/><node id="-28" visible="true" lat="43.59062966458927" lon="-84.77554500102998"/><node id="-29" visible="true" lat="43.59075788151587" lon="-84.77561473846437"/><node id="-30" visible="true" lat="43.59083170325882" lon="-84.77571666240692"/><node id="-31" visible="true" lat="43.59087832747085" lon="-84.77589905261995"/><node id="-32" visible="true" lat="43.59087055677136" lon="-84.77604925632477"/><node id="-33" visible="true" lat="43.59083558861119" lon="-84.77614581584932"/><node id="-34" visible="true" lat="43.59076565222992" lon="-84.77609753608705"/><node id="-35" visible="true" lat="43.59075399615849" lon="-84.77612972259523"/><node id="-36" visible="true" lat="43.59088998351821" lon="-84.77633357048036"/><node id="-37" visible="true" lat="43.590866671421225" lon="-84.77637112140656"/><node id="-38" visible="true" lat="43.59078119365501" lon="-84.77625846862793"/><node id="-39" visible="true" lat="43.590726798649655" lon="-84.77630138397217"/><node id="-40" visible="true" lat="43.59065686214198" lon="-84.77633357048036"/><node id="-41" visible="true" lat="43.59057526944697" lon="-84.77634966373445"/><node id="-42" visible="true" lat="43.590470364390846" lon="-84.77630674839021"/><node id="-43" visible="true" lat="43.590388771443024" lon="-84.77624773979187"/><node id="-44" visible="true" lat="43.59032660531327" lon="-84.77617263793947"/><node id="-45" visible="true" lat="43.590311063770805" lon="-84.77605998516083"/><node id="-46" visible="true" lat="43.59028775144958" lon="-84.77587759494783"/><node id="-47" visible="true" lat="43.59032660531327" lon="-84.77571666240692"/><node id="-48" visible="true" lat="43.59035768838615" lon="-84.77575421333314"/><node id="-49" visible="true" lat="43.5903965422047" lon="-84.77565765380861"/><node id="-50" visible="true" lat="43.59041208372511" lon="-84.77565228939058"/><node id="-51" visible="true" lat="43.59040431296542" lon="-84.77563083171846"/><node id="-52" visible="true" lat="43.59035768838615" lon="-84.77565765380861"/><node id="-53" visible="true" lat="43.59023335599826" lon="-84.77528214454652"/><node id="-54" visible="true" lat="43.59021781443172" lon="-84.77529287338258"/><node id="-55" visible="true" lat="43.590171189708" lon="-84.77515876293184"/><node id="-56" visible="true" lat="43.590101252554696" lon="-84.7750246524811"/><node id="-57" visible="true" lat="43.590124564948155" lon="-84.77501392364503"/><node id="-58" visible="true" lat="43.59010513795424" lon="-84.77494955062868"/><node id="-59" visible="true" lat="43.59049367664133" lon="-84.77471351623537"/><node id="-60" visible="true" lat="43.59050921813665" lon="-84.77476179599763"/><node id="-61" visible="true" lat="43.590536415743806" lon="-84.77476179599763"/><node id="-62" visible="true" lat="43.59057526944697" lon="-84.77485835552217"/><node id="-63" visible="true" lat="43.59061800849148" lon="-84.77483689785005"/><node id="-64" visible="true" lat="43.59069571576738" lon="-84.77507829666139"/><node id="-65" visible="true" lat="43.59059469628914" lon="-84.77515876293184"/><node id="-66" visible="true" lat="43.59065686214198" lon="-84.77538406848907"/><node id="-67" visible="true" lat="43.590544186486426" lon="-84.77544844150545"/><node id="-68" visible="true" lat="43.59055195722806" lon="-84.77546989917757"/><node id="-69" visible="true" lat="43.590513103509856" lon="-84.77549135684968"/><way id="-4" visible="true"><nd ref="-27"/><nd ref="-28"/><nd ref="-29"/><nd ref="-30"/><nd ref="-31"/><nd ref="-32"/><nd ref="-33"/><nd ref="-34"/><nd ref="-35"/><nd ref="-36"/><nd ref="-37"/><nd ref="-38"/><nd ref="-39"/><nd ref="-40"/><nd ref="-41"/><nd ref="-42"/><nd ref="-43"/><nd ref="-44"/><nd ref="-45"/><nd ref="-46"/><nd ref="-47"/><nd ref="-48"/><nd ref="-49"/><nd ref="-50"/><nd ref="-51"/><nd ref="-52"/><nd ref="-53"/><nd ref="-54"/><nd ref="-55"/><nd ref="-56"/><nd ref="-57"/><nd ref="-58"/><nd ref="-59"/><nd ref="-60"/><nd ref="-61"/><nd ref="-62"/><nd ref="-63"/><nd ref="-64"/><nd ref="-65"/><nd ref="-66"/><nd ref="-67"/><nd ref="-68"/><nd ref="-69"/><nd ref="-27"/><tag k="building" v="university"/><tag k="name" v="Bovee University Center"/><tag k="alt_name" v="UC; University Center; The UC"/></way><node id="-70" visible="true" lat="43.58881517152605" lon="-84.77492809295656"/><node id="-71" visible="true" lat="43.58881128604325" lon="-84.77485299110413"/><node id="-72" visible="true" lat="43.588733576334356" lon="-84.77485835552217"/><node id="-73" visible="true" lat="43.58872969084627" lon="-84.77442920207979"/><node id="-74" visible="true" lat="43.58881128604325" lon="-84.7744131088257"/><node id="-75" visible="true" lat="43.58883848441766" lon="-84.77432727813722"/><node id="-76" visible="true" lat="43.589024987225365" lon="-84.77434873580934"/><node id="-77" visible="true" lat="43.589024987225365" lon="-84.7741609811783"/><node id="-78" visible="true" lat="43.58904052909993" lon="-84.77395713329315"/><node id="-79" visible="true" lat="43.58912600933825" lon="-84.77382302284241"/><node id="-80" visible="true" lat="43.58928531309483" lon="-84.77371573448183"/><node id="-81" visible="true" lat="43.58946792907757" lon="-84.77373719215394"/><node id="-82" visible="true" lat="43.589596148479046" lon="-84.77382838726045"/><node id="-83" visible="true" lat="43.589650544506256" lon="-84.77391421794893"/><node id="-84" visible="true" lat="43.58968551335492" lon="-84.77402150630951"/><node id="-85" visible="true" lat="43.58971271133428" lon="-84.77415561676025"/><node id="-86" visible="true" lat="43.58970882590942" lon="-84.77432727813722"/><node id="-87" visible="true" lat="43.589662200791395" lon="-84.77449893951416"/><node id="-88" visible="true" lat="43.58961557563726" lon="-84.77459013462068"/><node id="-89" visible="true" lat="43.58960391934309" lon="-84.77493882179262"/><way id="-5" visible="true"><nd ref="-70"/><nd ref="-71"/><nd ref="-72"/><nd ref="-73"/><nd ref="-74"/><nd ref="-75"/><nd ref="-76"/><nd ref="-77"/><nd ref="-78"/><nd ref="-79"/><nd ref="-80"/><nd ref="-81"/><nd ref="-82"/><nd ref="-83"/><nd ref="-84"/><nd ref="-85"/><nd ref="-86"/><nd ref="-87"/><nd ref="-88"/><nd ref="-89"/><nd ref="-70"/><tag k="building" v="university"/><tag k="name" v="Park Library"/></way><node id="-90" visible="true" lat="43.578222413793576" lon="-84.77177381515503"/><node id="-91" visible="true" lat="43.57823407229172" lon="-84.77012693881989"/><node id="-92" visible="true" lat="43.57706043882252" lon="-84.77012157440187"/><node id="-93" visible="true" lat="43.57691276146768" lon="-84.77033615112305"/><node id="-94" visible="true" lat="43.57690887521662" lon="-84.77136611938477"/><node id="-95" visible="true" lat="43.57702157639583" lon="-84.77154850959779"/><node id="-96" visible="true" lat="43.57702934888318" lon="-84.77176308631897"/><node id="-97" visible="true" lat="43.577328588882985" lon="-84.77177381515503"/><node id="-98" visible="true" lat="43.577328588882985" lon="-84.7719830274582"/><node id="-99" visible="true" lat="43.57792706442133" lon="-84.77198839187623"/><node id="-100" visible="true" lat="43.57792706442133" lon="-84.77177381515503"/><way id="-6" visible="true"><nd ref="-90"/><nd ref="-91"/><nd ref="-92"/><nd ref="-93"/><nd ref="-94"/><nd ref="-95"/><nd ref="-96"/><nd ref="-97"/><nd ref="-98"/><nd ref="-99"/><nd ref="-100"/><nd ref="-90"/><tag k="building" v="Football Stadium"/><tag k="name" v="Kelly/Shorts Stadium"/></way><node id="-101" visible="true" lat="43.590283866061846" lon="-84.77099061012268"/><node id="-102" visible="true" lat="43.59028775144958" lon="-84.77114617824554"/><node id="-103" visible="true" lat="43.59032271992803" lon="-84.7712105512619"/><node id="-104" visible="true" lat="43.59044316675387" lon="-84.77120518684389"/><node id="-105" visible="true" lat="43.590482020517236" lon="-84.77114617824554"/><node id="-106" visible="true" lat="43.590482020517236" lon="-84.77113008499147"/><node id="-107" visible="true" lat="43.59069571576738" lon="-84.77112472057343"/><node id="-108" visible="true" lat="43.59069571576738" lon="-84.77115154266359"/><node id="-109" visible="true" lat="43.59126297584205" lon="-84.7711569070816"/><node id="-110" visible="true" lat="43.591278517138704" lon="-84.77096915245056"/><node id="-111" visible="true" lat="43.591313485041525" lon="-84.7709745168686"/><node id="-112" visible="true" lat="43.591317370362795" lon="-84.770867228508"/><node id="-113" visible="true" lat="43.59126686116658" lon="-84.77085113525392"/><node id="-114" visible="true" lat="43.59125909051726" lon="-84.7706687450409"/><node id="-115" visible="true" lat="43.59100265852639" lon="-84.77067410945894"/><node id="-116" visible="true" lat="43.59100265852639" lon="-84.77038979530336"/><node id="-117" visible="true" lat="43.59109979198481" lon="-84.77038979530336"/><node id="-118" visible="true" lat="43.59109979198481" lon="-84.77020740509035"/><node id="-119" visible="true" lat="43.59112698932508" lon="-84.7702020406723"/><node id="-120" visible="true" lat="43.591119218657674" lon="-84.77008402347565"/><node id="-121" visible="true" lat="43.59109979198481" lon="-84.77007865905763"/><node id="-122" visible="true" lat="43.591095906649464" lon="-84.76990163326265"/><node id="-123" visible="true" lat="43.590703486489446" lon="-84.76989090442659"/><node id="-124" visible="true" lat="43.59069183040598" lon="-84.76972997188568"/><node id="-125" visible="true" lat="43.590633549954696" lon="-84.76972997188568"/><node id="-126" visible="true" lat="43.59062577922357" lon="-84.77035760879517"/><node id="-127" visible="true" lat="43.59020615825418" lon="-84.7703468799591"/><node id="-128" visible="true" lat="43.59020615825418" lon="-84.77047562599184"/><node id="-129" visible="true" lat="43.59019450207436" lon="-84.77047562599184"/><node id="-130" visible="true" lat="43.59018673128658" lon="-84.77047026157379"/><node id="-131" visible="true" lat="43.590190616680594" lon="-84.77058291435243"/><node id="-132" visible="true" lat="43.59020615825418" lon="-84.77059364318849"/><node id="-133" visible="true" lat="43.590210043646934" lon="-84.77072238922119"/><node id="-134" visible="true" lat="43.59032660531327" lon="-84.77072238922119"/><node id="-135" visible="true" lat="43.59033826146747" lon="-84.77093160152437"/><node id="-136" visible="true" lat="43.59033049069826" lon="-84.77093160152437"/><way id="-7" visible="true"><nd ref="-101"/><nd ref="-102"/><nd ref="-103"/><nd ref="-104"/><nd ref="-105"/><nd ref="-106"/><nd ref="-107"/><nd ref="-108"/><nd ref="-109"/><nd ref="-110"/><nd ref="-111"/><nd ref="-112"/><nd ref="-113"/><nd ref="-114"/><nd ref="-115"/><nd ref="-116"/><nd ref="-117"/><nd ref="-118"/><nd ref="-119"/><nd ref="-120"/><nd ref="-121"/><nd ref="-122"/><nd ref="-123"/><nd ref="-124"/><nd ref="-125"/><nd ref="-126"/><nd ref="-127"/><nd ref="-128"/><nd ref="-129"/><nd ref="-130"/><nd ref="-131"/><nd ref="-132"/><nd ref="-133"/><nd ref="-134"/><nd ref="-135"/><nd ref="-136"/><nd ref="-101"/><tag k="building" v="University"/><tag k="name" v="Health Professions"/></way><node id="-137" visible="true" lat="43.58840719446145" lon="-84.77364599704742"/><node id="-138" visible="true" lat="43.58828285804435" lon="-84.77356016635896"/><node id="-139" visible="true" lat="43.58806138316517" lon="-84.77332413196564"/><node id="-140" visible="true" lat="43.58782047973972" lon="-84.77291643619537"/><node id="-141" visible="true" lat="43.587707798774275" lon="-84.77262139320375"/><node id="-142" visible="true" lat="43.587707798774275" lon="-84.77257847785951"/><node id="-143" visible="true" lat="43.5878739" lon="-84.7728241"/><node id="-144" visible="true" lat="43.5878865340007" lon="-84.77235853672029"/><node id="-145" visible="true" lat="43.587964244803175" lon="-84.77235853672029"/><node id="-146" visible="true" lat="43.58796813034068" lon="-84.77209568023682"/><node id="-147" visible="true" lat="43.58804195550532" lon="-84.77211713790894"/><node id="-148" visible="true" lat="43.5880380699726" lon="-84.77205276489258"/><node id="-149" visible="true" lat="43.58806138316517" lon="-84.77203130722046"/><node id="-150" visible="true" lat="43.58808081081876" lon="-84.77207958698274"/><node id="-151" visible="true" lat="43.5881045" lon="-84.7720639"/><node id="-152" visible="true" lat="43.58811966610713" lon="-84.77192401885988"/><node id="-153" visible="true" lat="43.58828285804435" lon="-84.771945476532"/><node id="-154" visible="true" lat="43.58828674356127" lon="-84.7720366716385"/><node id="-155" visible="true" lat="43.58833336974478" lon="-84.77204203605652"/><node id="-156" visible="true" lat="43.588337255258445" lon="-84.77211177349092"/><node id="-157" visible="true" lat="43.58837999589217" lon="-84.77211177349092"/><node id="-158" visible="true" lat="43.58837999589217" lon="-84.77240681648254"/><node id="-159" visible="true" lat="43.58842662200344" lon="-84.77240145206453"/><node id="-160" visible="true" lat="43.588434393018474" lon="-84.77256774902345"/><node id="-161" visible="true" lat="43.588391652423375" lon="-84.77256774902345"/><node id="-162" visible="true" lat="43.588391652423375" lon="-84.77277696132661"/><node id="-163" visible="true" lat="43.588434393018474" lon="-84.77277696132661"/><node id="-164" visible="true" lat="43.588434393018474" lon="-84.77294325828554"/><node id="-165" visible="true" lat="43.58838388140283" lon="-84.77294862270355"/><node id="-166" visible="true" lat="43.588376110381276" lon="-84.77316319942476"/><node id="-167" visible="true" lat="43.58842662200344" lon="-84.77315783500671"/><node id="-168" visible="true" lat="43.58842273649553" lon="-84.77342069149019"/><node id="-169" visible="true" lat="43.5883022" lon="-84.7734227"/><way id="-8" visible="true"><nd ref="-137"/><nd ref="-138"/><nd ref="-139"/><nd ref="-140"/><nd ref="-141"/><nd ref="-142"/><nd ref="-143"/><nd ref="-144"/><nd ref="-145"/><nd ref="-146"/><nd ref="-147"/><nd ref="-148"/><nd ref="-149"/><nd ref="-150"/><nd ref="-151"/><nd ref="-152"/><nd ref="-153"/><nd ref="-154"/><nd ref="-155"/><nd ref="-156"/><nd ref="-157"/><nd ref="-158"/><nd ref="-159"/><nd ref="-160"/><nd ref="-161"/><nd ref="-162"/><nd ref="-163"/><nd ref="-164"/><nd ref="-165"/><nd ref="-166"/><nd ref="-167"/><nd ref="-168"/><nd ref="-169"/><nd ref="-137"/><tag k="building" v="University"/><tag k="name" v="Music Building"/><tag k="alt_name" v="SOM;School of Music"/></way><node id="-170" visible="true" lat="43.58672474554203" lon="-84.77643549442291"><tag k="entrance" v="yes"/><tag k="entrance:building" v="Pearce Hall"/></node><node id="-171" visible="true" lat="43.58673251677679" lon="-84.77567911148073"><tag k="entrance" v="yes"/><tag k="entrance:building" v="Pearce Hall"/></node><node id="-172" visible="true" lat="43.58626235526845" lon="-84.77574348449708"><tag k="amenity" v="bicycle_parking"/><tag k="covered" v="no"/><tag k="bicycle_parking" v="stands"/></node><node id="-173" visible="true" lat="43.58571836216394" lon="-84.77371573448183"><tag k="entrance" v="yes"/><tag k="entrance:building" v="Biosciences Building"/></node><node id="-174" visible="true" lat="43.586036987293035" lon="-84.77352261543275"><tag k="entrance" v="yes"/><tag k="entrance:building" v="Biosciences Building"/></node><node id="-175" visible="true" lat="43.58603310163088" lon="-84.7727018594742"><tag k="entrance" v="yes"/><tag k="entrance:building" v="Biosciences Building"/></node><node id="-1" visible="true" lat="43.5815955117596" lon="-84.7744131088257"><tag k="name" v="Rose Hall"/><tag k="building" v="University"/></node><node id="-2" visible="true" lat="43.581743177629455" lon="-84.77452576160432"><tag k="entrance" v="yes"/><tag k="entrance:building" v="Rose Hall"/></node></osm>

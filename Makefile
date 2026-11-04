@@ -68,16 +68,21 @@ db-up: ## Build and start only the local development database on localhost:15434
 .PHONY: db-migrate
 db-migrate: ## Apply the users schema to the running local development DB without resetting data
 	$(DEV_COMPOSE) exec -T db psql -U postgres -d cats -v ON_ERROR_STOP=1 < deploy/migrations/003_users.sql
+	$(DEV_COMPOSE) exec -T db psql -U postgres -d cats -v ON_ERROR_STOP=1 < deploy/migrations/004_map.sql
+	$(MAKE) map-import
 
 stack-test: ## Build and start the complete stack at http://localhost:18082
 	$(TEST_COMPOSE) up --build -d --wait
 	$(TEST_COMPOSE) exec -T db psql -U postgres -d cats -v ON_ERROR_STOP=1 < deploy/migrations/003_users.sql
+	$(TEST_COMPOSE) exec -T db psql -U postgres -d cats -v ON_ERROR_STOP=1 < deploy/migrations/004_map.sql
+	$(TEST_COMPOSE) exec -T api python scripts/import_campus_map.py --if-empty
 	$(MAKE) stack-check
 
-stack-check: ## Verify frontend, API routing, and PostGIS-backed locations
+stack-check: ## Verify frontend, API routing, locations, and database map features
 	curl --fail --show-error --max-time 10 http://127.0.0.1:$${CATS_PORT:-18082}/ -o /dev/null
 	curl --fail --show-error --max-time 10 http://127.0.0.1:$${CATS_PORT:-18082}/api/health
 	curl --fail --show-error --max-time 10 http://127.0.0.1:$${CATS_PORT:-18082}/api/locations
+	curl --fail --show-error --max-time 10 "http://127.0.0.1:$${CATS_PORT:-18082}/api/map/features?limit=1" -o /dev/null
 
 stack-down: ## Stop the complete local stack, retaining its database
 	$(TEST_COMPOSE) down
@@ -183,3 +188,15 @@ CATS_USER ?=
 TEAM_SSH_KEY ?= $(HOME)/.ssh/id_ed25519
 team-deploy: ## Classmates: upload/deploy API and frontend through the restricted SSH interface
 	python3 scripts/classmate_deploy.py --user "$(CATS_USER)" --key "$(TEAM_SSH_KEY)" --tag "$(CATS_TAG)"
+
+.PHONY: map-editor
+map-editor: ## Start the database map editor at http://localhost:8081/map-editor
+	$(MAKE) dev
+
+.PHONY: test-map-editor
+test-map-editor: ## Check OSM geometry and XML editing without changing campus data
+	node tests/frontend/osm-editor.cjs
+
+.PHONY: map-import
+map-import: ## Import campus data once; preserve any existing database edits
+	DB_PASSWORD=$${DB_PASSWORD:-cats-devonly} DB_PORT=$${CATS_DB_PORT:-15434} uv run python scripts/import_campus_map.py --if-empty
