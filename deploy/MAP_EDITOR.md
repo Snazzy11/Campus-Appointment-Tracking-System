@@ -105,9 +105,32 @@ an inverse changeset from `before_state` and submit it against the current revis
 or restore a database backup. There is no automatic “restore old revision” button.
 Do not blindly replay old records over later edits; dependencies must be reviewed.
 
-Walking topology is preserved, but this change does not calculate routes, infer
-walkable connectors, or validate accessibility. Disconnected entrances and access,
-steps, level, and crossing restrictions still need review before routing is enabled.
+## Walking navigation
+
+Open the Campus Map and search for a destination at the top. Select one of up to
+six suggestions using the arrow keys and Enter, or a click. Then select a starting
+location in the same way. Exact names and aliases rank first, followed by prefixes,
+substrings, and fuzzy matches; edit distance breaks ties within those groups.
+
+`GET /api/map/search?q=East` returns ranked, deduplicated locations.
+`GET /api/map/route?start=<feature-id>&destination=<feature-id>` returns a GeoJSON
+route with distance, estimated walking time (1.4 m/s), path segments, and revision.
+Buildings route through permitted entrances linked by building ID. Other locations
+must share a node with the walking network. Routes use shortest distance along
+footways, paths, pedestrian ways, stairs, and explicitly walkable cycleways.
+
+Shared node IDs establish connections. Visually overlapping lines, nearby entrances,
+and building name matches never create imaginary shortcuts. Disconnected endpoints
+return an explanatory error. Link entrances to buildings and connect them to real
+walking-path nodes in the data before expecting routes through them.
+
+Private/forbidden access, locked nodes, explicit barriers, and conditional access
+are excluded conservatively; pedestrian one-way tags are respected. Stairs are
+flagged. This is basic outdoor walking navigation, not live GPS guidance or an
+accessibility guarantee: opening hours, temporary closures, indoor levels, and
+crossing signals are not evaluated. Roads are not used as substitute sidewalks.
+The graph is read from the current database revision for each route request;
+large deployments should add a revision-keyed graph cache after measuring load.
 
 ## Checks
 
