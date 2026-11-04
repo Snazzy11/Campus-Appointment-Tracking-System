@@ -1,0 +1,21 @@
+# Key
+# Parker: Snazzy11
+# Vincent: vehmu
+# Carter: LordofChin
+# Becca: beccabanks
+# Anna: annasprophecy
+# Sadia: -
+
+# Frontend
+*.tsx    @Snazzy11 @LordofChin @vehmu
+
+# Backend
+*.py     @Snazzy11 @LordofChin @vehmu
+
+# DevOps / Infrastructure
+Dockerfile          @Snazzy11
+docker-compose.yml  @Snazzy11
+Makefile            @Snazzy11
+.python-version     @Snazzy11
+
+/.github/*          @Snazzy11

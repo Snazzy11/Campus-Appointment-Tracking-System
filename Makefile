@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-api lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -19,7 +19,9 @@ help: ## Show this help message
 
 ##@ Setup
 
-setup: setup-hooks setup-backend setup-frontend ## Install everything and set up git hooks
+setup: setup-hooks setup-env setup-backend setup-frontend ## Install everything and set up git hooks
+setup-env: ## Create .env from .env.example (keeps an existing .env)
+	@test -f .env || (cp .env.example .env && echo "created .env from .env.example")
 setup-frontend: ## Install frontend packages from the lockfile
 	@echo "downloading dependencies for the frontend from lockfiles"
 	pnpm --dir front_end install --frozen-lockfile
@@ -36,7 +38,7 @@ setup-hooks: ## Use the repo's git hooks (.githooks/)
 
 app-up: backend-up ## Start backend, run checks, then start the web app
 	$(MAKE) health
-	$(MAKE) test-api
+	$(MAKE) test-backend
 	$(MAKE) status
 	$(MAKE) web-up
 
@@ -56,9 +58,9 @@ backend-down: ## Stop the API + database containers
 	@echo "shutting down the backend"
 	docker compose down
 
-api-up: ## Run the API locally with auto-reload (no Docker)
+api-up: setup-env ## Run the API locally with auto-reload (no Docker)
 	@echo "starting just the api"
-	uv run uvicorn api.main:app --app-dir back_end/app --reload --port 8000
+	uv run uvicorn cats.api.main:app --reload --port 8000
 
 db-up: ## Start only the database container
 	@echo "launching db docker instance"
@@ -78,9 +80,9 @@ logs: ## Follow the API container's logs
 
 ##@ Backend checks
 
-test-api: ## Run backend API tests
-	@echo "runnning api tests..."
-	PYTHONPATH=back_end/app uv run pytest back_end/app/api/test_api.py -v
+test-backend: ## Run backend tests
+	@echo "runnning backend tests..."
+	uv run pytest tests/backend
 
 lint: ## Run backend linter (ruff)
 	@echo "Running linter checks"
@@ -130,4 +132,10 @@ validate-frontend: ## Run all frontend validations
 
 ##@ All checks
 
-validate: validate-backend validate-frontend ## Run all backend and frontend checks (what CI runs)
+validate: validate-backend validate-frontend ## Run all backend and frontend checks (CI runs these plus test-backend)
+
+##@ Scripts
+
+import-osm: setup-env db-up ## Start the db if needed, then import data/greater_cmu_area.osm (creates the locations table)
+	@echo "Filling database with data from 'data/greater_cmu_area.osm'"
+	uv run python3 ./scripts/import_osm_locations.py

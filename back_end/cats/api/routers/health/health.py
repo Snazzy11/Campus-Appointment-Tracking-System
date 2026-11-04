@@ -1,6 +1,7 @@
-from api.dependencies import db_session
 from fastapi import APIRouter
 from sqlalchemy import text
+
+from cats.api.dependencies import db_session
 
 router = APIRouter(tags=["Health"])
 

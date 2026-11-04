@@ -21,7 +21,7 @@ services:
     platform: linux/amd64
     image: postgis/postgis:18-3.6
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_USER: cats
       POSTGRES_PASSWORD: cats-devonly

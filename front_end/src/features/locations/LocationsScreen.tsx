@@ -17,7 +17,9 @@ export function LocationsScreen() {
         const data = await getLocations();
         setLocations(data);
       } catch {
-        setErrorMessage('Could not load locations. Is the backend running?');
+        setErrorMessage(
+          'Could not load locations. Is the backend running? Does the database have the data?',
+        );
       }
     }
 

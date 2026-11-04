@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers.health.health import router as health_router
-from api.routers.locations.locations import router as locations_router
+from cats.api.routers.health.health import router as health_router
+from cats.api.routers.locations.locations import router as locations_router
 
 app = FastAPI(
     title="Campus Appointment and Tracking System",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 app.add_middleware(

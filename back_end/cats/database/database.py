@@ -1,12 +1,10 @@
-import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = os.environ["DATABASE_URL"]  # See Dockerfile for environment variable
+from cats.settings import settings
 
 engine = create_engine(
-    DATABASE_URL, pool_pre_ping=True, future=True
+    settings.database_url, pool_pre_ping=True, future=True
 )  # Add `echo=True` for verbose logging
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)

@@ -1,25 +1,24 @@
 FROM python:3.14.7-slim-trixie
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+# Pinned so builds are reproducible; bump alongside the uv version the team uses locally
+COPY --from=ghcr.io/astral-sh/uv:0.13.4 /uv /uvx /bin/
 
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /cats-backend
 
-RUN apt-get update && apt-get install -y --no-install-recommends file \
-    && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml uv.lock README.md ./
 
-COPY pyproject.toml uv.lock ./
-
-# --no-emit-project excludes the local root package from requirements.txt
-RUN uv export --frozen --no-dev --no-emit-project > requirements.txt \
+# Install third-party dependencies first so this layer is cached across code changes
+RUN uv export --frozen --no-default-groups --no-emit-project > requirements.txt \
     && uv pip install --system -r requirements.txt
 
+COPY ./back_end/ ./back_end/
+RUN uv pip install --system --no-deps .
 
-COPY ./back_end/app/ ./back_end/app/
 COPY ./scripts/ ./scripts/
 COPY ./data/ ./data/
 
 EXPOSE 8000
 
-CMD ["uvicorn", "api.main:app", "--app-dir", "back_end/app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "cats.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

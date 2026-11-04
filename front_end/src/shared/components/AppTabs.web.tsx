@@ -27,9 +27,8 @@ export default function AppTabs() {
           <TabTrigger name="locations" href="/locations" asChild>
             <TabButton>Locations</TabButton>
           </TabTrigger>
-          {/* Fixed name, href, and display text for your OSM Map view */}
           <TabTrigger name="maps" href="/maps" asChild>
-            <TabButton>OSM Map</TabButton>
+            <TabButton>Map</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>

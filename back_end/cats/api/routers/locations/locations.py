@@ -1,8 +1,9 @@
-from api.dependencies import db_session
-from database.models.location import Location
 from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy import func, select
+
+from cats.api.dependencies import db_session
+from cats.database.models.location import Location
 
 router = APIRouter(tags=["Locations"])
 

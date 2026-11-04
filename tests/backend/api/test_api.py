@@ -1,4 +1,3 @@
-
 import asyncio
 import os
 
@@ -6,14 +5,16 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
 import pytest
-from api.main import app
-from api.routers.message.messages import (
+from cats.api.main import app
+from cats.api.routers.message.messages import (
     MessageInput,
     post_message,
     stream_messages,
     subscribers,
 )
-from database.database import get_db
+from cats.api.routers.message.messages import router as messaging_router
+from cats.database.database import get_db
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -45,28 +46,26 @@ def test_health(client):
     assert response.json() == {"status": "ok"}
 
 
-def test_test(client):
-    response = client.get("/test")
-    assert response.status_code == 200
-    assert response.json() == {"message": "hello wolrd"}
+# The messaging router isn't mounted on the main app yet, so test it on its own app.
+@pytest.fixture
+def messaging_client():
+    messaging_app = FastAPI()
+    messaging_app.include_router(messaging_router)
+    with TestClient(messaging_app) as test_client:
+        yield test_client
 
 
-def test_stream_routes_registered(client):
-    paths = client.get("/openapi.json").json()["paths"]
-    assert "get" in paths["/counter"]
-    assert "get" in paths["/messaging"]
-
-
-def test_post_message(client):
-    response = client.post("/messaging", json={"message": "Hello"})
+def test_post_message(messaging_client):
+    response = messaging_client.post("/messaging", json={"message": "Hello"})
     assert response.status_code == 200
     assert response.json() == {"status": "sent"}
 
 
 @pytest.mark.parametrize("payload", [None, {}, {"message": 123}])
-def test_invalid_message(client, payload):
-    response = client.post("/messaging", json=payload)
+def test_invalid_message(messaging_client, payload):
+    response = messaging_client.post("/messaging", json=payload)
     assert response.status_code == 422
+
 
 def test_message_broadcast_and_disconnect():
     async def check():

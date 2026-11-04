@@ -1,7 +1,7 @@
 [project]
 name = "cats"
 version = "0.2.0"
-description = "Add your description here"
+description = "Campus Appointment and Tracking System backend"
 readme = "README.md"
 authors = [
     { name = "Parker Scott", email = "98108108+Snazzy11@users.noreply.github.com" }
@@ -14,18 +14,23 @@ dependencies = [
     "phonenumbers>=9.0.41",
     "psycopg2-binary>=2.9.13",
     "pydantic-extra-types>=2.11.1",
+    "pydantic-settings>=2.16.1",
     "pydantic[email]>=2.14.1",
-    "selenium>=4.51.0",
     "sqlalchemy>=2.1.4",
     "uvicorn>=0.54.0",
 ]
 
 [build-system]
-requires = ["uv_build>=0.12.23,<0.13.0"]
+requires = ["uv_build>=0.12.23,<0.14.0"]
 build-backend = "uv_build"
 
+[tool.uv.build-backend]
+module-root = "back_end"
+module-name = "cats"
+
 [tool.uv]
-package = false
+package = true
+default-groups = ["dev", "scraper"]
 
 [dependency-groups]
 dev = [
@@ -34,22 +39,23 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.17.0",
 ]
+# Only needed by scraper/, kept out of the Docker image
+scraper = [
+    "selenium>=4.51.0",
+]
 
 [tool.pyright]
 pythonVersion = "3.14"
 
 typeCheckingMode = "standard"
 
-include = ["back_end/app"]
-extraPaths = ["back_end/app"]
+include = ["back_end/cats"]
+extraPaths = ["back_end"] # source root, so pyright treats `cats` as local code rather than an installed library
 venvPath = "."
 venv = ".venv"
 
 reportMissingImports = "error"
 
-strict = ["back_end/app/database"] # Mark database as always using strict analysis
+strict = ["back_end/cats/database"] # Mark database as always using strict analysis
 strictListInference = true # Stricter typing for lists and dictionaries
 strictDictionaryInference = true
-
-[tool.fastapi]
-entrypoint = "dev:app"
