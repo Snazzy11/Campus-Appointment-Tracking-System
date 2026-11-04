@@ -87,6 +87,7 @@ export default function OsmMapScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   header: {
+    minHeight: 78,
     padding: 14,
     backgroundColor: '#2c3e50',
     flexDirection: 'row',
