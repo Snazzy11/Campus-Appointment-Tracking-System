@@ -2,6 +2,8 @@
 
 Paths below are relative to the repository root. These changes make the existing starter a standalone Expo SDK 57 app; they do not import the demo applications.
 
+> **Update:** the app was later downgraded from SDK 57 to **SDK 54** so it runs in the App Store's Expo Go on iPhones. See the "Mobile development" section of `front_end/README.md`. SDK 57 details below are historical.
+
 ## Source moves (contents preserved except subsequent fixes listed below)
 
 - `front_end/app/_layout.tsx` → `front_end/src/app/_layout.tsx`

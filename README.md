@@ -18,7 +18,7 @@ pnpm install --frozen-lockfile
 pnpm web
 ```
 
-After installation, `pnpm web` also works from the repository root. See [frontend setup](front_end/README.md) and the [setup change record](front_end/SETUP_CHANGES.md). The Locations page needs the backend running (`make backend-up`).
+After installation, `pnpm web` also works from the repository root. To run the app on a phone or emulator, see [Mobile development](front_end/README.md#mobile-development). See [frontend setup](front_end/README.md) and the [setup change record](front_end/SETUP_CHANGES.md). The Locations page needs the backend running (`make backend-up`).
 
 
 ## Backend tooling
@@ -32,7 +32,7 @@ The backend uses Python, FastAPI, PostgreSQL, and uv. `make setup` creates `.env
 
 
 ## Contributing
-Work on a branch and open a pull request against main. Before pushing, run `make validate` (backend and frontend checks; CI runs the same ones). `make format` / `make frontend-format` auto-fix formatting. Use uv for Python dependencies and pnpm for frontend dependencies.
+Work on a branch and open a pull request against main. Before pushing, run `make validate` (backend and frontend checks; CI runs the same ones). `make format` / `make frontend-format` auto-fix formatting. Use uv for Python dependencies and pnpm for frontend dependencies (add frontend packages with `pnpm exec expo install <package>`, not `pnpm add`; see [frontend README](front_end/README.md)).
 
 
 ## Ai Policy

@@ -39,3 +39,10 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## Project constraints (CATS)
+
+- The app lives in `front_end/` and uses **pnpm**: run Expo commands as `pnpm exec expo ...` from `front_end/`.
+- **Stay on Expo SDK 54.** Do not upgrade `expo`. SDK 54 is the newest SDK the App Store's Expo Go supports, and the team has no Mac or paid Apple Developer account, so the app must run in Expo Go.
+- Only add packages that are "Included in Expo Go" (check the v54 docs) or are pure JavaScript. No development builds, no packages requiring custom native code. For maps use `react-native-maps`, not `expo-maps`.
+- See `front_end/README.md` ("Mobile development" and "Conventions") for screen conventions and device setup.

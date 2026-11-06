@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -46,6 +46,10 @@ web-up: ## Start the frontend in the browser
 	@echo "using pnpm to start the front-end"
 	pnpm web
 
+mobile-up: ## Start the Expo dev server for phones/emulators (shows a QR code)
+	@echo "starting Expo for phones and emulators; scan the QR code or press a / i"
+	pnpm --dir front_end start
+
 build-web: ## Build the web frontend into front_end/dist
 	@echo "building the web frontend for shipping"
 	pnpm --dir front_end build
@@ -60,7 +64,7 @@ backend-down: ## Stop the API + database containers
 
 api-up: setup-env ## Run the API locally with auto-reload (no Docker)
 	@echo "starting just the api"
-	uv run uvicorn cats.api.main:app --reload --port 8000
+	uv run uvicorn cats.api.main:app --reload --host 0.0.0.0 --port 8000
 
 db-up: ## Start only the database container
 	@echo "launching db docker instance"
