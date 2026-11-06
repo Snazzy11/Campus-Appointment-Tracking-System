@@ -1,6 +1,6 @@
 """Import named campus buildings from an OpenStreetMap export into the locations table.
 
-Usage (from the repo root, with the db container running via `make db-up`):
+Usage (from the repo root, after `make db-migrate` has created the tables):
     uv run python scripts/import_osm_locations.py [path/to/export.osm]
 """
 
@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 import osmnx as ox
-from cats.database.database import SessionLocal, engine
+from cats.database.database import SessionLocal
 from cats.database.models.location import GEO_SRID, Location
 from geoalchemy2 import Geography, WKTElement
 from sqlalchemy import cast, func, select
@@ -39,8 +39,6 @@ def main() -> None:
     osm_file = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OSM_FILE
     buildings = load_campus_buildings(osm_file)
     print(f"Found {len(buildings)} named buildings on campus in {osm_file.name}")
-
-    Location.__table__.create(bind=engine, checkfirst=True)
 
     with SessionLocal() as session:
         existing = set(session.scalars(select(Location.name)))
