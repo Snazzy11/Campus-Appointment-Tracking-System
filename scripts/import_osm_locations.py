@@ -7,11 +7,9 @@ Usage (from the repo root, with the db container running via `make db-up`):
 import sys
 from pathlib import Path
 
-# Importing add_locations also sets up sys.path and DATABASE_URL for the backend imports below.
-import add_locations  # noqa: F401
 import osmnx as ox
-from database.database import SessionLocal, engine
-from database.models.location import Location
+from cats.database.database import SessionLocal, engine
+from cats.database.models.location import GEO_SRID, Location
 from geoalchemy2 import Geography, WKTElement
 from sqlalchemy import cast, func, select
 from sqlalchemy.orm import Session, aliased
@@ -53,7 +51,7 @@ def main() -> None:
                 continue
             session.add(
                 Location(
-                    name=name, position=WKTElement(f"POINT({lon} {lat})", srid=4326)
+                    name=name, position=WKTElement(f"POINT({lon} {lat})", srid=GEO_SRID)
                 )
             )
             existing.add(name)

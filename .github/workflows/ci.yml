@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: astral-sh/setup-uv@v6
         with:
@@ -21,11 +21,26 @@ jobs:
 
       - name: Lint, format, and type check
         run: make validate-backend
+  backend_tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run tests
+        run: make test-backend
   frontend_validation:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Reads the pnpm version from "packageManager" in the root package.json
       - uses: pnpm/action-setup@v4
@@ -42,7 +57,7 @@ jobs:
       - name: Lint, format, and type check
         run: make validate-frontend
   build:
-    needs: backend_validation
+    needs: [backend_validation, backend_tests]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

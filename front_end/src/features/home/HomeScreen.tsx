@@ -1,9 +1,10 @@
-import { Text, View } from 'react-native';
+import { Screen } from '@/shared/components/Screen';
+import { ThemedText } from '@/shared/components/ThemedText';
 
 export function HomeScreen() {
   return (
-    <View style={{ padding: 48 }}>
-      <Text>CATS</Text>
-    </View>
+    <Screen>
+      <ThemedText type="title">CATS</ThemedText>
+    </Screen>
   );
 }

@@ -4,7 +4,9 @@ services:
   app:
     build: .
     ports:
-      - "127.0.0.1:8000:8000"
+      # Listens on every network interface (not just 127.0.0.1) so phones and emulators on
+      # the same Wi-Fi can reach the API. Anyone on your network can reach it while it runs.
+      - "8000:8000"
     environment:
       DATABASE_URL: "postgresql+psycopg2://cats:cats-devonly@db:5432/cats"
     healthcheck:
@@ -18,15 +20,16 @@ services:
         condition: service_healthy
 
   db:
+    platform: linux/amd64
     image: postgis/postgis:18-3.6
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_USER: cats
       POSTGRES_PASSWORD: cats-devonly
       POSTGRES_DB: cats
     volumes:
-      - cats_data:/var/lib/postgresql
+      - cats_data_pg18:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cats -d cats"]
       interval: 5s
@@ -35,4 +38,5 @@ services:
       start_period: 10s
 
 volumes:
-  cats_data:
+  # PostgreSQL 16 data remains in cats_cats_data; migrate via dump/restore.
+  cats_data_pg18:

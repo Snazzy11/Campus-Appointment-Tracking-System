@@ -24,10 +24,6 @@ from scraper.scrape_v1 import RSO
 BASE_URL = ""
 ORGANIZATIONS_URL = f"{BASE_URL}/organizations"
 
-options = webdriver.ChromeOptions()
-options.add_argument("--window-size=1920,1080")
-
-driver = webdriver.Chrome(options=options)
 # driver.get(BASE_URL)
 # # test code here, this is a certain test case
 # try:
@@ -41,9 +37,14 @@ driver = webdriver.Chrome(options=options)
 # finally:
 #     driver.quit()
 
-
+# Skipped: this opens Chrome and scrapes the live CMU website, so it is not a real unit test.
+# It needs to be rewritten against saved HTML before it is re-enabled.
+@unittest.skip("opens Chrome and hits the live engage.apps.cmich.edu site")
 class RSOTests(unittest.TestCase):
     def test_email_case(self):
+        options = webdriver.ChromeOptions()
+        options.add_argument("--window-size=1920,1080")
+        driver = webdriver.Chrome(options=options)
         driver.get("https://engage.apps.cmich.edu/organization/athleteservices")
         email_element = driver.find_element(
             By.XPATH,

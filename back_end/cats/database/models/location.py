@@ -1,0 +1,23 @@
+from geoalchemy2 import Geometry
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from cats.database.database import Base
+
+GEO_SRID = 4326
+
+
+class Location(Base):
+    __tablename__ = "locations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+
+    position = mapped_column(
+        Geometry(
+            geometry_type="POINT",
+            srid=GEO_SRID,
+            spatial_index=True,
+        ),
+        nullable=True,
+    )
