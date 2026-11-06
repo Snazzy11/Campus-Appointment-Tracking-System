@@ -85,17 +85,14 @@ location_point
 
 _RSO_
 rsos:
-rso_id (p-key),
-name,
-rso_url,
-rso_chat_id(f-key)
-rso_members:
-rso_id(f-key/p-key),
-user_id(f-key, p-key),
-role, -- president, treasurer, member, etc
-moderator, -- can perform administrative tasks
-confirmed_by,
-status -- pending, active
+    rso_id (p-key), 
+    name,
+    description, 
+    rso_url, 
+    email,
+    phone,
+    location,
+    rso_chat_id(f-key)
 
 The following probably aren't needed
 _MAP_
