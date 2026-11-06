@@ -36,6 +36,47 @@ jobs:
 
       - name: Run tests
         run: make test-backend
+  migrations_check:
+    # Fails when a model was changed without a matching migration (see back_end/README.md)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      db:
+        # Same image as docker-compose.yml
+        image: postgis/postgis:18-3.6
+        env:
+          POSTGRES_USER: cats
+          POSTGRES_PASSWORD: cats-devonly
+          POSTGRES_DB: cats
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cats -d cats"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg2://cats:cats-devonly@127.0.0.1:5432/cats
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      # Also fails if two merged branches both added a migration ("multiple heads")
+      - name: Apply all migrations
+        run: uv run alembic upgrade head
+
+      - name: Check that the models match the migrations
+        run: |
+          if ! uv run alembic check; then
+            echo "::error::A model changed without a migration. Run: make db-revision m=\"describe the change\", review the new file in alembic/versions/, and commit it."
+            exit 1
+          fi
   frontend_validation:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -57,7 +98,7 @@ jobs:
       - name: Lint, format, and type check
         run: make validate-frontend
   build:
-    needs: [backend_validation, backend_tests]
+    needs: [backend_validation, backend_tests, migrations_check]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
