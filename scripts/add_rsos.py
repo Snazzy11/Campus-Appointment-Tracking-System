@@ -15,13 +15,13 @@ sys.path.insert(0, str(APP_DIR))
 os.environ.setdefault(
     "DATABASE_URL", "postgresql+psycopg2://cats:cats-devonly@localhost:5432/cats"
 )
-from pydantic import ValidationError
-from database.database import SessionLocal, engine
-from database.models.rso_main import RSO
-from database.models.rso_base import RSOBase
 import json
 
+from cats.database.database import SessionLocal, engine
+from cats.database.models.rso_base import RSOBase
+from cats.database.models.rso_main import RSO
 from geoalchemy2 import Geography, WKTElement
+from pydantic import ValidationError
 from sqlalchemy import cast, func, select
 from sqlalchemy.orm import Session, aliased
 
