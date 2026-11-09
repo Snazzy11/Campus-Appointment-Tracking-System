@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up db-migrate db-revision db-downgrade health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -57,6 +57,7 @@ build-web: ## Build the web frontend into front_end/dist
 backend-up: ## Build and start the API + database containers
 	@echo "starting the api and db containers"
 	docker compose up --build --wait
+	$(MAKE) db-migrate
 
 backend-down: ## Stop the API + database containers
 	@echo "shutting down the backend"
@@ -69,6 +70,21 @@ api-up: setup-env ## Run the API locally with auto-reload (no Docker)
 db-up: ## Start only the database container
 	@echo "launching db docker instance"
 	docker compose up -d --wait db
+
+##@ Database migrations (Alembic)
+
+db-migrate: setup-env db-up ## Start the db if needed, then apply all migrations
+	@echo "applying database migrations"
+	uv run alembic upgrade head
+
+db-revision: setup-env db-up ## Generate a migration from model changes: make db-revision m="add chats table"
+	@test -n "$(m)" || (echo 'usage: make db-revision m="describe the change"' && exit 1)
+	uv run alembic upgrade head
+	uv run alembic revision --autogenerate -m "$(m)"
+
+db-downgrade: setup-env ## Undo the most recent migration
+	@echo "reverting the latest migration"
+	uv run alembic downgrade -1
 
 ##@ Status and debugging
 
@@ -140,6 +156,6 @@ validate: validate-backend validate-frontend ## Run all backend and frontend che
 
 ##@ Scripts
 
-import-osm: setup-env db-up ## Start the db if needed, then import data/greater_cmu_area.osm (creates the locations table)
+import-osm: db-migrate ## Start and migrate the db if needed, then import data/greater_cmu_area.osm
 	@echo "Filling database with data from 'data/greater_cmu_area.osm'"
 	uv run python3 ./scripts/import_osm_locations.py
