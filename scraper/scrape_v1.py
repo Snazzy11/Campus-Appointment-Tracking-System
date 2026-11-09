@@ -25,9 +25,6 @@ RSOs = []
 def addRSOsToDatabase():
     pass
 
-
-# TODO: translate RSO object to a model... make it in models/RSO.py?
-@dataclass
 class RSO:
     id: int
     name: str
