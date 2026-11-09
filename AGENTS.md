@@ -44,5 +44,5 @@ Docs: https://docs.expo.dev/eas/index.md
 
 - The app lives in `front_end/` and uses **pnpm**: run Expo commands as `pnpm exec expo ...` from `front_end/`.
 - **Stay on Expo SDK 54.** Do not upgrade `expo`. SDK 54 is the newest SDK the App Store's Expo Go supports, and the team has no Mac or paid Apple Developer account, so the app must run in Expo Go.
-- Only add packages that are "Included in Expo Go" (check the v54 docs) or are pure JavaScript. No development builds, no packages requiring custom native code. For maps use `react-native-maps`, not `expo-maps`.
+- Only add packages that are "Included in Expo Go" (`inExpoGo: true` in the archived SDK 54 docs at https://github.com/expo/expo/tree/sdk-54/docs/pages/versions/v54.0.0/sdk , since docs.expo.dev `/versions/v54.0.0/` now redirects to latest) or are pure JavaScript. No development builds, no packages requiring custom native code. For maps use `react-native-maps`, not `expo-maps`.
 - See `front_end/README.md` ("Mobile development" and "Conventions") for screen conventions and device setup.
