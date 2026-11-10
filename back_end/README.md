@@ -49,11 +49,6 @@ Fix it with `uv run alembic merge heads -m "merge"`.
 
 ### Databases created before Alembic
 
-Before migrations existed, `make import-osm` created the `locations` table itself, so
-`make db-migrate` fails with `relation "locations" already exists` on those databases.
-Drop that table once, then migrate and re-import:
-
-```sh
-docker compose exec db psql -U cats -d cats -c 'DROP TABLE locations'
-make import-osm   # runs the migrations, then reloads the campus locations
-```
+Before migrations existed, `make import-osm` created the `locations` table itself. The first
+migration detects that table and keeps it, along with its data, so `make db-migrate` works on
+those databases with no extra steps.

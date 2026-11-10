@@ -1,10 +1,10 @@
 """Seed the database with a few campus locations, then print the distance between each pair.
 
-Usage (from the repo root, with the db container running via `make db-up`):
-    uv run python scripts/add_locations.py
+Usage (from the repo root, after `make db-migrate` has created the tables):
+    uv run python scripts/add_fake_locations_and_test.py
 """
 
-from cats.database.database import SessionLocal, engine
+from cats.database.database import SessionLocal
 from cats.database.models.location import Location
 from geoalchemy2 import Geography, WKTElement
 from sqlalchemy import cast, func, select
@@ -18,9 +18,6 @@ LOCATIONS = [
 
 
 def main() -> None:
-    # Create the locations table if it doesn't exist yet (no-op otherwise).
-    Location.__table__.create(bind=engine, checkfirst=True)
-
     with SessionLocal() as session:
         for name, lon, lat in LOCATIONS:
             exists = session.scalar(select(Location).where(Location.name == name))
