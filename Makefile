@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up db-migrate db-revision db-downgrade health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up db-migrate db-revision require-message db-downgrade health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -77,10 +77,13 @@ db-migrate: setup-env db-up ## Start the db if needed, then apply all migrations
 	@echo "applying database migrations"
 	uv run alembic upgrade head
 
-db-revision: setup-env db-up ## Generate a migration from model changes: make db-revision m="add chats table"
-	@test -n "$(m)" || (echo 'usage: make db-revision m="describe the change"' && exit 1)
+db-revision: require-message setup-env db-up ## Generate a migration from model changes: make db-revision m="add chats table"
 	uv run alembic upgrade head
 	uv run alembic revision --autogenerate -m "$(m)"
+
+# Runs before db-revision starts the database, so a missing m= fails right away
+require-message:
+	@test -n "$(m)" || (echo 'usage: make db-revision m="describe the change"  (the m= is required)' && exit 1)
 
 db-downgrade: setup-env ## Undo the most recent migration
 	@echo "reverting the latest migration"
