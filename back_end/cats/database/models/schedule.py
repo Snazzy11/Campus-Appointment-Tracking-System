@@ -6,7 +6,7 @@ from cats.database.database import Base
 
 class Schedule(Base):
     __tablename__ = "user_schedule"
-    
+
     section: Mapped[int] = mapped_column(primary_key=True)
     course_code: Mapped[str] = mapped_column(String(10))
     course_title: Mapped[str] = mapped_column(String(100))
