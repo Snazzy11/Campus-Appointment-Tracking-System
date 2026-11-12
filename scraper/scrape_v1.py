@@ -51,6 +51,9 @@ class RSO:
 
     def setLocation(self, location):
         self.location = location
+    
+    def __str__(self):
+        return f"{self.id} {self.name} {self.description}"
 
 
 def addEmail(rso):
@@ -192,14 +195,14 @@ def main():
         # print("\n\n\n_______Summary_______\nSuccessful contact count: " + str(successful_attempt_count) + "\nFailure contact count: " + str(failed_attempt_count) + "\nSuccess rate: " + str(round(float(successful_attempt_count/len(RSOs)), 2)))
 
         for rso in RSOs:
-            print(str(rso))
+            print(rso)
 
     finally:
         driver.quit()
         
         # writes info from scraper to json file in data folder
-        with open('rso_info.json', 'w') as fp:
-            json.dump([asdict(rso) for rso in RSOs], fp)
+        with open('data/rso_info.json', 'w') as fp:
+            fp.write(json.dumps(RSOs, default=vars))
 
 if __name__ == "__main__":
     main()
