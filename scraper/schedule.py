@@ -1,3 +1,7 @@
+"""
+Gets class schedule from data/test_schedule.py and adds info to a json file.
+"""
+
 import pdfplumber
 import json
 from dataclasses import dataclass
@@ -34,11 +38,12 @@ def main() -> None:
         # gets rid of the first row
         CLASSES.pop(0) 
         
-        print("Schedule Info...")
+        print("Class schedule Info...")
         for class_item in CLASSES:
             print(class_item.section + " " + class_item.course_title + " " + class_item.instructor_name)
             
         fp.write(json.dumps(CLASSES, default=vars))
     
+    print("Finished getting class schedule info")
 if __name__ == "__main__":
     main()
