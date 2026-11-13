@@ -6,9 +6,8 @@ import {
   TabTrigger,
   TabTriggerSlotProps,
 } from 'expo-router/ui';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
-import { ExternalLink } from './ExternalLink';
 import { ThemedText } from './ThemedText';
 import { ThemedView } from './ThemedView';
 
@@ -16,8 +15,9 @@ import { MaxContentWidth, Spacing } from '@/shared/constants/theme';
 
 export default function AppTabs() {
   return (
+    // Tabs is a flex column: the tab bar sits on top, and TabSlot (the current page)
+    // fills the remaining space below it, so page content never goes under the bar.
     <Tabs>
-      <TabSlot style={{ height: '100%' }} />
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="home" href="/" asChild>
@@ -29,8 +29,12 @@ export default function AppTabs() {
           <TabTrigger name="maps" href="/maps" asChild>
             <TabButton>Map</TabButton>
           </TabTrigger>
+          <TabTrigger name="calendars" href="/calendars" asChild>
+            <TabButton>Calendar</TabButton>
+          </TabTrigger>
         </CustomTabList>
       </TabList>
+      <TabSlot />
     </Tabs>
   );
 }
@@ -52,28 +56,21 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
 
 export function CustomTabList(props: TabListProps) {
   return (
-    <View {...props} style={styles.tabListContainer}>
+    // ThemedView (not View) so the strip around the bar gets the light/dark page background.
+    <ThemedView {...props} style={styles.tabListContainer}>
       <ThemedView type="backgroundElement" style={styles.innerContainer}>
         <ThemedText type="smallBold" style={styles.brandText}>
           CATS
         </ThemedText>
 
         {props.children}
-
-        <ExternalLink href="https://docs.expo.dev" asChild>
-          <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs ↗</ThemedText>
-          </Pressable>
-        </ExternalLink>
       </ThemedView>
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   tabListContainer: {
-    position: 'absolute',
-    width: '100%',
     padding: Spacing.three,
     justifyContent: 'center',
     alignItems: 'center',
@@ -99,12 +96,5 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.three,
-  },
-  externalPressable: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.one,
-    marginLeft: Spacing.three,
   },
 });

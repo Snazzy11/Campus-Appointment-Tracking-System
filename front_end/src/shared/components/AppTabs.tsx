@@ -27,6 +27,11 @@ export default function AppTabs() {
         <Label>Locations</Label>
         <Icon src={require('@/assets/images/tabIcons/explore.png')} />
       </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="calendars">
+        <Label>Calendar</Label>
+        <Icon src={require('@/assets/images/tabIcons/explore.png')} />
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
