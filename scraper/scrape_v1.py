@@ -202,7 +202,7 @@ def main():
         
         # writes info from scraper to json file in data folder
         with open('data/rso_info.json', 'w') as fp:
-            fp.write(json.dumps(RSOs, default=vars))
+            fp.write(json.dumps(RSOs, default=vars, indent=4))
 
 if __name__ == "__main__":
     main()
