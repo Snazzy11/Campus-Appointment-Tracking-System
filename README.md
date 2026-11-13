@@ -32,7 +32,7 @@ The backend uses Python, FastAPI, PostgreSQL, and uv. `make setup` creates `.env
 
 
 ## Contributing
-Work on a branch and open a pull request against main. Before pushing, run `make validate` (backend and frontend checks; CI runs the same ones). `make format` / `make frontend-format` auto-fix formatting. Use uv for Python dependencies and pnpm for frontend dependencies (add frontend packages with `pnpm exec expo install <package>`, not `pnpm add`; see [frontend README](front_end/README.md)).
+Work on a branch and open a pull request against main. Before pushing, run `make validate` (backend and frontend checks; CI runs the same ones). `make format` / `make frontend-format` auto-fix formatting. Use uv for Python dependencies and pnpm for frontend dependencies (add frontend packages with `pnpm exec expo install <package>` run inside `front_end/`, not `pnpm add`; see [frontend README](front_end/README.md)).
 
 
 ## Ai Policy

@@ -2,7 +2,7 @@
 
 An [Expo](https://docs.expo.dev) app written in React Native + TypeScript.
 We are using expo so the app is portable between browsers, iOS, Android.
-We're on **Expo SDK 54** (React 19.1, React Native 0.81, Expo Router 6; see `expo` in `package.json`). Expo changes a lot between SDK versions, so check the docs for our version (https://docs.expo.dev/versions/v54.0.0/) rather than the "latest" docs or older tutorials. `AGENTS.md` in the repo root contains Expo's guidance for AI coding tools, and this README follows it.
+We're on **Expo SDK 54** (React 19.1, React Native 0.81, Expo Router 6; see `expo` in `package.json`). Expo changes a lot between SDK versions, so check the docs for our version rather than the "latest" docs or older tutorials. docs.expo.dev no longer hosts SDK 54 pages (`/versions/v54.0.0/` links redirect to the latest docs), but the SDK 54 docs are archived on GitHub: [expo/expo/tree/sdk-54/docs/pages/versions/v54.0.0](https://github.com/expo/expo/tree/sdk-54/docs/pages/versions/v54.0.0) (one `.mdx` file per page, e.g. `sdk/map-view.mdx`). `AGENTS.md` in the repo root contains Expo's guidance for AI coding tools, and this README follows it.
 
 > **Don't upgrade the Expo SDK** (e.g. `expo install expo@latest`). We deliberately stay on SDK 54 because it's the newest version the App Store's Expo Go supports, and nobody on the team has a Mac or a paid Apple Developer account. Upgrading would stop the app from running on iPhones. See [Mobile development](#mobile-development).
 
@@ -75,9 +75,9 @@ Phones must be on the same Wi-Fi as your computer (see below).
 
 ### Only use packages that are included in Expo Go
 
-Expo Go can only run packages whose native code is built into it. We can't make our own builds of the app (that needs a Mac or a paid Apple account), so **every package we add must work in Expo Go**. Before adding one, open its page in the [SDK 54 docs](https://docs.expo.dev/versions/v54.0.0/) and look for **"Included in Expo Go"** under the platforms. Pure JavaScript packages always work.
+Expo Go can only run packages whose native code is built into it. We can't make our own builds of the app (that needs a Mac or a paid Apple account), so **every package we add must work in Expo Go**. Pure JavaScript packages (no `ios/`/`android/` folders, no native modules) always work; most UI components such as calendars, date pickers and charts are pure JavaScript. For packages with native code, look for `inExpoGo: true` at the top of the package's page in the [archived SDK 54 docs](https://github.com/expo/expo/tree/sdk-54/docs/pages/versions/v54.0.0/sdk). If a package isn't listed there and has native code, it won't run in Expo Go.
 
-- **Maps:** use [`react-native-maps`](https://docs.expo.dev/versions/v54.0.0/sdk/map-view/) (included in Expo Go, no setup needed for testing). **Don't use `expo-maps`**: it isn't in Expo Go and needs a development build. Neither works in the browser, so the web version of the Map tab needs its own `MapScreen.web.tsx`.
+- **Maps:** use [`react-native-maps`](https://github.com/expo/expo/blob/sdk-54/docs/pages/versions/v54.0.0/sdk/map-view.mdx) (included in Expo Go, no setup needed for testing). **Don't use `expo-maps`**: it isn't in Expo Go and needs a development build. Neither works in the browser, so the web version of the Map tab needs its own `MapScreen.web.tsx`.
 - Never create or edit `ios/` or `android/` folders by hand; native settings go in `app.json`.
 
 ## Checks (same idea as the backend's ruff + pyright)
@@ -157,7 +157,7 @@ Don't create or edit `ios/` or `android/` folders. Expo generates them when need
 
 - **`File.web.tsx`**: on the web, Expo automatically uses `File.web.tsx` instead of `File.tsx`. That's why there are two `AppTabs` files, and a change to one isn't seen on the other platform.
 - **Phones and `localhost`**: on a phone, `localhost` means the phone itself. In development the app automatically calls the backend on port 8000 of the computer running Expo (`src/shared/api.ts`), so the backend must be running on that computer (`make backend-up` or `make api-up`; see [Mobile development](#mobile-development)). To use a different backend, create `front_end/.env` with `EXPO_PUBLIC_API_URL=http://<host>:8000` and restart `pnpm web`/`pnpm start`. `.env` changes only apply after a restart.
-- **Adding packages**: use `pnpm exec expo install <package>` (not `pnpm add`). We still use pnpm: `expo install` picks versions that work with our Expo SDK and then installs them with pnpm. Expo's docs write this as `npx expo install`, which does the same thing. Don't use npm or yarn to install packages in this project.
+- **Adding packages**: from inside `front_end/`, run `pnpm exec expo install <package>` (not `pnpm add`). From the repo root, use `pnpm --dir front_end exec expo install <package>`. Running it from the root without `--dir` fails with `Command "expo" not found`. We still use pnpm: `expo install` picks versions that work with our Expo SDK and then installs them with pnpm. Expo's docs write this as `npx expo install`, which does the same thing. Don't use npm or yarn to install packages in this project.
 - **Data looks wrong?** Check the backend first with `curl localhost:8000/locations` or http://localhost:8000/docs. If the API is right, the bug is in the frontend.
 - **CORS errors in the console**: the backend only allows requests from `localhost:8081`; see `allow_origins` in `back_end/cats/api/main.py`.
 
