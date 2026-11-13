@@ -1,50 +1,58 @@
 [
-  {
-    "section": "22475064",
-    "course_code": "CPS 410",
-    "course_title": "Senior Design I",
-    "credits": "3",
-    "days": "M W F",
-    "times": "10:00 AM - 10:50 AM",
-    "dates": "8/31/26 - 12/18/26",
-    "location": "Pearce Hall 137",
-    "delivery": "Face to Face",
-    "instructor_name": "Kinnicutt, Patrick"
-  },
-  {
-    "section": "22479933",
-    "course_code": "HST 323WI",
-    "course_title": "Native American History",
-    "credits": "3",
-    "days": "M W",
-    "times": "12:30 PM - 1:45 PM",
-    "dates": "8/31/26 - 12/16/26",
-    "location": "Anspach Hall 155",
-    "delivery": "Face to Face",
-    "instructor_name": "Cassidy, Michelle"
-  },
-  {
-    "section": "22476560",
-    "course_code": "ITC 320",
-    "course_title": "Web App Development - Client-Side Script",
-    "credits": "3",
-    "days": "Tu Th",
-    "times": "9:30 AM - 10:45 AM",
-    "dates": "9/1/26 - 12/17/26",
-    "location": "Pearce Hall 423",
-    "delivery": "Face to Face",
-    "instructor_name": "Iqbal, Razi"
-  },
-  {
-    "section": "22474787",
-    "course_code": "MCA 223",
-    "course_title": "Video Production",
-    "credits": "3",
-    "days": "Tu",
-    "times": "2:00 PM - 5:50 PM",
-    "dates": "8/31/26 - 12/18/26",
-    "location": "Anspach Hall 019",
-    "delivery": "Hybrid",
-    "instructor_name": "Potter, Michael"
-  }
+    {
+        "days_of_week": [
+            "Monday",
+            "Wednesday",
+            "Friday"
+        ],
+        "start_time": "10:00:00",
+        "length": 50,
+        "tag": "class",
+        "location": "Pearce Hall 137",
+        "description": "",
+        "title": "Senior Design I",
+        "with_who": "Patrick Kinnicutt",
+        "is_repeating": true
+    },
+    {
+        "days_of_week": [
+            "Monday",
+            "Wednesday"
+        ],
+        "start_time": "12:30:00",
+        "length": 75,
+        "tag": "class",
+        "location": "Anspach Hall 155",
+        "description": "",
+        "title": "Native American History",
+        "with_who": "Michelle Cassidy",
+        "is_repeating": true
+    },
+    {
+        "days_of_week": [
+            "Tuesday",
+            "Thursday"
+        ],
+        "start_time": "09:30:00",
+        "length": 75,
+        "tag": "class",
+        "location": "Pearce Hall 423",
+        "description": "",
+        "title": "Web App Development - Client-Side Script",
+        "with_who": "Razi Iqbal",
+        "is_repeating": true
+    },
+    {
+        "days_of_week": [
+            "Tuesday"
+        ],
+        "start_time": "14:00:00",
+        "length": 230,
+        "tag": "class",
+        "location": "Anspach Hall 019",
+        "description": "",
+        "title": "Video Production",
+        "with_who": "Michael Potter",
+        "is_repeating": false
+    }
 ]

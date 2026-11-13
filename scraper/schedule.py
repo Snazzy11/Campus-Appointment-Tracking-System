@@ -1,49 +1,109 @@
 """
-Gets class schedule from data/test_schedule.py and adds info to a json file.
+Gets class schedule from data/test_schedule.py and adds schedule items in a json file
 """
 
 import pdfplumber
 import json
 from dataclasses import dataclass
+from datetime import datetime, time
+from enum import Enum
 
-schedule = None
-CLASSES = []
-
+SCHEDULE_ITEMS = []
+    
+class CLASS(Enum):
+    SECTION = 0
+    COURSE = 1
+    TITLE = 2
+    CREDITS = 3
+    DAYS = 4
+    TIME = 5
+    DATES = 6
+    LOCATION = 7
+    DELIVERY = 8
+    INSTRUCTOR = 9
+    
 @dataclass
-# don't ask me why it's str or none for each, it was complaining...
-class Class:
-    section: str | None
-    course_code: str | None
-    course_title: str | None
-    credits: str | None
-    days: str | None
-    times: str | None
-    dates: str | None 
-    location: str | None
-    delivery: str | None
-    instructor_name: str | None
+class ScheduleItem: 
+    days_of_week: list[str]
+    start_time: time
+    length: int
+    tag: str
+    location: str
+    description: str
+    title: str
+    with_who: str
+    is_repeating: bool
+
+def create_dates(date):
+    dates = date.split(" ")
+    result_dates = []
+    for date in dates:
+        match date:
+            case 'M':
+                result_dates.append("Monday")
+            case 'Tu':
+                result_dates.append("Tuesday")
+            case 'W':
+                result_dates.append("Wednesday")
+            case 'Th':
+                result_dates.append("Thursday")
+            case 'F':
+                result_dates.append("Friday")
+    return result_dates
+
+def create_time(time):
+    start_end_times = time.split("-")
+    return start_end_times
+
+def get_time(time):
+    result = datetime.strptime(time, "%I:%M %p")
+    return result 
+
+# shoutout claude for this
+def serialize(obj):
+    if isinstance(obj, (time, datetime)):
+        return obj.isoformat()   # "10:50:00"
+    return vars(obj)
+
+def add_class_schedule_item(days_of_week, times_for_class, title_for_class, professor_for_class, location_for_class, repeating):
+    start_time = get_time(times_for_class[0].strip())
+    end_time = get_time(times_for_class[1].strip())
+    length = int((end_time - start_time).total_seconds() / 60)
+    print(f"{title_for_class} is {length} minutes long")
+    
+    # formats professor name
+    prof_name = professor_for_class.split(", ")
+    prof_name = prof_name[1].strip() + " " + prof_name[0].strip()
+    
+    schedule_item = ScheduleItem(days_of_week, start_time.time(), length, "class", location_for_class, "", title_for_class, prof_name, repeating)
+    SCHEDULE_ITEMS.append(schedule_item)
     
 def main() -> None:
     print("Reading schedule pdf...")
     schedule = open("data/test_schedule.pdf", "rb")
+    
     with pdfplumber.open(schedule) as pdf:
-        for p in pdf.pages:
-            for t in p.extract_tables():
-                for r in t:
-                    class_item = Class(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]);   
-                    CLASSES.append(class_item)
+        for page in pdf.pages:
+            for table in page.extract_tables():
+                for data in table[1::]: # skips the first row since it has the title for each column in the pdf
+                    # creates schedule item based on days in schedule
+                    dates_for_class = create_dates(data[CLASS.DAYS.value])
+                    times_for_class = create_time(data[CLASS.TIME.value])
+                    title_for_class = data[CLASS.TITLE.value]
+                    location_for_class = data[CLASS.LOCATION.value]
+                    professor_for_class = data[CLASS.INSTRUCTOR.value]
+                    is_repeating = False
+                    
+                    if len(dates_for_class) > 1:
+                        is_repeating = True
+                        
+                    add_class_schedule_item(dates_for_class, times_for_class, title_for_class, professor_for_class, location_for_class, is_repeating)
             
     
     with open("data/schedule_info.json", "w") as fp:
-        # gets rid of the first row
-        CLASSES.pop(0) 
-        
-        print("Class schedule Info...")
-        for class_item in CLASSES:
-            print(class_item.section + " " + class_item.course_title + " " + class_item.instructor_name)
-            
-        fp.write(json.dumps(CLASSES, default=vars))
+        fp.write(json.dumps(SCHEDULE_ITEMS, default=serialize, indent=4))
     
     print("Finished getting class schedule info")
+    
 if __name__ == "__main__":
     main()

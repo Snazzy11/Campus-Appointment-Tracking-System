@@ -37,10 +37,10 @@ setup-hooks: ## Use the repo's git hooks (.githooks/)
 ##@ Run
 
 app-up: backend-up ## Start backend, run checks, then start the web app
-	$(MAKE) health
-	$(MAKE) test-backend
-	$(MAKE) status
-	$(MAKE) web-up
+	"$(MAKE)" health
+	"$(MAKE)" test-backend
+	"$(MAKE)" status
+	"$(MAKE)" web-up
 
 web-up: ## Start the frontend in the browser
 	@echo "using pnpm to start the front-end"
@@ -57,7 +57,7 @@ build-web: ## Build the web frontend into front_end/dist
 backend-up: ## Build and start the API + database containers
 	@echo "starting the api and db containers"
 	docker compose up --build --wait
-	$(MAKE) db-migrate
+	"$(MAKE)" db-migrate
 
 backend-down: ## Stop the API + database containers
 	@echo "shutting down the backend"
