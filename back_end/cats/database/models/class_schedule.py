@@ -1,12 +1,24 @@
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from cats.database.database import Base
+
+if TYPE_CHECKING:
+    from cats.database.models.user.user import User
 
 
 class ClassSchedule(Base):
     __tablename__ = "user_class_schedule"
 
+    # DB relation
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        primary_key=True,  # restrict deletion of users
+    )
+    # Python-side relationship
+    user: Mapped[User] = relationship(back_populates="class_schedules")
     section: Mapped[int] = mapped_column(primary_key=True)
     course_code: Mapped[str] = mapped_column(String(10))
     course_title: Mapped[str] = mapped_column(String(100))
