@@ -17,42 +17,18 @@
     {
         "days_of_week": [
             "Monday",
-            "Wednesday"
-        ],
-        "start_time": "12:30:00",
-        "length": 75,
-        "tag": "class",
-        "location": "Anspach Hall 155",
-        "description": "",
-        "title": "Native American History",
-        "with_who": "Michelle Cassidy",
-        "is_repeating": true
-    },
-    {
-        "days_of_week": [
             "Tuesday",
-            "Thursday"
+            "Wednesday",
+            "Thursday",
+            "Friday"
         ],
-        "start_time": "09:30:00",
-        "length": 75,
+        "start_time": "16:00:00",
+        "length": 80,
         "tag": "class",
-        "location": "Pearce Hall 423",
+        "location": "Music Building 156",
         "description": "",
-        "title": "Web App Development - Client-Side Script",
-        "with_who": "Razi Iqbal",
+        "title": "Band",
+        "with_who": "James Batcheller",
         "is_repeating": true
-    },
-    {
-        "days_of_week": [
-            "Tuesday"
-        ],
-        "start_time": "14:00:00",
-        "length": 230,
-        "tag": "class",
-        "location": "Anspach Hall 019",
-        "description": "",
-        "title": "Video Production",
-        "with_who": "Michael Potter",
-        "is_repeating": false
     }
 ]

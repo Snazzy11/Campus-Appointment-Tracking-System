@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class ClassSchedule(Base):
-    __tablename__ = "user_class_schedule"
+    __tablename__ = "class_schedule"
 
     # DB relation
     user_id: Mapped[int] = mapped_column(
@@ -19,10 +19,12 @@ class ClassSchedule(Base):
     )
     # Python-side relationship
     user: Mapped[User] = relationship(back_populates="class_schedules")
+
     section: Mapped[int] = mapped_column(primary_key=True)
     course_code: Mapped[str] = mapped_column(String(10))
     course_title: Mapped[str] = mapped_column(String(100))
     credits: Mapped[str] = mapped_column(String(3))
+
     days: Mapped[str] = mapped_column(String(5))
     times: Mapped[str] = mapped_column(String(30))
     dates: Mapped[str] = mapped_column(String(30))

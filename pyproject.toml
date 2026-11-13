@@ -14,10 +14,12 @@ dependencies = [
     "pdfplumber>=0.11.10",
     "phonenumbers>=9.0.41",
     "psycopg2-binary>=2.9.13",
+    "python-dateutil>=2.9.0",
     "pydantic-extra-types>=2.11.1",
     "pydantic-settings>=2.16.1",
     "pydantic[email]>=2.14.1",
     "sqlalchemy>=2.1.4",
+    "tzdata>=2025.2",
     "uvicorn>=0.54.0",
 ]
 

@@ -11,7 +11,7 @@ import pdfplumber
 
 SCHEDULE_ITEMS = []
     
-class CLASS(Enum): # TODO get from elsewhere
+class CLASS(Enum):
     SECTION = 0
     COURSE = 1
     TITLE = 2
@@ -24,7 +24,7 @@ class CLASS(Enum): # TODO get from elsewhere
     INSTRUCTOR = 9
     
 @dataclass
-class ScheduleItem: # TODO Define elsewhere
+class ScheduleItem:
     days_of_week: list[str]
     start_time: time
     length: int

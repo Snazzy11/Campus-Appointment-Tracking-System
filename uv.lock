@@ -85,7 +85,9 @@ dependencies = [
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-extra-types" },
     { name = "pydantic-settings" },
+    { name = "python-dateutil" },
     { name = "sqlalchemy" },
+    { name = "tzdata" },
     { name = "uvicorn" },
 ]
 
@@ -112,7 +114,9 @@ requires-dist = [
     { name = "pydantic", extras = ["email"], specifier = ">=2.14.1" },
     { name = "pydantic-extra-types", specifier = ">=2.11.1" },
     { name = "pydantic-settings", specifier = ">=2.16.1" },
+    { name = "python-dateutil", specifier = ">=2.9.0" },
     { name = "sqlalchemy", specifier = ">=2.1.4" },
+    { name = "tzdata", specifier = ">=2025.2" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]
 
