@@ -1,9 +1,9 @@
-"""Database fixtures for the calendar event tests.
+"""Database fixtures for the event tests.
 
-The tests need Postgres (JSONB and ON CONFLICT). They use a separate database so the
-dev data is never touched: `TEST_DATABASE_URL` if set, otherwise the dev DATABASE_URL
-with the database name replaced by `cats_test` (created on first use). If Postgres is
-not reachable, the database tests are skipped; `make db-up` starts it.
+These tests need Postgres, since the code uses JSONB and ON CONFLICT. They run in a
+separate database so dev data is safe: `TEST_DATABASE_URL` if it's set, otherwise the dev
+database's URL pointed at `cats_test`, which is created the first time. If Postgres isn't
+running the tests are skipped; `make db-up` starts it.
 """
 
 import os
@@ -64,7 +64,7 @@ def engine() -> Iterator[Engine]:
 
 @pytest.fixture
 def session(engine: Engine) -> Iterator[Session]:
-    """A session whose work (even session.commit()) is rolled back after each test."""
+    """A session in a transaction that is rolled back after the test, even if it commits."""
     connection = engine.connect()
     transaction = connection.begin()
     db = Session(

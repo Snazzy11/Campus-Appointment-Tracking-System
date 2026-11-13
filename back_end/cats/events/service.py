@@ -1,11 +1,11 @@
-"""Create, materialize, edit, and query calendar events.
+"""Create, schedule, edit, and look up calendar events.
 
-All functions take a SQLAlchemy `Session` and flush but do not commit; the caller owns
-the transaction. `now` parameters (aware datetimes) exist so tests can pin the clock.
+Every function takes a SQLAlchemy `Session`, flushes, and leaves committing to the
+caller. The `now` arguments exist so tests can control the clock.
 
-Materialization is idempotent: occurrences are inserted with
-`ON CONFLICT (series_id, original_start) DO NOTHING`, so reruns and regenerations never
-duplicate rows and never resurrect cancelled or edited occurrences.
+Occurrences are inserted with `ON CONFLICT (series_id, original_start) DO NOTHING`.
+That is what makes it safe to materialize a series again and again: rows that already
+exist, including cancelled or moved ones, are never duplicated or overwritten.
 """
 
 import copy
@@ -37,10 +37,11 @@ class EventError(ValueError):
     """The requested change is not valid."""
 
 
-_UNSET: Any = object()
+_UNSET: Any = object()  # "argument not passed", so None can mean "clear this"
 
-# Series fields an edit may change. start_date is not here: moving the first date is a
-# "this and all following" split, and moving one meeting is an occurrence edit.
+# Series fields an edit can change. start_date is left out on purpose: changing where the
+# series starts is a "this and all following" split, and moving one meeting is an
+# occurrence edit.
 SERIES_EDITABLE = frozenset(
     {
         "event_type",
@@ -53,12 +54,10 @@ SERIES_EDITABLE = frozenset(
         "rrule",
     }
 )
-OCCURRENCE_EDITABLE = frozenset(
-    {"start_at", "end_at", "status", "title_override", "location_override"}
-)
 
 
 def _now(now: dt.datetime | None) -> dt.datetime:
+    """The current time unless one was passed in, which must be timezone-aware."""
     if now is None:
         return dt.datetime.now(dt.UTC)
     if now.tzinfo is None:
@@ -67,13 +66,16 @@ def _now(now: dt.datetime | None) -> dt.datetime:
 
 
 def horizon_end(today: dt.date) -> dt.date:
-    """Last local date that gets materialized: EVENT_HORIZON_MONTHS from `today`."""
+    """The last date that gets occurrences: EVENT_HORIZON_MONTHS after `today`."""
     return today + relativedelta(months=EVENT_HORIZON_MONTHS)
 
 
 def _untouched(duration_min: int) -> ColumnElement[bool]:
-    """SQL condition for an occurrence nobody has edited: it is scheduled, has no
-    overrides, was not moved, and still has the series' duration."""
+    """SQL filter for occurrences nobody has edited.
+
+    That means still scheduled, no overrides, not moved, and still the series' length.
+    Only these are safe to delete and recreate when the series changes.
+    """
     return and_(
         EventOccurrence.status == EventStatus.SCHEDULED.value,
         EventOccurrence.title_override.is_(None),
@@ -87,6 +89,7 @@ def _untouched(duration_min: int) -> ColumnElement[bool]:
 def _get_series(session: Session, series_id: int, *, lock: bool = False) -> EventSeries:
     statement = select(EventSeries).where(EventSeries.id == series_id)
     if lock:
+        # hold a row lock until commit so two edits (or the daily job) can't interleave
         statement = statement.with_for_update()
     series = session.scalars(statement).one_or_none()
     if series is None:
@@ -103,7 +106,7 @@ def _validate_fields(
     rrule: str | None,
     details: dict[str, Any] | None,
 ) -> tuple[str | None, dict[str, Any]]:
-    """Validate series fields; returns the normalized rrule and validated details."""
+    """Check the fields shared by create and edit; returns the cleaned rrule and details."""
     if not title.strip():
         raise EventError("title cannot be empty")
     if duration_min < 1:
@@ -128,10 +131,10 @@ def create_series(
     rrule: str | None = None,
     now: dt.datetime | None = None,
 ) -> EventSeries:
-    """Create an event and materialize its occurrences.
+    """Create an event and its occurrences.
 
-    A one-off (`rrule=None`) gets exactly one occurrence. A recurring event gets
-    occurrences from `start_date` through the earlier of the rule's end and the horizon.
+    A one-off (`rrule=None`) gets a single occurrence. A recurring event gets them from
+    `start_date` until the rule ends or the horizon is reached, whichever comes first.
     """
     normalized, valid_details = _validate_fields(
         event_type=event_type,
@@ -154,7 +157,7 @@ def create_series(
         rrule=normalized,
     )
     session.add(series)
-    session.flush()  # the session has autoflush off, and occurrences need series.id
+    session.flush()  # autoflush is off, and the occurrences need series.id
     materialize_series(session, series, now=now)
     return series
 
@@ -167,11 +170,11 @@ def materialize_series(
     regenerate_from: dt.date | None = None,
     not_before: dt.datetime | None = None,
 ) -> int:
-    """Insert the occurrences that should exist but do not; returns how many were added.
+    """Create the occurrences that are missing and return how many were added.
 
-    Normally resumes after `generated_until`. `regenerate_from` restarts from that local
-    date instead (existing rows are untouched, because insertion skips conflicts), and
-    `not_before` drops occurrences that start before that instant.
+    By default it picks up after `generated_until`. `regenerate_from` starts from a given
+    local date instead, which is safe to do over existing rows. `not_before` skips
+    occurrences that start before that moment.
     """
     now = _now(now)
     tz = get_timezone(series.timezone)
@@ -195,7 +198,7 @@ def materialize_series(
             window_start = series.start_date
         else:
             if series.generated_until >= target:
-                return 0  # already materialized as far as it needs to go
+                return 0  # nothing new to create yet
             window_start = max(
                 series.start_date, series.generated_until + dt.timedelta(days=1)
             )
@@ -242,13 +245,13 @@ def materialize_series(
 def extend_series_occurrences(
     session: Session, *, now: dt.datetime | None = None
 ) -> int:
-    """The daily job: extend every recurring series to the current horizon.
+    """The daily job: bring every recurring series up to the current horizon.
 
-    Safe to run any number of times. Returns the number of occurrences added.
+    Safe to run repeatedly. Returns how many occurrences were added.
     """
     now = _now(now)
-    # Candidates are cheaply pre-filtered here; materialize_series does the exact check
-    # in each series' own timezone. The extra day covers timezones ahead of UTC.
+    # A rough filter in SQL; materialize_series makes the exact call for each series'
+    # timezone. The extra day covers timezones ahead of UTC.
     cutoff = horizon_end(now.astimezone(dt.UTC).date()) + dt.timedelta(days=1)
     candidates = session.scalars(
         select(EventSeries).where(
@@ -266,7 +269,10 @@ def extend_series_occurrences(
 
 
 def cancel_occurrence(session: Session, occurrence_id: int) -> EventOccurrence:
-    """Cancel one occurrence. The row is kept so regeneration cannot recreate it."""
+    """Cancel one occurrence.
+
+    The row stays, marked cancelled, so regenerating the series doesn't bring it back.
+    """
     return update_occurrence(session, occurrence_id, status=EventStatus.CANCELLED.value)
 
 
@@ -280,10 +286,10 @@ def update_occurrence(
     title_override: str | None = _UNSET,
     location_override: str | None = _UNSET,
 ) -> EventOccurrence:
-    """Change this occurrence only. `original_start` never changes.
+    """Change a single occurrence. `original_start` never changes.
 
-    Pass only what changes; an override set to None goes back to inheriting from the
-    series. Moving `start_at` without `end_at` keeps the occurrence's length.
+    Only pass what should change. Setting an override to None goes back to the series'
+    value, and moving `start_at` without `end_at` keeps the same length.
     """
     occurrence = session.get(EventOccurrence, occurrence_id)
     if occurrence is None:
@@ -325,7 +331,10 @@ def _check_changes(changes: Mapping[str, Any]) -> None:
 def _normalized_changes(
     base: Mapping[str, Any], changes: Mapping[str, Any]
 ) -> dict[str, Any]:
-    """Validate base+changes together and return `changes` with rrule/details normalized."""
+    """Validate the series as it would look after `changes`; return `changes` cleaned up.
+
+    The rrule and details in the result are the normalized versions.
+    """
     merged = {**base, **changes}
     rrule, details = _validate_fields(
         event_type=merged["event_type"],
@@ -346,6 +355,7 @@ def _normalized_changes(
 
 
 def _series_fields(series: EventSeries) -> dict[str, Any]:
+    """The editable fields of a series, as a dict."""
     return {
         "event_type": series.event_type,
         "title": series.title,
@@ -365,9 +375,12 @@ def edit_series_all(
     now: dt.datetime | None = None,
     **changes: Any,
 ) -> EventSeries:
-    """Edit every occurrence: update the series, then regenerate future occurrences
-    that have no overrides and are not cancelled. Past occurrences are never altered,
-    and moved, overridden, and cancelled occurrences are kept as they are."""
+    """Apply changes to every occurrence in the series.
+
+    The series is updated, and future occurrences nobody has touched are deleted and
+    recreated from the new settings. Past occurrences, and any that were moved,
+    overridden, or cancelled, are left alone.
+    """
     _check_changes(changes)
     now = _now(now)
     series = _get_series(session, series_id, lock=True)
@@ -401,13 +414,11 @@ def edit_series_following(
     now: dt.datetime | None = None,
     **changes: Any,
 ) -> tuple[EventSeries, EventSeries]:
-    """Edit this occurrence and all following, from `split_date` (a local date).
+    """Apply changes from `split_date` (a local date) onward; earlier meetings stay as is.
 
-    The existing series is ended just before `split_date` and its untouched future
-    occurrences from that point on are deleted. A new series carrying the changes
-    starts at the first occurrence on or after `split_date`, so the two cover the
-    schedule with no overlap and no gap. Rules are never patched in place.
-    Returns (old_series, new_series).
+    The existing series is ended just before `split_date`, its untouched occurrences from
+    then on are deleted, and a new series carrying the changes takes over. Together they
+    cover the original schedule with no overlap and no gap. Returns (old, new).
     """
     _check_changes(changes)
     now = _now(now)
@@ -432,14 +443,15 @@ def edit_series_following(
     if first_after is None:
         raise EventError("the series has no occurrences on or after split_date")
 
-    # The tail normally starts at the first occurrence from the split, which keeps an
-    # INTERVAL>1 rule in step. If the caller supplies a new rule, it starts at the split.
+    # The new series normally starts at the first real occurrence on or after the split,
+    # which keeps a rule like INTERVAL=2 in step. If the caller gives a new rule, it
+    # starts on the split date itself.
     new_start_date = split_date if "rrule" in changes else first_after.date()
     if "rrule" in changes:
         new_rrule = new_fields["rrule"]
     else:
-        # occurrences the old series keeps (strictly before the split), so a COUNT rule
-        # does not get its full count again
+        # Count what the old series keeps, so the new one only gets what's left of a
+        # COUNT rule.
         day_before_start = dt.datetime.combine(
             series.start_date - dt.timedelta(days=1), dt.time.min, tzinfo=tz
         )
@@ -472,7 +484,7 @@ def edit_series_following(
 
 
 def delete_series(session: Session, series_id: int) -> None:
-    """Delete a whole series; its occurrences go with it (ON DELETE CASCADE)."""
+    """Delete a series. The database removes its occurrences too."""
     session.delete(_get_series(session, series_id))
     session.flush()
 
@@ -482,11 +494,13 @@ def delete_series(session: Session, series_id: int) -> None:
 
 @dataclass(frozen=True)
 class CalendarEntry:
+    """One occurrence ready to display, with any overrides already applied."""
+
     occurrence_id: int
     series_id: int
     event_type: str
-    title: str  # title_override, else the series title
-    location: str | None  # location_override, else the series location
+    title: str  # the override if there is one, otherwise the series'
+    location: str | None  # same
     start_at: dt.datetime
     end_at: dt.datetime
     details: dict[str, Any]
@@ -498,9 +512,10 @@ def calendar_entries(
     range_start: dt.datetime,
     range_end: dt.datetime,
 ) -> list[CalendarEntry]:
-    """A user's events starting in [range_start, range_end), cancelled ones excluded.
+    """A user's events that start in [range_start, range_end), minus cancelled ones.
 
-    One indexed range query on event_occurrences.start_at, joined to the series.
+    This is a range query on the indexed start_at column, joined to the series for the
+    display fields.
     """
     rows = session.execute(
         select(
@@ -534,7 +549,7 @@ def calendar_entries(
 
 
 def occurrences_for_series(session: Session, series_id: int) -> list[EventOccurrence]:
-    """Every occurrence of one series, in time order (cancelled ones included)."""
+    """All occurrences of a series in time order, including cancelled ones."""
     return list(
         session.scalars(
             select(EventOccurrence)

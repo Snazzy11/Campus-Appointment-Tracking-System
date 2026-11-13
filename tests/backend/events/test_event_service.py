@@ -1,4 +1,4 @@
-"""Event service behavior against Postgres: materialization, edits, and queries."""
+"""Tests for creating, editing, and querying events, run against a real Postgres."""
 
 import datetime as dt
 from zoneinfo import ZoneInfo
@@ -15,7 +15,7 @@ TZ_NAME = "America/Chicago"
 CHICAGO = ZoneInfo(TZ_NAME)
 NOW = dt.datetime(
     2027, 1, 1, 12, tzinfo=dt.UTC
-)  # Jan 1 in Chicago too; horizon is 2028-01-01
+)  # still Jan 1 in Chicago, so the horizon is 2028-01-01
 MWF = build_rrule(freq="WEEKLY", by_weekday=["MO", "WE", "FR"])
 
 

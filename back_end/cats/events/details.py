@@ -1,9 +1,9 @@
-"""Type-specific event fields stored in `event_series.details` (JSONB).
+"""Validation for the type-specific `details` JSON on an event series.
 
-One pydantic schema per `event_type`. Fields that are filtered, sorted, or joined on
-belong in real columns, not here. If a type needs real relationships (for example a class
-tied to a course and an instructor), give it an extension table keyed by series_id
-instead of adding to these schemas.
+Each event type has a small pydantic model listing the fields it allows. Anything you
+need to filter or join on should be a real column instead, and a type that needs real
+relationships (a class tied to a course, say) is better off with its own table keyed by
+series id.
 """
 
 from typing import Any
@@ -14,6 +14,7 @@ from cats.database.models.event import EventType
 
 
 class _Details(BaseModel):
+    # Reject unknown keys so a typo doesn't get saved silently.
     model_config = ConfigDict(extra="forbid")
 
 
@@ -37,8 +38,7 @@ class WorkDetails(_Details):
     pass
 
 
-# One schema per EventType; adding a type to the enum without one fails the import-time
-# check below, so the two cannot drift apart.
+# Every EventType needs an entry here; the assert below catches a new type added without one.
 DETAILS_SCHEMAS: dict[EventType, type[_Details]] = {
     EventType.CLASS: ClassDetails,
     EventType.CLUB: ClubDetails,
@@ -51,10 +51,10 @@ assert set(DETAILS_SCHEMAS) == set(EventType), "every EventType needs a details 
 def validate_details(
     event_type: str | EventType, details: dict[str, Any] | None
 ) -> dict[str, Any]:
-    """Return `details` validated against the schema for `event_type`.
+    """Check `details` against the schema for `event_type` and return the cleaned dict.
 
-    `event_type` is an EventType or its string value (e.g. "class"). Raises ValueError
-    for an unknown event type or invalid fields.
+    Accepts an EventType or its string value (like "class"). Raises ValueError for an
+    unknown type or invalid fields.
     """
     try:
         kind = EventType(event_type)

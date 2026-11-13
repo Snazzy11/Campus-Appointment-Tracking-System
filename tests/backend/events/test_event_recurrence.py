@@ -1,4 +1,4 @@
-"""Recurrence rules and expansion. Pure functions, no database."""
+"""Tests for recurrence rules and expanding them into meeting times (no database)."""
 
 import datetime as dt
 from zoneinfo import ZoneInfo

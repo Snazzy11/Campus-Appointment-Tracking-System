@@ -1,14 +1,9 @@
-"""Daily job: extend recurring events so occurrences always exist ~12 months ahead.
+"""Daily job: create the upcoming occurrences for recurring events.
 
-Usage (from the repo root, after `make db-migrate`):
-    make events-extend
-or:
-    uv run python scripts/extend_event_occurrences.py
-
-Safe to run as often as you like: it only adds occurrences that are missing, and never
-duplicates, resurrects cancelled ones, or overwrites edited ones. The horizon length is
-EVENT_HORIZON_MONTHS in back_end/cats/events/config.py. Schedule this once a day (cron,
-a cloud scheduler, ...).
+Run it with `make events-extend`, or `uv run python scripts/extend_event_occurrences.py`.
+It only adds occurrences that are missing, so running it more than once a day is
+harmless. Nothing in the repo schedules it yet; use cron or a cloud scheduler. How far
+ahead it looks is EVENT_HORIZON_MONTHS in back_end/cats/events/config.py.
 """
 
 from cats.database.database import SessionLocal

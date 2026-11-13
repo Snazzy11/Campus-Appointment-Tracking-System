@@ -1,9 +1,11 @@
-"""Recurrence rules (RFC 5545 RRULE) and turning them into concrete occurrence times.
+"""Recurrence rules and how they turn into real meeting times.
 
-Pure functions, no database. Rules are expanded by python-dateutil; there is no custom
-date-expansion logic here. The rule is expanded in the series' own timezone, so the
-local wall-clock start time is constant across daylight saving changes, and each
-occurrence is then converted to UTC.
+A rule is an RFC 5545 RRULE string such as `FREQ=WEEKLY;BYDAY=MO,WE,FR`, and
+python-dateutil does the expanding. The rule runs in the series' own timezone so the
+local start time stays put across daylight saving changes, and each result is then
+converted to UTC.
+
+Nothing in here touches the database.
 """
 
 import datetime as dt
@@ -32,9 +34,11 @@ class RecurrenceError(ValueError):
 
 @dataclass(frozen=True)
 class OccurrenceTimes:
-    original_start: dt.datetime  # what the rule produced (UTC)
-    start_at: dt.datetime  # same as original_start until someone moves it (UTC)
-    end_at: dt.datetime  # UTC
+    """One meeting, in UTC. start_at only differs from original_start once it's moved."""
+
+    original_start: dt.datetime
+    start_at: dt.datetime
+    end_at: dt.datetime
 
 
 def get_timezone(name: str) -> ZoneInfo:
@@ -45,10 +49,11 @@ def get_timezone(name: str) -> ZoneInfo:
 
 
 def _until_to_utc(value: str, tz: ZoneInfo) -> dt.datetime:
-    """Parse an UNTIL value into a UTC instant.
+    """Convert an UNTIL value to a UTC time.
 
-    A date-only value is inclusive of that whole local day (RFC 5545), so it means the
-    end of that day. A floating date-time is read in the series' timezone.
+    dateutil only accepts a UTC UNTIL for a timezone-aware series, so date-only and
+    local date-time values get converted. A date-only UNTIL includes that whole day, so
+    it becomes the end of that day in the series' timezone.
     """
     if _UNTIL_UTC.match(value):
         return dt.datetime.strptime(value, _UNTIL_FORMAT).replace(tzinfo=dt.UTC)
@@ -63,6 +68,7 @@ def _until_to_utc(value: str, tz: ZoneInfo) -> dt.datetime:
 
 
 def _split_rule(rrule: str) -> list[tuple[str, str]]:
+    """Split 'FREQ=DAILY;COUNT=3' into [('FREQ', 'DAILY'), ('COUNT', '3')]."""
     text = rrule.strip()
     if text.upper().startswith("RRULE:"):
         text = text[len("RRULE:") :]
@@ -85,11 +91,10 @@ def _join_rule(parts: list[tuple[str, str]]) -> str:
 
 
 def normalize_rrule(rrule: str, timezone: str) -> str:
-    """Validate an RRULE and return it in canonical form.
+    """Check an RRULE and return it in the form we store.
 
-    Strips an optional "RRULE:" prefix and rewrites UNTIL as a UTC date-time, which is
-    what dateutil needs for a timezone-aware series. Raises RecurrenceError if the rule
-    is not usable.
+    Drops a leading "RRULE:" and rewrites UNTIL in UTC (see _until_to_utc). Raises
+    RecurrenceError if the rule can't be used.
     """
     tz = get_timezone(timezone)
     parts = _split_rule(rrule)
@@ -107,7 +112,7 @@ def normalize_rrule(rrule: str, timezone: str) -> str:
         for key, value in parts
     ]
     result = _join_rule(normalized)
-    # Parse once so a bad rule fails here, not later during materialization.
+    # A trial parse catches rules that look fine but aren't valid, like FREQ=SOMETIMES.
     try:
         _parse(result, dt.datetime(2000, 1, 1, tzinfo=tz))
     except (ValueError, KeyError) as error:
@@ -126,7 +131,7 @@ def _local_start(start_date: dt.date, start_time: dt.time, tz: ZoneInfo) -> dt.d
 def build_rule(
     *, timezone: str, start_date: dt.date, start_time: dt.time, rrule: str
 ) -> DateutilRule:
-    """The dateutil rule for a series, anchored at its local start."""
+    """The dateutil rule for a series, anchored at its first local start time."""
     tz = get_timezone(timezone)
     return _parse(rrule, _local_start(start_date, start_time, tz))
 
@@ -142,13 +147,13 @@ def expand_occurrences(
     window_end: dt.date,
     not_before: dt.datetime | None = None,
 ) -> list[OccurrenceTimes]:
-    """Occurrences whose local date is in [window_start, window_end].
+    """Return the occurrences whose local date falls in [window_start, window_end].
 
-    `rrule=None` is a one-off: a single occurrence on `start_date`, if it is in the
-    window. `not_before` (an aware datetime) drops occurrences that start earlier.
+    A one-off (`rrule=None`) produces its single occurrence if `start_date` is inside
+    the window. `not_before` drops anything that starts before that moment.
 
-    end_at is start_at plus `duration_min` of real elapsed time, computed from the
-    occurrence's own start, so a daylight saving change cannot corrupt it.
+    The end is the start plus `duration_min` of real elapsed time, so a meeting that
+    spans a daylight saving change keeps its true length.
     """
     tz = get_timezone(timezone)
     first = _local_start(start_date, start_time, tz)
@@ -174,10 +179,10 @@ def expand_occurrences(
 def last_occurrence_date(
     *, timezone: str, start_date: dt.date, start_time: dt.time, rrule: str
 ) -> dt.date | None:
-    """Local date of the rule's last occurrence, or None if the rule never ends.
+    """Local date of the rule's last occurrence, or None if it repeats forever.
 
-    A rule with neither UNTIL nor COUNT is open-ended. A finite rule with no occurrences
-    at all returns `start_date`.
+    A rule with neither UNTIL nor COUNT never ends. A finite rule that happens to have
+    no occurrences at all returns `start_date`.
     """
     keys = {key for key, _ in _split_rule(rrule)}
     if not keys & {"UNTIL", "COUNT"}:
@@ -186,7 +191,7 @@ def last_occurrence_date(
         timezone=timezone, start_date=start_date, start_time=start_time, rrule=rrule
     )
     last: dt.datetime | None = None
-    for last in rule:
+    for last in rule:  # walk to the final occurrence
         pass
     return start_date if last is None else last.date()
 
@@ -202,15 +207,17 @@ def build_rrule(
     until: dt.datetime | None = None,
     count: int | None = None,
 ) -> str:
-    """Build an RRULE string from the options the UI offers.
+    """Build an RRULE string from the choices a UI would offer.
 
-    - Weekly on chosen days: `freq="WEEKLY", by_weekday=["MO", "WE", "FR"]`.
-    - Monthly on a day of the month: `by_month_day=31`. Months without that day are
-      skipped, as the standard says.
-    - Monthly on the last day: `last_day_of_month=True` (a separate, explicit option).
-    - Monthly on the nth weekday: `nth_weekday=(2, "TU")` is the second Tuesday, and
-      `(-1, "FR")` is the last Friday.
-    - End with `until` (an aware datetime) or `count`; with neither, it is open-ended.
+    - Weekly on chosen days: `freq="WEEKLY", by_weekday=["MO", "WE", "FR"]`
+    - Monthly on a day number: `freq="MONTHLY", by_month_day=31`
+    - Monthly on the last day: `freq="MONTHLY", last_day_of_month=True`
+    - Monthly on a weekday: `nth_weekday=(2, "TU")` is the second Tuesday and
+      `(-1, "FR")` is the last Friday
+
+    A month without the chosen day number (like the 31st) is skipped, as the standard
+    says, which is why "last day" is its own option. Pass `until` (an aware datetime) or
+    `count` to end the series; with neither it repeats forever.
     """
     if interval < 1:
         raise RecurrenceError("interval must be at least 1")
@@ -265,9 +272,10 @@ def build_rrule(
 
 
 def end_before(rrule: str, until: dt.datetime) -> str:
-    """The rule ending at `until` (an aware datetime; an occurrence exactly at `until`
-    is still included). Any COUNT or existing UNTIL is replaced, since RFC 5545 does not
-    allow both."""
+    """Return the rule with its end set to `until` (an aware datetime).
+
+    Replaces any existing UNTIL or COUNT, since a rule can't have both.
+    """
     if until.tzinfo is None:
         raise RecurrenceError("until must be timezone-aware")
     parts = [(k, v) for k, v in _split_rule(rrule) if k not in ("UNTIL", "COUNT")]
@@ -276,8 +284,11 @@ def end_before(rrule: str, until: dt.datetime) -> str:
 
 
 def with_remaining_count(rrule: str, already_used: int) -> str:
-    """The rule for the tail of a split series: COUNT reduced by the occurrences the
-    earlier series already used. Rules without COUNT are returned unchanged."""
+    """Reduce a COUNT by the occurrences already used up.
+
+    When a series is split, the second half only gets the occurrences the first half
+    didn't use. Rules without a COUNT come back unchanged.
+    """
     parts = _split_rule(rrule)
     result: list[tuple[str, str]] = []
     for key, value in parts:
