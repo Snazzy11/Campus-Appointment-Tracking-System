@@ -2,15 +2,16 @@
 Gets class schedule from data/test_schedule.py and adds schedule items in a json file
 """
 
-import pdfplumber
 import json
 from dataclasses import dataclass
 from datetime import datetime, time
 from enum import Enum
 
+import pdfplumber
+
 SCHEDULE_ITEMS = []
     
-class CLASS(Enum):
+class CLASS(Enum): # TODO get from elsewhere
     SECTION = 0
     COURSE = 1
     TITLE = 2
@@ -23,7 +24,7 @@ class CLASS(Enum):
     INSTRUCTOR = 9
     
 @dataclass
-class ScheduleItem: 
+class ScheduleItem: # TODO Define elsewhere
     days_of_week: list[str]
     start_time: time
     length: int
@@ -72,20 +73,28 @@ def add_class_schedule_item(days_of_week, times_for_class, title_for_class, prof
     print(f"{title_for_class} is {length} minutes long")
     
     # formats professor name
-    prof_name = professor_for_class.split(", ")
-    prof_name = prof_name[1].strip() + " " + prof_name[0].strip()
+    prof_name = professor_for_class.split(",")
+    if len(prof_name) > 1:
+        prof_name = prof_name[1].strip() + " " + prof_name[0].strip()
+    else:
+        prof_name = professor_for_class.strip()
     
     schedule_item = ScheduleItem(days_of_week, start_time.time(), length, "class", location_for_class, "", title_for_class, prof_name, repeating)
     SCHEDULE_ITEMS.append(schedule_item)
     
 def main() -> None:
     print("Reading schedule pdf...")
-    schedule = open("data/test_schedule.pdf", "rb")
-    
-    with pdfplumber.open(schedule) as pdf:
+    with open("data/test_schedule.pdf", "rb") as schedule, pdfplumber.open(schedule) as pdf:
         for page in pdf.pages:
             for table in page.extract_tables():
                 for data in table[1::]: # skips the first row since it has the title for each column in the pdf
+                    # collapses newlines/extra whitespace in cells and turns None into ""
+                    data = [" ".join((cell or "").split()) for cell in data]
+
+                    # skips classes without a meeting day/time (e.g. online asynchronous)
+                    if not data[CLASS.DAYS.value] or not data[CLASS.TIME.value]:
+                        continue
+
                     # creates schedule item based on days in schedule
                     dates_for_class = create_dates(data[CLASS.DAYS.value])
                     times_for_class = create_time(data[CLASS.TIME.value])
@@ -93,12 +102,12 @@ def main() -> None:
                     location_for_class = data[CLASS.LOCATION.value]
                     professor_for_class = data[CLASS.INSTRUCTOR.value]
                     is_repeating = False
-                    
+
                     if len(dates_for_class) > 1:
                         is_repeating = True
-                        
+
                     add_class_schedule_item(dates_for_class, times_for_class, title_for_class, professor_for_class, location_for_class, is_repeating)
-            
+
     
     with open("data/schedule_info.json", "w") as fp:
         fp.write(json.dumps(SCHEDULE_ITEMS, default=serialize, indent=4))
