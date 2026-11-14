@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up db-migrate db-revision require-message db-downgrade health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up db-migrate db-revision require-message db-downgrade health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm events-extend
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -37,10 +37,10 @@ setup-hooks: ## Use the repo's git hooks (.githooks/)
 ##@ Run
 
 app-up: backend-up ## Start backend, run checks, then start the web app
-	$(MAKE) health
-	$(MAKE) test-backend
-	$(MAKE) status
-	$(MAKE) web-up
+	"$(MAKE)" health
+	"$(MAKE)" test-backend
+	"$(MAKE)" status
+	"$(MAKE)" web-up
 
 web-up: ## Start the frontend in the browser
 	@echo "using pnpm to start the front-end"
@@ -57,7 +57,7 @@ build-web: ## Build the web frontend into front_end/dist
 backend-up: ## Build and start the API + database containers
 	@echo "starting the api and db containers"
 	docker compose up --build --wait
-	$(MAKE) db-migrate
+	"$(MAKE)" db-migrate
 
 backend-down: ## Stop the API + database containers
 	@echo "shutting down the backend"
@@ -162,3 +162,7 @@ validate: validate-backend validate-frontend ## Run all backend and frontend che
 import-osm: db-migrate ## Start and migrate the db if needed, then import data/greater_cmu_area.osm
 	@echo "Filling database with data from 'data/greater_cmu_area.osm'"
 	uv run python3 ./scripts/import_osm_locations.py
+
+events-extend: db-migrate ## Extend recurring calendar events to the 12-month horizon (run daily)
+	@echo "extending event occurrences"
+	uv run python3 ./scripts/extend_event_occurrences.py
