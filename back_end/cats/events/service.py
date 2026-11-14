@@ -494,7 +494,12 @@ def delete_series(session: Session, series_id: int) -> None:
 
 @dataclass(frozen=True)
 class CalendarEntry:
-    """One occurrence ready to display, with any overrides already applied."""
+    """One occurrence ready to display, with any overrides already applied.
+
+    This flattens the occurrence and its series into one row, so whoever displays it
+    doesn't need to know about the two tables. `series_id` and `is_recurring` are there
+    for edits: a recurring event needs "this event or all events?" asked first.
+    """
 
     occurrence_id: int
     series_id: int
@@ -503,7 +508,35 @@ class CalendarEntry:
     location: str | None  # same
     start_at: dt.datetime
     end_at: dt.datetime
+    status: str
+    is_recurring: bool
     details: dict[str, Any]
+
+
+def _calendar_query():
+    return select(
+        EventOccurrence,
+        func.coalesce(EventOccurrence.title_override, EventSeries.title),
+        func.coalesce(EventOccurrence.location_override, EventSeries.location),
+        EventSeries,
+    ).join(EventSeries, EventOccurrence.series_id == EventSeries.id)
+
+
+def _to_entry(
+    occurrence: EventOccurrence, title: str, location: str | None, series: EventSeries
+) -> CalendarEntry:
+    return CalendarEntry(
+        occurrence_id=occurrence.id,
+        series_id=occurrence.series_id,
+        event_type=series.event_type,
+        title=title,
+        location=location,
+        start_at=occurrence.start_at,
+        end_at=occurrence.end_at,
+        status=occurrence.status,
+        is_recurring=series.rrule is not None,
+        details=series.details,
+    )
 
 
 def calendar_entries(
@@ -518,13 +551,7 @@ def calendar_entries(
     display fields.
     """
     rows = session.execute(
-        select(
-            EventOccurrence,
-            func.coalesce(EventOccurrence.title_override, EventSeries.title),
-            func.coalesce(EventOccurrence.location_override, EventSeries.location),
-            EventSeries,
-        )
-        .join(EventSeries, EventOccurrence.series_id == EventSeries.id)
+        _calendar_query()
         .where(
             EventSeries.owner_id == owner_id,
             EventOccurrence.start_at >= range_start,
@@ -533,19 +560,15 @@ def calendar_entries(
         )
         .order_by(EventOccurrence.start_at, EventOccurrence.id)
     ).all()
-    return [
-        CalendarEntry(
-            occurrence_id=occurrence.id,
-            series_id=occurrence.series_id,
-            event_type=series.event_type,
-            title=title,
-            location=location,
-            start_at=occurrence.start_at,
-            end_at=occurrence.end_at,
-            details=series.details,
-        )
-        for occurrence, title, location, series in rows
-    ]
+    return [_to_entry(*row) for row in rows]
+
+
+def calendar_entry(session: Session, occurrence_id: int) -> CalendarEntry | None:
+    """One occurrence by id, cancelled or not, or None if it doesn't exist."""
+    row = session.execute(
+        _calendar_query().where(EventOccurrence.id == occurrence_id)
+    ).one_or_none()
+    return None if row is None else _to_entry(*row)
 
 
 def occurrences_for_series(session: Session, series_id: int) -> list[EventOccurrence]:
