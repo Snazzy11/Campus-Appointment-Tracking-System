@@ -31,8 +31,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from cats.database.database import Base
 
 
-# The database stores the plain string value. The `str` mixin means a member can also be
-# used anywhere a string is expected.
 class EventStatus(str, Enum):
     SCHEDULED = "scheduled"
     CANCELLED = "cancelled"
@@ -63,24 +61,23 @@ class EventSeries(Base):
         ForeignKey("users.id", ondelete="RESTRICT"), index=True
     )
 
-    # Holds an EventType value. Typed `str` because that's what comes back from the
-    # database; cats.events.details checks it against EventType.
+    # Holds an EventType value
+    # see cats.events.details where it checks against EventType
     event_type: Mapped[str] = mapped_column(String)
 
-    # Extra fields that depend on event_type (a class's course code, a club's RSO id).
-    # The database doesn't check the contents; cats.events.details does.
+    # Extra fields that depend on event_type like a course code
+    # See cats.events.details
     details: Mapped[dict[str, Any]] = mapped_column(
         JSONB, server_default=text("'{}'::jsonb")
     )
 
-    # The start is a local time plus a timezone rather than a UTC instant, so a 9:00 AM
-    # class stays at 9:00 AM when daylight saving changes.
+    # local time plus a timezone
     timezone: Mapped[str] = mapped_column(String)  # IANA name, e.g. 'America/Chicago'
     start_date: Mapped[datetime.date] = mapped_column(Date)  # date of the first meeting
     start_time: Mapped[datetime.time] = mapped_column(Time)  # local wall-clock time
     duration_min: Mapped[int]
 
-    # RFC 5545 recurrence rule, e.g. 'FREQ=WEEKLY;BYDAY=MO,WE,FR'. NULL for a one-off.
+    # RFC 5545 recurrence rule, e.g. 'FREQ=WEEKLY;BYDAY=MO,WE,FR'. NULL for a one time event
     rrule: Mapped[str | None] = mapped_column(Text)
     # Occurrences have been created up to this date; the daily job moves it forward.
     generated_until: Mapped[datetime.date | None] = mapped_column(Date)
@@ -115,7 +112,7 @@ class EventOccurrence(Base):
     # When the repeat rule produced this occurrence. Together with series_id it identifies
     # the occurrence, and it doesn't change if the occurrence is later moved.
     original_start: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
-    # The actual start. Same as original_start unless the occurrence was moved.
+    # The actual start, same as original_start unless the occurrence was moved
     start_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
     end_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
 
@@ -125,7 +122,7 @@ class EventOccurrence(Base):
         server_default=EventStatus.SCHEDULED.value,
     )
 
-    # NULL means use the series' title/location
+    # NULL means use the series title/location
     title_override: Mapped[str | None] = mapped_column(Text)
     location_override: Mapped[str | None] = mapped_column(Text)
 
