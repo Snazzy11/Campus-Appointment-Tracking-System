@@ -1,6 +1,13 @@
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field, ValidationError, field_validator, TypeAdapter
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    Field,
+    ValidationError,
+    field_validator,
+    TypeAdapter,
+)
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 
@@ -9,7 +16,9 @@ class USPhone(PhoneNumber):
     supproted_regions = "US"
     phone_format = "NATIONAL"
 
+
 _email_adapter = TypeAdapter(EmailStr)
+
 
 class RSOBase(BaseModel):
     __tablename__ = "rsos"
@@ -34,7 +43,7 @@ class RSOBase(BaseModel):
             return _email_adapter.validate_python(email)
         except ValidationError:
             return "None"
-        
+
     @field_validator("link")
     @classmethod
     def validate_link(cls, link: str) -> str:
