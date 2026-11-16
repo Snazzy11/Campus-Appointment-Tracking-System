@@ -4,9 +4,9 @@ from pydantic import (
     BaseModel,
     EmailStr,
     Field,
+    TypeAdapter,
     ValidationError,
     field_validator,
-    TypeAdapter,
 )
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
