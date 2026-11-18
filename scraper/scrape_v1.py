@@ -64,7 +64,7 @@ def addEmail(rso):
         # for a specific case if that element has a phone number instead of an email
         if not email_element.text.__contains__("P: "):
             email_contact = email_element.text.split("E: ")[1]
-            rso.setEmailContact(email_contact)
+            rso.setEmailContact(email_contact.strip())
     except NoSuchElementException:
         print(f"{rso.id} STATUS: Email wasn't found")
         rso.setEmailContact("None")
@@ -77,7 +77,7 @@ def addPhoneNumber(rso):
             "/html/body/div[2]/div/div/div/div/div[1]/div/div[2]/div/div[3]/div/div[2]/div[3]",
         )
         phone_contact = phone_number_element.text.split("P:")[1]
-        rso.setPhoneContact(phone_contact)
+        rso.setPhoneContact(phone_contact.strip())
     except NoSuchElementException:
         print(f"{rso.id} STATUS: Phone Number wasn't found")
         rso.setPhoneContact("None")
@@ -94,7 +94,7 @@ def addLocation(rso):
             print(f"{rso.id} : Location var was empty")
             rso.setLocation("None")
         else:
-            rso.setLocation(location)
+            rso.setLocation(location.strip())
     except NoSuchElementException:
         print(f"{rso.id} STATUS: Location wasn't found")
         rso.setLocation("None")
@@ -198,8 +198,8 @@ def main():
         driver.quit()
         
         # writes info from scraper to json file in data folder
-        with open('rso_info.json', 'w') as fp:
-            json.dump([asdict(rso) for rso in RSOs], fp)
+        with open('data/rso_info.json', 'w') as fp:
+            json.dump([vars(rso) for rso in RSOs], fp)
 
 if __name__ == "__main__":
     main()
