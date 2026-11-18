@@ -3,6 +3,8 @@ Adds RSO objects scraped from the engage website to a
 RSO table in the database.
 
 Usage (from the repo root, with the db container running via Docker using "make db-up")
+
+Scrape the data first from the website, then run this script to properly update the RSO table
 """
 
 import os
@@ -17,10 +19,12 @@ os.environ.setdefault(
 )
 import json
 
-from cats.database.database import SessionLocal
+from cats.database.database import SessionLocal, engine
 from cats.schemas.rso import RSOBase
+from cats.database.models.rso import RSO
 from pydantic import ValidationError
-
+from sqlalchemy import cast, func, select
+from sqlalchemy.exc import DataError
 os.environ.setdefault(
     "DATABASE_URL", "postgresql+psycopg2://cats:cats-devonly@localhost:5432/cats"
 )
@@ -31,16 +35,18 @@ def printRSO(values):
 
 
 def main():
-    # RSO.__table__.create(bind=engine, checkfirst=True)
-    # print("Created RSO table")
+    RSO.__table__.create(bind=engine, checkfirst=True)
+    print("Created RSO table")
+    
     id = 0
     email = ""
+    
     with SessionLocal() as session:
-        with open("rso_info.json") as file:
+        with open("data/rso_info.json") as file:
             json_data = json.load(file)
+            seen_names = set(session.scalars(select(RSO.name)))
             for values in json_data:
                 # pydantic magic
-                rso_obj = None
                 try:
                     rso_obj = RSOBase(
                         id=values["id"],
@@ -53,8 +59,29 @@ def main():
                     )
                     id = rso_obj.id
                     email = rso_obj.email
+                    
+                    if rso_obj.name in seen_names:
+                        continue
+                
                 except ValidationError:
                     print(f"Couldnt validate email for id {id} with email {email}")
+                    continue
+                
+                seen_names.add(rso_obj.name)
+                
+                exists = session.scalar(select(RSO).where(RSO.name == rso_obj.name))
+                
+                if exists:
+                    continue;
+                
+                session.add(RSO(**rso_obj.model_dump()))
+
+            try:
+                session.commit()
+            except DataError as e:
+                print(e)
+                
+            print("Successfully added RSO data to database")
 
 
 if __name__ == "__main__":
