@@ -43,6 +43,7 @@ Docs: https://docs.expo.dev/eas/index.md
 ## Project constraints (CATS)
 
 - The app lives in `front_end/` and uses **pnpm**: run Expo commands as `pnpm exec expo ...` from `front_end/`.
-- **Stay on Expo SDK 54.** Do not upgrade `expo`. SDK 54 is the newest SDK the App Store's Expo Go supports, and the team has no Mac or paid Apple Developer account, so the app must run in Expo Go.
-- Only add packages that are "Included in Expo Go" (`inExpoGo: true` in the archived SDK 54 docs at https://github.com/expo/expo/tree/sdk-54/docs/pages/versions/v54.0.0/sdk , since docs.expo.dev `/versions/v54.0.0/` now redirects to latest) or are pure JavaScript. No development builds, no packages requiring custom native code. For maps use `react-native-maps`, not `expo-maps`.
+- **We're on Expo SDK 58.** Use the SDK 58 docs at https://docs.expo.dev/versions/v58.0.0/ . Upgrade the SDK only on a dedicated branch, following the `expo-upgrade` steps (`expo install expo@<version>`, `expo install --fix`, `expo-doctor`, then lint, typecheck and a build).
+- We build and distribute with **EAS**. On iPhones, SDK 55 and later can't use the App Store's Expo Go (it stops at SDK 54). Instead we use an Expo Go built with `eas go` and shared through our TestFlight team, or our own TestFlight builds. Both need an Apple Developer Program membership, which the team can get funding for. Android devices, the Android emulator and the iOS Simulator can install the SDK 58 Expo Go from https://expo.dev/go .
+- Prefer packages that are "Included in Expo Go" (`inExpoGo: true` in the SDK 58 docs) or are pure JavaScript, so everyone can keep developing in Expo Go. A package with custom native code needs a development build (`eas build --profile development`). Check with the team before adding one. For maps use `react-native-maps`, not `expo-maps`.
 - See `front_end/README.md` ("Mobile development" and "Conventions") for screen conventions and device setup.

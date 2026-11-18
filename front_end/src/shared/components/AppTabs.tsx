@@ -1,4 +1,4 @@
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useColorScheme } from '@/shared/hooks/useColorScheme';
 
 import { Colors } from '@/shared/constants/theme';
@@ -14,23 +14,23 @@ export default function AppTabs() {
       labelStyle={{ selected: { color: colors.text } }}
     >
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
-        <Icon src={require('@/assets/images/tabIcons/home.png')} />
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon src={require('@/assets/images/tabIcons/home.png')} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="maps">
-        <Label>Map</Label>
-        <Icon src={require('@/assets/images/tabIcons/home.png')} />
+        <NativeTabs.Trigger.Label>Map</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon src={require('@/assets/images/tabIcons/home.png')} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="locations">
-        <Label>Locations</Label>
-        <Icon src={require('@/assets/images/tabIcons/explore.png')} />
+        <NativeTabs.Trigger.Label>Locations</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon src={require('@/assets/images/tabIcons/explore.png')} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="calendars">
-        <Label>Calendar</Label>
-        <Icon src={require('@/assets/images/tabIcons/explore.png')} />
+        <NativeTabs.Trigger.Label>Calendar</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon src={require('@/assets/images/tabIcons/explore.png')} />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
