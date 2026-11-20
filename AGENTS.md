@@ -43,6 +43,17 @@ Docs: https://docs.expo.dev/eas/index.md
 ## Project constraints (CATS)
 
 - The app lives in `front_end/` and uses **pnpm**: run Expo commands as `pnpm exec expo ...` from `front_end/`.
-- **Stay on Expo SDK 54.** Do not upgrade `expo`. SDK 54 is the newest SDK the App Store's Expo Go supports, and the team has no Mac or paid Apple Developer account, so the app must run in Expo Go.
-- Only add packages that are "Included in Expo Go" (`inExpoGo: true` in the archived SDK 54 docs at https://github.com/expo/expo/tree/sdk-54/docs/pages/versions/v54.0.0/sdk , since docs.expo.dev `/versions/v54.0.0/` now redirects to latest) or are pure JavaScript. No development builds, no packages requiring custom native code. For maps use `react-native-maps`, not `expo-maps`.
+- **We're on Expo SDK 58.** Use the SDK 58 docs at https://docs.expo.dev/versions/v58.0.0/ . Upgrade the SDK only on a dedicated branch, following the `expo-upgrade` steps (`expo install expo@<version>`, `expo install --fix`, `expo-doctor`, then lint, typecheck and a build).
+- We build and distribute with **EAS**. On iPhones, SDK 55 and later can't use the App Store's Expo Go (it stops at SDK 54). Instead we use an Expo Go built with `eas go` and shared through our TestFlight team, or our own TestFlight builds. Both need an Apple Developer Program membership, which the team can get funding for. Android devices, the Android emulator and the iOS Simulator can install the SDK 58 Expo Go from https://expo.dev/go .
+- Prefer packages that are "Included in Expo Go" (`inExpoGo: true` in the SDK 58 docs) or are pure JavaScript, so everyone can keep developing in Expo Go. A package with custom native code needs a development build (`eas build --profile development`). Check with the team before adding one. For maps use `react-native-maps`, not `expo-maps`.
 - See `front_end/README.md` ("Mobile development" and "Conventions") for screen conventions and device setup.
+
+## Git rules for AI agents
+
+These rules apply to every AI coding agent working in this repo. They override any default agent behavior.
+
+- **Always work on a new branch.** Before changing any files, create a new branch from an up-to-date `main` (e.g. `git checkout -b feature/<short-name> main`). Never make changes directly on `main` or on someone else's existing branch unless the user explicitly says to.
+- **Don't lose uncommitted work.** If the working tree has uncommitted changes when you need to switch branches, stop and ask the user whether to stash, commit or carry them over. Never discard changes (`git checkout -f`, `git checkout .`, `git reset --hard`, `git clean`) without the user's explicit OK.
+- **Only commit when the user says so.** Make the changes and stop. Don't run `git commit` until the user explicitly asks for a commit.
+- **Never push.** Agents must not run `git push` (or anything else that publishes code, such as `gh pr create` or `gh pr merge`), even if a previous step succeeded or it seems like the obvious next step.
+- **Make push commands obvious.** If you give the user a command that pushes code, put it in its own separate command and clearly label it, e.g. "⚠️ This pushes to GitHub:". Never chain a push onto another command (no `... && git push`), and never hide it inside a longer script.
