@@ -7,8 +7,9 @@ import { getEvent, getEvents } from '@/features/calendar/calendarService';
 import { CalendarEvent } from '@/features/calendar/types';
 import { FlatList, Text } from 'react-native';
 import { LocationItem } from '@/features/locations/LocationItem';
+import { ThemedText } from '@/shared/components/ThemedText';
 
-const test_events_params = [1, new Date(2025, 0, 1), new Date(2027, 1, 1)] as const;
+const test_events_params = [1, new Date(2026, 1, 1), new Date(2026, 12, 26)] as const;
 
 export function CalendarScreen() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -32,14 +33,16 @@ export function CalendarScreen() {
 
   return (
     <Screen>
+      <ThemedText>Events:</ThemedText>
+      {errorMessage ? <ThemedText>{errorMessage}</ThemedText> : null}
       <Calendar />
       <FlatList
         data={events}
         keyExtractor={(event) => String(event.occurrence_id)}
         renderItem={({ item }) => (
-          <Text>
+          <ThemedText>
             {item.title}: {item.end_at}
-          </Text>
+          </ThemedText>
         )}
       />
     </Screen>
