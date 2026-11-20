@@ -3,11 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from cats.api.routers.health.health import router as health_router
 from cats.api.routers.locations.locations import router as locations_router
+from cats.api.routers.schedule.schedule import router as schedule_router
 
 app = FastAPI(
     title="Campus Appointment and Tracking System",
-    version="0.2.0",
+    version="0.2.1",
 )
+
+api_prefix = "/api"
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,4 +31,7 @@ app.include_router(health_router)
 # app.include_router(messaging_router)
 
 # campus locations imported from OpenStreetMap
-app.include_router(locations_router)
+app.include_router(locations_router)  # todo add api prefix
+
+# calendar events
+app.include_router(schedule_router, prefix=api_prefix)

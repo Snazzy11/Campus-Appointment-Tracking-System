@@ -3,7 +3,7 @@
 export FORCE_COLOR := 1
 
 # Mark checks as fake targets
-.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up db-migrate db-revision require-message db-downgrade health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm events-extend
+.PHONY: help setup setup-env setup-frontend setup-backend setup-hooks application-up web-up mobile-up build-web backend-up backend-down api-up db-up db-migrate db-revision require-message db-downgrade health status logs test-backend lint format format-check typecheck validate validate-backend validate-frontend frontend-lint frontend-format frontend-format-check frontend-typecheck import-osm events-extend seed-schedule clean reset
 
 # Running `make` with no args also prints help
 .DEFAULT_GOAL := help
@@ -33,6 +33,18 @@ setup-backend: ## Install backend packages from the lockfile
 setup-hooks: ## Use the repo's git hooks (.githooks/)
 	@echo "settings up git hooks"
 	git config core.hooksPath .githooks
+
+##@ Cleanup
+
+# Cache/build dirs and installed packages, found anywhere in the repo (except .git)
+CACHE_DIRS := .venv node_modules .pnpm-store __pycache__ .ruff_cache .pytest_cache .mypy_cache .expo dist
+
+clean: ## Delete caches and installed packages (.venv, node_modules, __pycache__, ...)
+	@echo "removing caches and installed packages"
+	find . -path ./.git -prune -o -type d \( $(foreach d,$(CACHE_DIRS),-name $(d) -o) -false \) -prune -exec rm -rf {} +
+	find . -path ./.git -prune -o -name '*.tsbuildinfo' -type f -exec rm -f {} +
+
+reset: clean setup-backend setup-frontend ## Delete all caches, then reinstall packages from the lockfiles
 
 ##@ Run
 
@@ -162,6 +174,10 @@ validate: validate-backend validate-frontend ## Run all backend and frontend che
 import-osm: db-migrate ## Start and migrate the db if needed, then import data/greater_cmu_area.osm
 	@echo "Filling database with data from 'data/greater_cmu_area.osm'"
 	uv run python3 ./scripts/import_osm_locations.py
+
+seed-schedule: db-migrate ## Start and migrate the db if needed, then add the sample events from data/schedule_info.json
+	@echo "adding sample schedule events"
+	uv run python3 ./scripts/add_schedule_info.py
 
 events-extend: db-migrate ## Extend recurring calendar events to the 12-month horizon (run daily)
 	@echo "extending event occurrences"
