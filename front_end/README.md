@@ -84,6 +84,19 @@ A package that isn't in Expo Go is still possible, but then everyone needs a **d
 - **Maps:** use [`react-native-maps`](https://docs.expo.dev/versions/v58.0.0/sdk/map-view/) (included in Expo Go, no setup needed for testing). **Don't use `expo-maps`**: it isn't in Expo Go and needs a development build. Neither works in the browser, so the web version of the Map tab needs its own `MapScreen.web.tsx`.
 - Never create or edit `ios/` or `android/` folders by hand; native settings go in `app.json`.
 
+### Shipping a TestFlight build
+
+Builds run in the cloud on [EAS](https://docs.expo.dev/build/introduction/), using the profiles in `eas.json`. You need the team's Expo account and access to the Apple Developer team. EAS keeps the build number and increments it on every `production` build, so don't change it by hand.
+
+From `front_end/`:
+
+```sh
+pnpm dlx eas-cli login
+pnpm dlx eas-cli build -p ios --profile production --auto-submit
+```
+
+The first run asks you to sign in to Apple and to let EAS manage the signing certificate and provisioning profile. Say yes. Apple takes a few minutes to process the upload. After that, add the build to a tester group in App Store Connect so testers can install it from the TestFlight app.
+
 ## Checks (same idea as the backend's ruff + pyright)
 
 | Command (from repo root)  | What it does                                                                                       |
