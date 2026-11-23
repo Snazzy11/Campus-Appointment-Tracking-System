@@ -1,4 +1,3 @@
-import { FlatList } from 'react-native';
 import { ThemedView } from '@/shared/components/ThemedView';
 import { ThemedText } from '@/shared/components/ThemedText';
 import { RSO } from './types';
