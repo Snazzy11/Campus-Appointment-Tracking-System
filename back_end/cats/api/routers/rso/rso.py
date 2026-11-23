@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from sqlalchemy import func, select
+from sqlalchemy import select
+
 from cats.api.dependencies import db_session
 from cats.database.models.rso import RSO
 from cats.schemas.rso import RSOBase
