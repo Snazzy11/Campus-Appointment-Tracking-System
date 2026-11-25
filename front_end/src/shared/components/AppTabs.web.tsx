@@ -24,12 +24,19 @@ export default function AppTabs() {
           <TabTrigger name="home" href="/" asChild>
             <TabButton>Home</TabButton>
           </TabTrigger>
+
           <TabTrigger name="locations" href="/locations" asChild>
             <TabButton>Locations</TabButton>
           </TabTrigger>
+
+          <TabTrigger name="rsos" href="/rsos" asChild>
+            <TabButton>RSOs</TabButton>
+          </TabTrigger>
+
           <TabTrigger name="maps" href="/maps" asChild>
             <TabButton>Map</TabButton>
           </TabTrigger>
+
           <TabTrigger name="calendars" href="/calendars" asChild>
             <TabButton>Calendar</TabButton>
           </TabTrigger>
