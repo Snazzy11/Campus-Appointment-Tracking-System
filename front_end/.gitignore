@@ -5,3 +5,10 @@ expo-env.d.ts
 /ios/
 /android/
 example/
+
+# EAS / store builds
+*.ipa
+*.apk
+*.aab
+credentials.json
+credentials/

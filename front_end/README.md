@@ -84,6 +84,56 @@ A package that isn't in Expo Go is still possible, but then everyone needs a **d
 - **Maps:** use [`react-native-maps`](https://docs.expo.dev/versions/v58.0.0/sdk/map-view/) (included in Expo Go, no setup needed for testing). **Don't use `expo-maps`**: it isn't in Expo Go and needs a development build. Neither works in the browser, so if the Map tab switches to a real map, the web version will need its own `MapScreen.web.tsx`. (Today the Map tab is an illustration drawn with plain Views, which works everywhere.)
 - Never create or edit `ios/` or `android/` folders by hand; native settings go in `app.json`.
 
+### Shipping a TestFlight build
+
+Builds run in the cloud on [EAS](https://docs.expo.dev/build/introduction/), using the profiles in `eas.json`. The signing certificate, provisioning profile and App Store Connect API key are stored on EAS, so anyone on the Expo team can build. You don't need an Apple login or any files on your computer.
+
+| Thing                     | Value                                                      |
+| ------------------------- | ---------------------------------------------------------- |
+| EAS project               | `@cmich-cats/cats-project` (slug must stay `cats-project`) |
+| Bundle identifier         | `com.cmichcats.catsproject`                                |
+| Apple Team ID             | `7Z7S9RBX72`                                               |
+| App Store Connect app ID  | `6838381865` (`ascAppId` in `eas.json`)                    |
+| App Store Connect API key | Key ID `HK7YF2VD4S`, used by EAS Submit                    |
+| Certificate and profile   | Expire **2027-11-23**                                      |
+
+#### Ship a build
+
+From `front_end/` (always run `eas` from here, not the repo root):
+
+```sh
+pnpm dlx eas-cli@latest login     # once, with the team's Expo account
+pnpm dlx eas-cli@latest build -p ios --profile production --auto-submit
+```
+
+This builds in the cloud (about 15–30 minutes), then uploads the build to App Store Connect. EAS increments the build number on every `production` build, so don't set it by hand. The app has no over-the-air updates, so every code change needs a new build to reach TestFlight.
+
+Then:
+
+1. Wait for Apple to process the upload (5–30 minutes). You'll get an email, and the build appears in App Store Connect → the app → **TestFlight** → iOS Builds. Export compliance is already answered in `app.json` (`ITSAppUsesNonExemptEncryption: false`).
+2. **First time only:** in TestFlight → **Internal Testing**, create a group (for example "CATS Team") with **automatic distribution** turned on, and add testers. Internal testers must first be added to the Apple Developer team in App Store Connect → Users and Access. After that, new builds go to the group automatically.
+3. Testers install the **TestFlight** app from the App Store, accept the email invite, and install CATS from there. TestFlight builds expire after 90 days.
+
+To check status from the terminal: `pnpm dlx eas-cli@latest build:list` and `pnpm dlx eas-cli@latest submit:list -p ios`.
+
+#### How the credentials were made, and renewing them
+
+We made the credentials by hand and uploaded them to EAS, because EAS's Apple login doesn't work with our `cmich.edu` Apple ID ("Authentication with Apple Developer Portal failed! The first argument must be of type string or an instance of Buffer..."). Don't answer **yes** to "log in to your Apple account" in `eas credentials`. Answer no, and upload files instead.
+
+The original files are not in git (`credentials/` and `credentials.json` are gitignored). They live in `front_end/credentials/ios/`, on the machine of the person who made them, and in the team's private backup. **Never commit them or post them in chat.** To renew before 2027-11-23, or to replace a lost certificate:
+
+1. Make a key and signing request: `openssl genrsa -out dist.key 2048` and `openssl req -new -key dist.key -out dist.csr -subj "/CN=CATS iOS Distribution/C=US"`.
+2. On [developer.apple.com](https://developer.apple.com/account): Certificates → **+** → **Apple Distribution**, upload `dist.csr`, download the `.cer`. Then Profiles → **+** → **App Store Connect**, pick `com.cmichcats.catsproject` and the new certificate, and download the `.mobileprovision`.
+3. Convert the certificate to `.p12`. EAS needs the older encryption flags:
+   ```sh
+   openssl x509 -inform DER -in distribution.cer -out distribution.pem
+   openssl pkcs12 -export -inkey dist.key -in distribution.pem -out dist-cert.p12 \
+     -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1
+   ```
+4. Create `front_end/credentials.json` pointing at the `.p12` (with its password) and the `.mobileprovision` ([format](https://docs.expo.dev/app-signing/local-credentials/)). Then run `pnpm dlx eas-cli@latest credentials -p ios` → production → **no** to Apple login → **credentials.json: Upload credentials from credentials.json to EAS**.
+
+API key (only if it's revoked): an Admin creates one in App Store Connect → Users and Access → Integrations → App Store Connect API. The download must keep Apple's name, `AuthKey_<KEYID>.p8`, because EAS reads the Key ID from the filename. Add it under `eas credentials` → **App Store Connect: Manage your API Key**, with the Issuer ID from the same page.
+
 ## Checks (same idea as the backend's ruff + pyright)
 
 | Command (from repo root)  | What it does                                                                                       |
