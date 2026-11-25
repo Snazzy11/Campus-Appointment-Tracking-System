@@ -19,7 +19,7 @@ export function RSOScreen() {
         setRSOs(data);
       } catch {
         setError(
-          'Could not load locations. Is the backend running? Does the database have the data?',
+          'Could not load RSO information. Is the backend running? Does the database have the data?',
         );
       }
     }
