@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from cats.api.routers.health.health import router as health_router
 from cats.api.routers.locations.locations import router as locations_router
+from cats.api.routers.rso.rso import router as rso_router
 
 app = FastAPI(
     title="Campus Appointment and Tracking System",
@@ -29,3 +30,6 @@ app.include_router(health_router)
 
 # campus locations imported from OpenStreetMap
 app.include_router(locations_router)
+
+# rso info
+app.include_router(rso_router)
