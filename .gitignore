@@ -56,3 +56,10 @@ example
 
 .claude
 postgres
+
+# EAS / store builds (also in front_end/.gitignore; repeated here in case EAS is run from the repo root)
+*.ipa
+*.apk
+*.aab
+credentials.json
+credentials/
