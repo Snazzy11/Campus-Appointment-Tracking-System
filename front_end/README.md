@@ -68,8 +68,8 @@ Phones must be on the same Wi-Fi as your computer (see below).
 
 ### Common problems
 
-- **QR code won't load / times out:** the phone and computer must be on the same network, and campus Wi-Fi usually blocks devices from talking to each other. Use a phone hotspot or home Wi-Fi. `pnpm start --tunnel` gets the app code through, but **not** the API calls, so the Locations page will still fail.
-- **App loads but Locations shows an error:** the phone can't reach port 8000. Check that the backend is running (`make health`), that your computer's firewall allows ports 8000 and 8081, and that both devices are on the same network.
+- **QR code won't load / times out:** the phone and computer must be on the same network, and campus Wi-Fi usually blocks devices from talking to each other. Use a phone hotspot or home Wi-Fi. `pnpm start --tunnel` gets the app code through, but **not** the API calls, so Saved places (the only screen that uses the backend so far) will still fail.
+- **App loads but Saved places shows an error:** the phone can't reach port 8000. Check that the backend is running (`make health`), that your computer's firewall allows ports 8000 and 8081, and that both devices are on the same network.
 - **"Project is incompatible with this version of Expo Go":** your Expo Go is for a different SDK. On Android, install the SDK 58 build from [expo.dev/go](https://expo.dev/go). On iPhone, use the team's TestFlight Expo Go, not the App Store one. If the SDK was upgraded, the TestFlight build has to be rebuilt with `eas go`.
 - **"You need to be signed in to Expo Go and Expo CLI" (iPhone):** run `pnpm exec expo login` in `front_end/` and sign in to Expo Go with the same account, then restart `make mobile-up`. `pnpm exec expo whoami` shows who the CLI is signed in as.
 - **Changes don't show up:** shake the device (or press `m` in the terminal) to open the developer menu and reload. If it's still stale, stop Expo and run `pnpm start --clear` from `front_end/`.
@@ -81,7 +81,7 @@ Expo Go can only run packages whose native code is built into it. Day-to-day dev
 
 A package that isn't in Expo Go is still possible, but then everyone needs a **development build** of our app made with EAS (`eas build --profile development`), and iPhones need it through TestFlight. Talk to the team before adding one.
 
-- **Maps:** use [`react-native-maps`](https://docs.expo.dev/versions/v58.0.0/sdk/map-view/) (included in Expo Go, no setup needed for testing). **Don't use `expo-maps`**: it isn't in Expo Go and needs a development build. Neither works in the browser, so the web version of the Map tab needs its own `MapScreen.web.tsx`.
+- **Maps:** use [`react-native-maps`](https://docs.expo.dev/versions/v58.0.0/sdk/map-view/) (included in Expo Go, no setup needed for testing). **Don't use `expo-maps`**: it isn't in Expo Go and needs a development build. Neither works in the browser, so if the Map tab switches to a real map, the web version will need its own `MapScreen.web.tsx`. (Today the Map tab is an illustration drawn with plain Views, which works everywhere.)
 - Never create or edit `ios/` or `android/` folders by hand; native settings go in `app.json`.
 
 ## Checks (same idea as the backend's ruff + pyright)
@@ -102,56 +102,76 @@ Settings live in `.prettierrc.json` (formatting) and `eslint.config.js` (lint ru
 
 ```
 src/
-  app/                 Routes. Each file here is a page/URL. Keep these files tiny.
-    _layout.tsx        Wraps every page (theme + tab bar)
-    index.tsx          "/"           -> HomeScreen
-    locations.tsx      "/locations"  -> LocationsScreen
-    maps.tsx           "/maps"       -> MapScreen
-  features/            One folder per feature. Most of your work happens here.
-    home/
-      HomeScreen.tsx
-    map/
-      MapScreen.tsx         placeholder for now
+  app/                      Routes. Each file here is a page/URL. Keep these files tiny.
+    _layout.tsx             Wraps every page (theme, phone-width column in the browser, Stack)
+    index.tsx               "/"                      -> WelcomeScreen
+    sign-in.tsx             "/sign-in"               -> SignInScreen
+    create-account.tsx      "/create-account"        -> CreateAccountScreen
+    book-appointment.tsx    "/book-appointment"      -> BookAppointmentScreen
+    appointment-confirmed.tsx                        -> AppointmentConfirmedScreen
+    organizations/[organizationId].tsx               -> OrganizationDetailScreen
+    (tabs)/                 Everything with the bottom tab bar. "(tabs)" is not part of the URL.
+      _layout.tsx           The tab bar (shared/components/AppTabs.tsx)
+      home.tsx, map.tsx, schedule.tsx, clubs.tsx, settings.tsx
+      saved-places.tsx      Inside the tabs (so the bar shows) but has no tab button
+  features/                 One folder per feature. Most of your work happens here.
     locations/
-      LocationsScreen.tsx   the page: holds state, loads data
-      LocationItem.tsx      a piece of UI used by the page
-      locationService.ts    calls to the backend for this feature
+      SavedPlacesScreen.tsx the page: holds state, loads data
+      locationService.ts    calls to the backend for this feature (real GET /locations)
       types.ts              shapes of the data this feature uses
-  shared/              Code used by more than one feature
-    api.ts             backend address + getFromApi() helper
-    components/        shared UI (Screen wrapper, tab bar, themed text/views)
-    constants/         colors, spacing
-    hooks/             shared hooks (light/dark mode)
+    auth/ booking/ clubs/ home/ map/ schedule/ settings/ welcome/
+                            same idea: Screen, feature-only components, <feature>Service.ts, types.ts
+  shared/                   Code used by more than one feature
+    api.ts                  backend address + getFromApi() helper
+    components/             shared UI: Screen, ScreenHeader, Button, TextField, HeroCard, ActionRow, ...
+    constants/theme.ts      ALL design tokens: colors (light + dark), spacing, text styles, sizes
+    dates.ts                turns "2026-11-18" / "13:00" into text like "Wednesday, November 18"
+    fakeBackend.ts          helpers for services that return fake data (see below)
+    navigation.ts           goBackOr() and enterApp()
+    hooks/                  shared hooks (light/dark mode)
 ```
 
 Rule of thumb: if only one feature uses it, it goes in that feature's folder. If two or more do, it goes in `shared/`.
 Only routes go in `src/app/`. Expo Router turns every file there into a page, so components, hooks and helpers must live elsewhere.
 Don't create or edit `ios/` or `android/` folders. Expo generates them when needed; change native settings in `app.json` instead.
+The design these screens come from is in Figma; the spec and tokens are in `data/figma/`. Open tasks are in `FRONTEND_TASKS.md`.
 
-## How the Locations page gets its data
+## Real data and fake data
 
-1. You open `/locations`, so Expo Router renders `src/app/locations.tsx`, which just shows `LocationsScreen`.
-2. `LocationsScreen` runs `useEffect`, which calls `getLocations()` when the page first appears.
-3. `getLocations()` (`locationService.ts`) calls `getFromApi('/locations')` (`shared/api.ts`).
+Every screen gets its data by calling a function in its feature's `<feature>Service.ts`. Screens never know whether that data came from the backend.
+
+- **Real:** `locationService.ts` calls `GET /locations`. Saved places uses it to look up the real buildings.
+- **Fake:** every other service returns sample data from the design, because the backend has no endpoint for it yet. Each of those files says so in a comment at the top. They call `simulateRequest()` from `shared/fakeBackend.ts`, which waits a moment like a real request.
+- **To see every error state:** set `SIMULATE_FAKE_BACKEND_ERRORS = true` in `shared/fakeBackend.ts` (set it back before committing). To see Saved places' error state, stop the backend.
+- **To connect a feature to the backend:** change only its service file to use `getFromApi(...)`, and make `types.ts` match the Pydantic model. See `FRONTEND_TASKS.md`.
+
+## How Saved places gets its data
+
+1. You open `/saved-places`, so Expo Router renders `src/app/(tabs)/saved-places.tsx`, which just shows `SavedPlacesScreen`.
+2. `SavedPlacesScreen` runs `useEffect`, which calls `getSavedPlaces()` when the page first appears.
+3. `getSavedPlaces()` (`locationService.ts`) calls `getLocations()`, which calls `getFromApi('/locations')` (`shared/api.ts`).
 4. That sends `GET http://localhost:8000/locations` (on a phone, `http://<your computer's address>:8000/locations`) to FastAPI (`back_end/cats/api/routers/locations/locations.py`).
-5. The JSON response is saved with `setLocations(...)`, the page re-draws, and a `FlatList` shows each location with `LocationItem`.
+5. `getSavedPlaces()` picks out the saved buildings ("CMU Park Library", "Bovee University Center") by name. The screen saves the result with `setPlaces(...)`, sets `status` to `'ready'`, and re-draws.
+6. If the request fails, `status` becomes `'error'` and the screen shows a "Try again" button. Pressing it adds 1 to `loadCount`, which makes the `useEffect` run again.
 
 ## Adding a new feature (example: "events")
 
 1. **Backend:** add the endpoint and its Pydantic response model. Check it at http://localhost:8000/docs.
 2. `src/features/events/types.ts`: a TypeScript type that matches the Pydantic model field for field.
 3. `src/features/events/eventService.ts`: `getEvents()` using `getFromApi('/events')`.
-4. `src/features/events/EventsScreen.tsx`: copy `LocationsScreen.tsx` as a starting point. Keep the `Screen` wrapper and `ThemedText` (see Conventions).
-5. `src/app/events.tsx`: two lines, like `src/app/locations.tsx`.
-6. To give it a tab, add it to **both** `shared/components/AppTabs.tsx` (phone) and `AppTabs.web.tsx` (browser).
+4. `src/features/events/EventsScreen.tsx`: copy `ClubsScreen.tsx` as a starting point (it has loading, empty and error states). Keep the `Screen` wrapper and `ThemedText` (see Conventions).
+5. `src/app/events.tsx` (or `src/app/(tabs)/events.tsx` to show the tab bar): two lines, like the other route files.
+6. To give it a tab button, add a `<Tabs.Screen>` to `shared/components/AppTabs.tsx`. The same file is used on phones and in the browser.
 
 ## Conventions
 
-- Components and screens: `PascalCase.tsx` with a named export (`export function LocationsScreen`).
+- Components and screens: `PascalCase.tsx` with a named export (`export function ClubsScreen`).
 - Everything else: `camelCase.ts`.
 - Only files in `src/app/` use `export default`, because Expo Router requires it there.
 - Wrap every screen in `Screen` (`src/shared/components/Screen.tsx`). It keeps content clear of the notch, status bar and home indicator, and uses the light/dark background.
-- Use `ThemedText` instead of React Native's `Text`, otherwise text stays black in dark mode.
+- Use `ThemedText` instead of React Native's `Text`, otherwise text stays black in dark mode. Pick a design text style with `type` (e.g. `type="title"`).
+- Never type a color, size or font into a style. Use the tokens in `shared/constants/theme.ts` (`theme.primary`, `Spacing.lg`, `Radius.card`, ...). If a value is missing, add a token there first.
+- Every screen that loads data shows a loading state, an empty state and an error state with "Try again".
 - Use `FlatList` instead of `ScrollView` + `.map()` for lists that can get long. It only draws the rows on screen, which keeps phones fast.
 - Navigate with `Link`, `router` and `useLocalSearchParams` from `expo-router`.
 - Prefer Expo's own packages (`expo-image`, `expo-location`, ...) over third-party ones when both exist, as long as they're included in Expo Go (see [Mobile development](#only-use-packages-that-are-included-in-expo-go)).
@@ -159,7 +179,8 @@ Don't create or edit `ios/` or `android/` folders. Expo generates them when need
 
 ## Things that trip people up
 
-- **`File.web.tsx`**: on the web, Expo automatically uses `File.web.tsx` instead of `File.tsx`. That's why there are two `AppTabs` files, and a change to one isn't seen on the other platform.
+- **`File.web.tsx`**: on the web, Expo automatically uses `File.web.tsx` instead of `File.tsx`, so a change to one isn't seen on the other platform. (`useColorScheme` has a web version.)
+- **Hiding a route from the tab bar**: use `tabBarButton: () => null`, not `href: null`. In Expo Router 58, `href: null` makes the tab "hidden", and hidden tabs redirect to the first tab when opened.
 - **Phones and `localhost`**: on a phone, `localhost` means the phone itself. In development the app automatically calls the backend on port 8000 of the computer running Expo (`src/shared/api.ts`), so the backend must be running on that computer (`make backend-up` or `make api-up`; see [Mobile development](#mobile-development)). To use a different backend, create `front_end/.env` with `EXPO_PUBLIC_API_URL=http://<host>:8000` and restart `pnpm web`/`pnpm start`. `.env` changes only apply after a restart.
 - **Adding packages**: from inside `front_end/`, run `pnpm exec expo install <package>` (not `pnpm add`). From the repo root, use `pnpm --dir front_end exec expo install <package>`. Running it from the root without `--dir` fails with `Command "expo" not found`. We still use pnpm: `expo install` picks versions that work with our Expo SDK and then installs them with pnpm. Expo's docs write this as `npx expo install`, which does the same thing. Don't use npm or yarn to install packages in this project.
 - **Data looks wrong?** Check the backend first with `curl localhost:8000/locations` or http://localhost:8000/docs. If the API is right, the bug is in the frontend.

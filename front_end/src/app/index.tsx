@@ -1,4 +1,4 @@
-// Route: "/" (the Home tab). Route files stay tiny; the real screen lives in features/.
-import { HomeScreen } from '@/features/home/HomeScreen';
+// Route: "/" (Welcome). Route files stay tiny; the real screen lives in features/.
+import { WelcomeScreen } from '@/features/welcome/WelcomeScreen';
 
-export default HomeScreen;
+export default WelcomeScreen;
