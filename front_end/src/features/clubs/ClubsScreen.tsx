@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { CardGrid } from '@/shared/components/CardGrid';
 import { HeroCard } from '@/shared/components/HeroCard';
 import { Screen } from '@/shared/components/Screen';
 import { ScreenHeader } from '@/shared/components/ScreenHeader';
@@ -44,7 +45,7 @@ export function ClubsScreen() {
   }
 
   return (
-    <Screen hasTabBar>
+    <Screen width="wide" hasTabBar>
       <ScreenHeader
         eyebrow="CATS / CAMPUS COMPANION"
         title="Find your people"
@@ -64,11 +65,11 @@ export function ClubsScreen() {
         />
 
         {status === 'loading' && (
-          <>
+          <CardGrid>
             <Skeleton height={Size.organizationRowMinHeight} />
             <Skeleton height={Size.organizationRowMinHeight} />
             <Skeleton height={Size.organizationRowMinHeight} />
-          </>
+          </CardGrid>
         )}
 
         {status === 'error' && (
@@ -86,15 +87,19 @@ export function ClubsScreen() {
         )}
 
         {/* There are only a few organizations, so a plain map() is fine. Switch to a FlatList
-            if the real backend returns a long list. */}
-        {status === 'ready' &&
-          organizations.map((organization) => (
-            <OrganizationRow
-              key={organization.id}
-              organization={organization}
-              onPress={() => router.push(`/organizations/${organization.id}`)}
-            />
-          ))}
+            (with numColumns for wide screens) if the real backend returns a long list. */}
+        {/* One column on phones, two on wide screens. */}
+        {status === 'ready' && (
+          <CardGrid>
+            {organizations.map((organization) => (
+              <OrganizationRow
+                key={organization.id}
+                organization={organization}
+                onPress={() => router.push(`/organizations/${organization.id}`)}
+              />
+            ))}
+          </CardGrid>
+        )}
       </View>
     </Screen>
   );

@@ -103,7 +103,7 @@ Settings live in `.prettierrc.json` (formatting) and `eslint.config.js` (lint ru
 ```
 src/
   app/                      Routes. Each file here is a page/URL. Keep these files tiny.
-    _layout.tsx             Wraps every page (theme, phone-width column in the browser, Stack)
+    _layout.tsx             Wraps every page (theme + Stack)
     index.tsx               "/"                      -> WelcomeScreen
     sign-in.tsx             "/sign-in"               -> SignInScreen
     create-account.tsx      "/create-account"        -> CreateAccountScreen
@@ -111,7 +111,7 @@ src/
     appointment-confirmed.tsx                        -> AppointmentConfirmedScreen
     organizations/[organizationId].tsx               -> OrganizationDetailScreen
     (tabs)/                 Everything with the bottom tab bar. "(tabs)" is not part of the URL.
-      _layout.tsx           The tab bar (shared/components/AppTabs.tsx)
+      _layout.tsx           The tabs (shared/components/AppTabs.tsx): bottom bar on phones, sidebar on wide screens
       home.tsx, map.tsx, schedule.tsx, clubs.tsx, settings.tsx
       saved-places.tsx      Inside the tabs (so the bar shows) but has no tab button
   features/                 One folder per feature. Most of your work happens here.
@@ -128,7 +128,8 @@ src/
     dates.ts                turns "2026-11-18" / "13:00" into text like "Wednesday, November 18"
     fakeBackend.ts          helpers for services that return fake data (see below)
     navigation.ts           goBackOr() and enterApp()
-    hooks/                  shared hooks (light/dark mode)
+    hooks/                  shared hooks (light/dark mode, useIsWideScreen)
+    themePreference.tsx     the Settings → Appearance choice (System / Light / Dark), shared with the whole app
 ```
 
 Rule of thumb: if only one feature uses it, it goes in that feature's folder. If two or more do, it goes in `shared/`.
@@ -169,9 +170,14 @@ Every screen gets its data by calling a function in its feature's `<feature>Serv
 - Everything else: `camelCase.ts`.
 - Only files in `src/app/` use `export default`, because Expo Router requires it there.
 - Wrap every screen in `Screen` (`src/shared/components/Screen.tsx`). It keeps content clear of the notch, status bar and home indicator, and uses the light/dark background.
-- Use `ThemedText` instead of React Native's `Text`, otherwise text stays black in dark mode. Pick a design text style with `type` (e.g. `type="title"`).
+- Use `ThemedText` instead of React Native's `Text`, otherwise text stays black in dark mode. Get colors with `const theme = useTheme();` so they follow Settings → Appearance (System / Light / Dark); never call React Native's `useColorScheme` directly. Pick a design text style with `type` (e.g. `type="title"`).
 - Never type a color, size or font into a style. Use the tokens in `shared/constants/theme.ts` (`theme.primary`, `Spacing.lg`, `Radius.card`, ...). If a value is missing, add a token there first.
 - Every screen that loads data shows a loading state, an empty state and an error state with "Try again".
+- **Phones and wide screens:** the app must work well in a laptop browser too. From 768px wide (`Breakpoints.wide` in `theme.ts`) the tabs become a sidebar and screens can use more room:
+  - Pick how wide a screen's content may get with `<Screen width="form" | "reading" | "wide">` (480 / 760 / 1100 px). Forms use `form`, one-column screens `reading` (the default), screens with columns or grids `wide`.
+  - Use `<CardGrid>` for lists of cards: one column on phones, two on wide screens.
+  - For anything else, `const isWide = useIsWideScreen();` and pick a different style, e.g. `flexDirection: 'row'` (see `HomeScreen.tsx` and `MapScreen.tsx`).
+  - Check every change at phone width **and** in a wide browser window.
 - Use `FlatList` instead of `ScrollView` + `.map()` for lists that can get long. It only draws the rows on screen, which keeps phones fast.
 - Navigate with `Link`, `router` and `useLocalSearchParams` from `expo-router`.
 - Prefer Expo's own packages (`expo-image`, `expo-location`, ...) over third-party ones when both exist, as long as they're included in Expo Go (see [Mobile development](#only-use-packages-that-are-included-in-expo-go)).

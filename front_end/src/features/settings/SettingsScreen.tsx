@@ -15,6 +15,7 @@ import { Skeleton } from '@/shared/components/Skeleton';
 import { ThemedText } from '@/shared/components/ThemedText';
 import { Radius, Size, Spacing } from '@/shared/constants/theme';
 
+import { AppearancePicker } from './AppearancePicker';
 import { ProfileCard } from './ProfileCard';
 
 // Figma: "CATS · Settings" (node 67:57)
@@ -103,6 +104,14 @@ export function SettingsScreen() {
           subtitle="Find a community that fits"
           onPress={() => router.navigate('/clubs')}
         />
+      </View>
+
+      <View style={styles.list}>
+        <SectionHeading
+          title="Appearance"
+          description="Choose light or dark mode, or match your device."
+        />
+        <AppearancePicker />
       </View>
 
       {signOutError !== '' && <InfoNote variant="error" message={signOutError} />}

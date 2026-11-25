@@ -54,7 +54,7 @@ export function AppointmentConfirmedScreen() {
   // Spec: never show "See you soon!" until we know the booking exists.
   if (status === 'loading') {
     return (
-      <Screen contentStyle={styles.centered}>
+      <Screen width="form" contentStyle={styles.centered}>
         <StatePanel variant="loading" title="Checking your appointment…" />
       </Screen>
     );
@@ -64,7 +64,7 @@ export function AppointmentConfirmedScreen() {
   // so the student doesn't go back and book a second time.
   if (status === 'error') {
     return (
-      <Screen contentStyle={styles.centered}>
+      <Screen width="form" contentStyle={styles.centered}>
         <StatePanel
           variant="error"
           title="Appointment details unavailable"
@@ -80,7 +80,7 @@ export function AppointmentConfirmedScreen() {
 
   if (!appointment) {
     return (
-      <Screen contentStyle={styles.centered}>
+      <Screen width="form" contentStyle={styles.centered}>
         <StatePanel
           variant="empty"
           title="No confirmed appointment"
@@ -95,7 +95,7 @@ export function AppointmentConfirmedScreen() {
   }
 
   return (
-    <Screen contentStyle={styles.centered}>
+    <Screen width="form" contentStyle={styles.centered}>
       <View style={styles.top}>
         <SuccessEmblem />
         <ThemedText type="title" accessibilityRole="header" style={styles.centerText}>

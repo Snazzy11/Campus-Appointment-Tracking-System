@@ -118,7 +118,13 @@ export const Opacity = {
 // ---------- Fixed sizes ----------
 export const Size = {
   referencePhoneWidth: 390,
-  browserContentMaxWidth: 480,
+  // Widest the content gets on big screens (browser, tablets). See Screen's `width` prop.
+  // The spec only defined the 480 form width; the reading and wide widths and the sidebar are
+  // our own additions for a better web experience (not in Figma yet).
+  formMaxWidth: 480, // forms and short flows (the spec's browserContentMaxWidth)
+  readingMaxWidth: 760, // single-column screens like Schedule and Settings
+  wideMaxWidth: 1100, // screens with two columns or a grid like Home, Map and Clubs
+  sidebarWidth: 240, // the navigation sidebar on wide screens
   touchTargetMin: 48,
   buttonMinHeight: 54,
   inputMinHeight: 56,
@@ -141,6 +147,13 @@ export const Size = {
   // Loading placeholders: roughly the height of the content they stand in for.
   skeletonHeroHeight: 150,
   skeletonCardHeight: 110,
+} as const;
+
+// ---------- Screen-width breakpoints ----------
+// At this window width and wider, the app switches from the phone layout (bottom tabs, one column)
+// to the wide layout (sidebar, two columns). Use the useIsWideScreen() hook to check it.
+export const Breakpoints = {
+  wide: 768,
 } as const;
 
 // ---------- Ratios ----------

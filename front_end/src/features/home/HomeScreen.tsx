@@ -14,6 +14,7 @@ import { Skeleton } from '@/shared/components/Skeleton';
 import { ThemedText } from '@/shared/components/ThemedText';
 import { Opacity, Radius, Size, Spacing } from '@/shared/constants/theme';
 import { formatLongDate } from '@/shared/dates';
+import { useIsWideScreen } from '@/shared/hooks/useIsWideScreen';
 import { useTheme } from '@/shared/hooks/useTheme';
 
 import { getHomeSummary } from './homeService';
@@ -44,6 +45,7 @@ const ACTIONS: { number: string; title: string; subtitle: string; href: Href }[]
 // Figma: "CATS · Home" (node 67:17)
 export function HomeScreen() {
   const theme = useTheme();
+  const isWide = useIsWideScreen();
   const [summary, setSummary] = useState<HomeSummary | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
@@ -71,8 +73,33 @@ export function HomeScreen() {
     setLoadCount(loadCount + 1);
   }
 
+  // The "Find your people" card. Defined once here and placed below, in a different spot
+  // depending on the screen width.
+  const findYourPeople = (
+    <Pressable
+      onPress={() => router.navigate('/clubs')}
+      accessibilityRole="button"
+      accessibilityLabel="Find your people. Explore student organizations"
+      style={({ pressed }) => [
+        styles.callout,
+        { backgroundColor: theme.backgroundSelected },
+        pressed && { opacity: Opacity.pressed },
+      ]}
+    >
+      <ThemedText type="bodyBold" themeColor="primary">
+        Find your people
+      </ThemedText>
+      <View style={styles.calloutLink}>
+        <ThemedText type="caption" themeColor="primary">
+          Explore student organizations
+        </ThemedText>
+        <Icon name="arrowRight" color={theme.primary} size={Size.iconSmall} />
+      </View>
+    </Pressable>
+  );
+
   return (
-    <Screen hasTabBar>
+    <Screen width="wide" hasTabBar>
       <ScreenHeader
         eyebrow="CATS / CAMPUS COMPANION"
         title="Hey, Chippewa."
@@ -87,67 +114,67 @@ export function HomeScreen() {
         }
       />
 
-      {/* Only the card with today's date depends on data. The rest of Home always works,
-          even while loading or after an error (spec). */}
-      {status === 'loading' && (
-        <Skeleton height={Size.skeletonHeroHeight} borderRadius={Radius.hero} />
-      )}
-      {status === 'error' && (
-        <InfoNote
-          variant="error"
-          title="Today’s plan didn’t load"
-          message="Your shortcuts below still work."
-          actionLabel="Try again"
-          onAction={retry}
-        />
-      )}
-      {status === 'ready' && summary && (
-        <HeroCard
-          eyebrow={formatLongDate(summary.today).toUpperCase()}
-          title={summary.heroTitle}
-          linkLabel="View your schedule"
-          onPress={() => router.navigate('/schedule')}
-        />
-      )}
+      {/* On wide screens the two parts sit side by side; on phones they stack. */}
+      <View style={isWide ? styles.columnsWide : styles.columns}>
+        <View style={[styles.section, isWide && styles.column]}>
+          {/* Only the card with today's date depends on data. The rest of Home always works,
+              even while loading or after an error (spec). */}
+          {status === 'loading' && (
+            <Skeleton height={Size.skeletonHeroHeight} borderRadius={Radius.hero} />
+          )}
+          {status === 'error' && (
+            <InfoNote
+              variant="error"
+              title="Today’s plan didn’t load"
+              message="Your shortcuts below still work."
+              actionLabel="Try again"
+              onAction={retry}
+            />
+          )}
+          {status === 'ready' && summary && (
+            <HeroCard
+              eyebrow={formatLongDate(summary.today).toUpperCase()}
+              title={summary.heroTitle}
+              linkLabel="View your schedule"
+              onPress={() => router.navigate('/schedule')}
+            />
+          )}
 
-      <View style={styles.section}>
-        <SectionHeading title="What do you need today?" />
-        {ACTIONS.map((action) => (
-          <ActionRow
-            key={action.number}
-            leadingLabel={action.number}
-            title={action.title}
-            subtitle={action.subtitle}
-            onPress={() => router.push(action.href)}
-          />
-        ))}
-      </View>
-
-      <Pressable
-        onPress={() => router.navigate('/clubs')}
-        accessibilityRole="button"
-        accessibilityLabel="Find your people. Explore student organizations"
-        style={({ pressed }) => [
-          styles.callout,
-          { backgroundColor: theme.backgroundSelected },
-          pressed && { opacity: Opacity.pressed },
-        ]}
-      >
-        <ThemedText type="bodyBold" themeColor="primary">
-          Find your people
-        </ThemedText>
-        <View style={styles.calloutLink}>
-          <ThemedText type="caption" themeColor="primary">
-            Explore student organizations
-          </ThemedText>
-          <Icon name="arrowRight" color={theme.primary} size={Size.iconSmall} />
+          {/* Wide screens: under the date card. Phones: at the bottom, as in Figma. */}
+          {isWide && findYourPeople}
         </View>
-      </Pressable>
+
+        <View style={[styles.section, isWide && styles.column]}>
+          <SectionHeading title="What do you need today?" />
+          {ACTIONS.map((action) => (
+            <ActionRow
+              key={action.number}
+              leadingLabel={action.number}
+              title={action.title}
+              subtitle={action.subtitle}
+              onPress={() => router.push(action.href)}
+            />
+          ))}
+        </View>
+
+        {!isWide && findYourPeople}
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  columns: {
+    gap: Spacing.xl,
+  },
+  columnsWide: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.xl,
+  },
+  column: {
+    flex: 1,
+  },
   section: {
     gap: Spacing.md,
   },

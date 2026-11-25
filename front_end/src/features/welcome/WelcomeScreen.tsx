@@ -38,7 +38,7 @@ export function WelcomeScreen() {
   }, []);
 
   return (
-    <Screen backgroundColor="primary" contentStyle={styles.content}>
+    <Screen width="form" backgroundColor="primary" contentStyle={styles.content}>
       {/* This screen has a dark maroon background in light mode (and light pink in dark mode),
           so the status bar text flips to stay readable. Only while this screen is visible. */}
       {isFocused && <StatusBar style={isDark ? 'dark' : 'light'} />}

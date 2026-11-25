@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { ActionRow } from '@/shared/components/ActionRow';
 import { Button } from '@/shared/components/Button';
+import { CardGrid } from '@/shared/components/CardGrid';
 import { HeroCard } from '@/shared/components/HeroCard';
 import { Screen } from '@/shared/components/Screen';
 import { ScreenHeader } from '@/shared/components/ScreenHeader';
@@ -66,10 +67,10 @@ export function SavedPlacesScreen() {
 
       <View style={styles.list}>
         {status === 'loading' && (
-          <>
+          <CardGrid>
             <Skeleton height={Size.actionRowMinHeight} />
             <Skeleton height={Size.actionRowMinHeight} />
-          </>
+          </CardGrid>
         )}
 
         {status === 'error' && (
@@ -90,16 +91,20 @@ export function SavedPlacesScreen() {
           />
         )}
 
-        {status === 'ready' &&
-          places.map((place) => (
-            <ActionRow
-              key={place.destinationId}
-              title={place.name}
-              // The building's official name comes from the backend (GET /locations).
-              subtitle={`${place.location.name} · ${place.description}`}
-              onPress={() => openOnMap(place.destinationId)}
-            />
-          ))}
+        {/* One column on phones, two on wide screens. */}
+        {status === 'ready' && (
+          <CardGrid>
+            {places.map((place) => (
+              <ActionRow
+                key={place.destinationId}
+                title={place.name}
+                // The building's official name comes from the backend (GET /locations).
+                subtitle={`${place.location.name} · ${place.description}`}
+                onPress={() => openOnMap(place.destinationId)}
+              />
+            ))}
+          </CardGrid>
+        )}
 
         {status === 'ready' && places.length > 0 && (
           <ThemedText type="caption" themeColor="textSecondary">

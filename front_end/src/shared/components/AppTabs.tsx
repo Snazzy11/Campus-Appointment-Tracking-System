@@ -1,24 +1,42 @@
+import { Link, usePathname, type Href } from 'expo-router';
 import { Tabs } from 'expo-router/tabs';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Radius, Size, Spacing, TextStyles } from '@/shared/constants/theme';
+import { BorderWidth, Opacity, Radius, Size, Spacing, TextStyles } from '@/shared/constants/theme';
+import { useIsWideScreen } from '@/shared/hooks/useIsWideScreen';
 import { useTheme } from '@/shared/hooks/useTheme';
 
 import { Icon, type IconName } from './Icon';
+import { ThemedText } from './ThemedText';
 
-// The bottom tab bar, used on phones and in the browser.
-// Each <Tabs.Screen name="..."> matches a file in src/app/(tabs)/.
+// The five tabs, in order. `name` matches a file in src/app/(tabs)/.
+const TABS: { name: string; title: string; icon: IconName; href: Href }[] = [
+  { name: 'home', title: 'Home', icon: 'home', href: '/home' },
+  { name: 'map', title: 'Map', icon: 'map', href: '/map' },
+  { name: 'schedule', title: 'Schedule', icon: 'schedule', href: '/schedule' },
+  { name: 'clubs', title: 'Clubs', icon: 'clubs', href: '/clubs' },
+  { name: 'settings', title: 'Settings', icon: 'settings', href: '/settings' },
+];
+
+// The app's main navigation.
+// - Phones and narrow browser windows: a tab bar at the bottom (as in the Figma design).
+// - Wide screens (laptops, tablets): a sidebar on the left (our addition for the web).
 export default function AppTabs() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const isWide = useIsWideScreen();
 
   return (
     <Tabs
       // "history" makes the back button return to the tab you came from (e.g. Saved places -> Map).
       backBehavior="history"
+      // On wide screens, draw our own Sidebar instead of the bottom bar.
+      tabBar={isWide ? () => <Sidebar /> : undefined}
       screenOptions={{
         headerShown: false,
+        // 'left' puts the Sidebar to the left of the screen instead of below it.
+        tabBarPosition: isWide ? 'left' : 'bottom',
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textSecondary,
         tabBarLabelStyle: TextStyles.tabLabel,
@@ -32,11 +50,18 @@ export default function AppTabs() {
         sceneStyle: { backgroundColor: theme.background },
       }}
     >
-      <Tabs.Screen name="home" options={tabOptions('Home', 'home')} />
-      <Tabs.Screen name="map" options={tabOptions('Map', 'map')} />
-      <Tabs.Screen name="schedule" options={tabOptions('Schedule', 'schedule')} />
-      <Tabs.Screen name="clubs" options={tabOptions('Clubs', 'clubs')} />
-      <Tabs.Screen name="settings" options={tabOptions('Settings', 'settings')} />
+      {TABS.map((tab) => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{
+            title: tab.title,
+            tabBarIcon: ({ focused }: { focused: boolean }) => (
+              <TabIcon icon={tab.icon} focused={focused} />
+            ),
+          }}
+        />
+      ))}
 
       {/* Saved places is not a tab, but the design keeps the tab bar visible on it, so it lives
           inside the tabs with no button in the bar. Don't use `href: null` here: in Expo Router 58
@@ -47,14 +72,6 @@ export default function AppTabs() {
       />
     </Tabs>
   );
-}
-
-// The title and icon for one tab.
-function tabOptions(title: string, icon: IconName) {
-  return {
-    title,
-    tabBarIcon: ({ focused }: { focused: boolean }) => <TabIcon icon={icon} focused={focused} />,
-  };
 }
 
 type TabIconProps = {
@@ -75,6 +92,57 @@ function TabIcon({ icon, focused }: TabIconProps) {
   );
 }
 
+// The navigation sidebar shown on wide screens.
+function Sidebar() {
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  // The current URL, e.g. "/schedule". Used to highlight the matching tab.
+  const pathname = usePathname();
+
+  return (
+    <View
+      style={[
+        styles.sidebar,
+        {
+          backgroundColor: theme.backgroundElement,
+          borderRightColor: theme.border,
+          paddingTop: Spacing.xxl + insets.top,
+        },
+      ]}
+      accessibilityRole="tablist"
+    >
+      <ThemedText type="hero" themeColor="primary" style={styles.brand}>
+        CATS
+      </ThemedText>
+
+      {TABS.map((tab) => {
+        const focused = pathname === tab.href;
+        const color = focused ? theme.primary : theme.textSecondary;
+        return (
+          // Link makes each item a real link in the browser (right-click, open in new tab).
+          <Link key={tab.name} href={tab.href} asChild>
+            <Pressable
+              accessibilityRole="tab"
+              accessibilityLabel={tab.title}
+              accessibilityState={{ selected: focused }}
+              style={({ pressed }) => [
+                styles.sidebarItem,
+                focused && { backgroundColor: theme.backgroundSelected },
+                pressed && { opacity: Opacity.pressed },
+              ]}
+            >
+              <Icon name={tab.icon} color={color} size={Size.iconSmall} />
+              <ThemedText type="rowTitle" style={{ color }}>
+                {tab.title}
+              </ThemedText>
+            </Pressable>
+          </Link>
+        );
+      })}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   iconPill: {
     width: Size.tabIconPillWidth,
@@ -82,5 +150,24 @@ const styles = StyleSheet.create({
     borderRadius: Radius.pill,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  sidebar: {
+    width: Size.sidebarWidth,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xl,
+    gap: Spacing.xs,
+    borderRightWidth: BorderWidth.default,
+  },
+  brand: {
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  sidebarItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    minHeight: Size.touchTargetMin,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.control,
   },
 });

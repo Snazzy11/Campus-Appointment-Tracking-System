@@ -52,7 +52,7 @@ export function CreateAccountScreen() {
   }
 
   return (
-    <Screen>
+    <Screen width="form">
       <ScreenHeader
         title="Join your campus"
         subtitle="A little less juggling. A lot more CATS."

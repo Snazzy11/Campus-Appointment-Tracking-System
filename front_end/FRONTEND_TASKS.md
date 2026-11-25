@@ -144,10 +144,28 @@ Known differences from Figma on purpose:
 - Saved places rows add the real building name from the backend: "CMU Park Library · Study spaces · Quiet corners" instead of "Study spaces · Quiet corners".
 - Text fields have a thin border (spec: needed so the field edge is visible).
 - The app uses the system font, not Inter (see C1).
+- Wide screens (768px and up) use a sidebar and wider layouts that aren't in Figma (see C0).
+- Settings has an Appearance section (System / Light / Dark) that isn't in Figma (see C0b).
 
 ---
 
 ## C. Assets, fonts and decisions
+
+### C0. Design review of the wide (laptop/tablet) layouts
+
+- **Goal:** design sign-off on the wide layouts. Figma only has phone frames; the wide layouts were added in code so the web app isn't a phone-sized strip on a laptop.
+- **Today:** from 768px wide, the bottom tabs become a left sidebar with the CATS name. Home shows the date card and shortcuts side by side, Map shows the map left and the route details right, Clubs and Saved places show cards in two columns, forms stay 480px wide, and other screens stay up to 760px wide.
+- **Files:** `src/shared/components/AppTabs.tsx` (sidebar), `src/shared/components/Screen.tsx` (`width` prop), `src/shared/components/CardGrid.tsx`, `src/shared/constants/theme.ts` (`Breakpoints`, `Size.formMaxWidth` / `readingMaxWidth` / `wideMaxWidth` / `sidebarWidth`), `HomeScreen.tsx`, `MapScreen.tsx`.
+- **How to test:** `pnpm web`, then drag the browser window from phone width to full screen on every screen. Check there's no jump or overlap around 768px, and that nothing gets too wide to read on a large monitor. Also try an iPad (it gets the sidebar too).
+- **Figma:** none yet. Ask the designer to add desktop frames for Home, Map and Clubs.
+
+### C0b. Remember the appearance choice on phones
+
+- **Goal:** Settings → Appearance (System / Light / Dark) is remembered after the app is closed. In the browser it already is (saved in `localStorage`); on phones it resets to System on every launch.
+- **Files:** `package.json` (from `front_end/` in a normal terminal: `pnpm exec expo install @react-native-async-storage/async-storage`; it is included in Expo Go), `src/shared/themePreferenceStorage.ts` (use `AsyncStorage.getItem` / `setItem` in the two functions, like `themePreferenceStorage.web.ts` does with `localStorage`).
+- **How to test:** on a phone, pick Dark, close the app completely, reopen it: it should still be dark. Then pick System and switch the phone's own dark mode on and off.
+- **Also:** the Appearance section isn't in Figma. Ask the designer to review it (Settings frame).
+- **Figma:** Settings (67-57)
 
 ### C1. Use the Inter font
 
@@ -168,7 +186,7 @@ Known differences from Figma on purpose:
 
 - **Goal:** design sign-off on dark mode. The spec says all dark colors are "proposed".
 - **Files:** `src/shared/constants/theme.ts` (`darkColors`).
-- **How to test:** switch the phone to dark mode, go through every screen, and show the designer. Check contrast of `textSecondary` and the small 10-point eyebrow text.
+- **How to test:** pick Dark in Settings → Appearance (or switch the phone to dark mode), go through every screen, and show the designer. Check contrast of `textSecondary` and the small 10-point eyebrow text.
 - **Figma:** all frames (they only show light mode)
 
 ### C4. Decide back-button and tab behavior

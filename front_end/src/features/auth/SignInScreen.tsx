@@ -57,7 +57,7 @@ export function SignInScreen() {
   }
 
   return (
-    <Screen>
+    <Screen width="form">
       <ScreenHeader
         title="Welcome back"
         subtitle="Sign in to your campus companion."

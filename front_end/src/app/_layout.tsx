@@ -1,9 +1,9 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
 
-import { Colors, Size } from '@/shared/constants/theme';
+import { Colors } from '@/shared/constants/theme';
 import { useColorScheme } from '@/shared/hooks/useColorScheme';
+import { ThemePreferenceProvider } from '@/shared/themePreference';
 
 // Root layout: wraps every screen in src/app/.
 //
@@ -11,6 +11,15 @@ import { useColorScheme } from '@/shared/hooks/useColorScheme';
 // Welcome, Sign in, Create account, Book appointment, Appointment confirmed and
 // Organization details. The tabs live in the "(tabs)" folder, which is one screen of this Stack.
 export default function RootLayout() {
+  // The provider must wrap everything that reads the light/dark choice (including RootNavigator).
+  return (
+    <ThemePreferenceProvider>
+      <RootNavigator />
+    </ThemePreferenceProvider>
+  );
+}
+
+function RootNavigator() {
   const isDark = useColorScheme() === 'dark';
   const colors = isDark ? Colors.dark : Colors.light;
 
@@ -30,25 +39,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={navigationTheme}>
-      <StatusBar style="auto" />
-      {/* In a wide browser window the app stays a phone-sized column in the middle (spec: browser layout). */}
-      <View style={[styles.page, { backgroundColor: colors.background }]}>
-        <View style={styles.column}>
-          <Stack screenOptions={{ headerShown: false }} />
-        </View>
-      </View>
+      {/* Light text on dark backgrounds and the other way round. Not "auto", because "auto"
+          follows the phone's setting even when the student picked a different appearance. */}
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      {/* The app uses the whole window. On wide screens each Screen limits how wide its own
+          content gets (see the `width` prop of Screen), and the tabs become a sidebar. */}
+      <Stack screenOptions={{ headerShown: false }} />
     </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  column: {
-    flex: 1,
-    width: '100%',
-    maxWidth: Size.browserContentMaxWidth,
-  },
-});

@@ -75,7 +75,7 @@ export function BookAppointmentScreen() {
   }
 
   return (
-    <Screen>
+    <Screen width="form">
       <ScreenHeader
         title="Book an appointment"
         subtitle="A little guidance goes a long way."
